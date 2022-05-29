@@ -1,0 +1,47 @@
+@import url(https://fonts.googleapis.com/css?family=Poppins:100,100italic,200,200italic,300,300italic,regular,italic,500,500italic,600,600italic,700,700italic,800,800italic,900,900italic);
+
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+body {
+  font-family: "Poppins", sans-serif, -apple-system, BlinkMacSystemFont,
+    "Segoe UI", Roboto, Oxygen, Ubuntu, Cantarell, "Open Sans", "Helvetica Neue",
+    sans-serif;
+}
+
+html,
+body {
+  /* Remove 300ms delay for 'click' event, when using touch interface. */
+  touch-action: manipulation;
+  scroll-behavior: smooth;
+  overflow-x: hidden;
+}
+.no-select {
+  -webkit-tap-highlight-color: transparent;
+  -webkit-touch-callout: none;
+  -webkit-user-select: none;
+  -khtml-user-select: none;
+  -moz-user-select: none;
+  -ms-user-select: none;
+  user-select: none;
+}
+.no-select:focus {
+  outline: none !important;
+}
+.bg-arrenge-center {
+  background-position: center;
+  background-repeat: no-repeat;
+  background-size: contain;
+}
+.bg-arrenge-cover {
+  background-size: cover;
+  background-repeat: no-repeat;
+  background-position-y: 0;
+}
+
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
