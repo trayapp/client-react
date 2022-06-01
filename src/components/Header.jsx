@@ -7,7 +7,7 @@ import {
   MdStore,
 } from "react-icons/md";
 import { motion } from "framer-motion";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 
 import Logo from "../img/logo.png";
 import Avatar from "../img/avatar.png";
@@ -15,18 +15,26 @@ import { useStateValue } from "../context/StateProvider";
 import { actionType } from "../context/reducer";
 
 const Header = () => {
-  const [{ user }, dispatch] = useStateValue();
+  const [{ user, token }, dispatch] = useStateValue();
   const [isMenu, setIsMenu] = useState(false);
+  const navigate = useNavigate();
   const login = async () => {
     if (!user) {
       if (window.location.pathname !== "/auth/login") {
         setIsMenu(false);
-        window.location.href = "/auth/login";
+        navigate("/auth/login");
+      } else {
+        setIsMenu(!isMenu);
       }
-    } else {
-      setIsMenu(!isMenu);
-      if (isMenu === true) {
-        setIsMenu(false);
+    } else if (user) {
+      if (!token) {
+        window.location.href = "/auth/login";
+      } else {
+        if (isMenu === true) {
+          setIsMenu(false);
+        } else {
+          setIsMenu(true);
+        }
       }
     }
   };
@@ -38,7 +46,11 @@ const Header = () => {
       type: actionType.SET_USER,
       user: null,
     });
-    window.location.href = "/auth/login";
+    dispatch({
+      type: actionType.SET_TOKEN,
+      user: null,
+      token: null,
+    });
   };
   return (
     <header className="fixed z-50 w-screen p-3 px-4 md:p-6 md:px-16 bg-navOverlay backdrop-blur-md">
@@ -66,7 +78,6 @@ const Header = () => {
             </li>
             {!user && (
               <li className="text-base text-textColor hover:text-headingColor duration-100 transition-all ease-in-out cursor-pointer">
-                
                 <Link to={"/auth/login"}>Login</Link>
               </li>
             )}

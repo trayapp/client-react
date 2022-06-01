@@ -1,7 +1,7 @@
 import React from "react";
 import Delivery from "../img/delivery.png";
 import HeroBg from "../img/heroBg.png";
-import { heroData } from "../utils/data";
+import { LoadHeroData } from "../GraphQL/functions";
 
 const HomeContainer = () => {
   return (
@@ -51,32 +51,7 @@ const HomeContainer = () => {
           alt="hero-bg"
         />
 
-        <div className="w-full h-full absolute top-0 left-0 flex items-center justify-center lg:pr-32 gap-4 flex-wrap">
-          {heroData &&
-            heroData.map((p) => (
-              <div
-                key={p.id}
-                className=" lg:w-190 p-4 bg-cardOverlay backdrop-blur-md rounded-3xl flex flex-col items-center justify-center drop-shadow-lg"
-              >
-                <img
-                  src={p.imageSrc}
-                  className="w-20 lg:w-40 -mt-10 lg:-mt-20 rounded-md"
-                  alt=""
-                />
-                <p className="text-base lg:text-xl font-semibold capitalize text-textColor mt-2 lg:mt-4">
-                  {p.name}
-                </p>
-
-                <p className="text-[12px] lg:text-sm w-full flex capitalize items-center justify-center text-lighttextGray font-semibold my-1 lg:my-3">
-                  {p.type}
-                </p>
-                <div className="text-sm font-semibold text-headingColor">
-                  <span className="text-xs text-green-600">₦</span>
-                  {p.price}
-                </div>
-              </div>
-            ))}
-        </div>
+        <LoadHeroData />
       </div>
     </section>
   );

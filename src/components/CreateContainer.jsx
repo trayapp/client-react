@@ -8,11 +8,20 @@ import {
   MdDescription,
 } from "react-icons/md";
 import { ReactComponent as NairaSign } from "../img/naira-currency.svg";
-import { product_categories, product_types } from "../utils/data";
+import { product_categories } from "../utils/data";
 import Loader from "./Loader";
+import { useMutation } from "@apollo/client";
+import { ADD_NEW_PRODUCT } from "../GraphQL/mutations/products";
+import {
+  LoadItemAttribute,
+  saveItem,
+} from "../GraphQL/functions/graphqlFunctions";
 
+// Saving new Items
 const CreateContainer = () => {
+  const [addProduct, { loading, error, data }] = useMutation(ADD_NEW_PRODUCT);
   const [productName, setProductName] = useState("");
+  const [productImage, setProductImage] = useState(null);
   const [productDescription, setProductDescription] = useState("");
   const [productPrice, setProductPrice] = useState(0);
   const [productCalories, setProductCalories] = useState(0);
@@ -23,6 +32,35 @@ const CreateContainer = () => {
   const [alertStatus, setAlertStatus] = useState("danger");
   const [msg, setMsg] = useState(null);
   const [isLoading, setIsLoading] = useState(false);
+  const [isScroll, setIsScroll] = useState(false);
+  const [sending, setSending] = useState(false);
+
+  useEffect(() => {
+    const data = {
+      product_slug: `${Date.now()}`,
+      product_name: productName,
+      product_price: productPrice,
+      product_image: productImage,
+      product_category: productCategory,
+      product_type: productType,
+      product_description: productDescription,
+      product_calories: productCalories,
+    };
+    if (sending === true && !sending === false) {
+      saveItem(addProduct, data);
+      setSending(false);
+    }
+  }, [
+    addProduct,
+    productCalories,
+    productCategory,
+    productDescription,
+    productImage,
+    productName,
+    productPrice,
+    productType,
+    sending,
+  ]);
 
   const fileToDataUri = (file) =>
     new Promise((resolve, reject) => {
@@ -50,12 +88,14 @@ const CreateContainer = () => {
     const imageFile = e.target.files[0];
     if (!imageFile.name.match(/.(jpg|jpeg|png|webp)$/i)) {
       setImageAsset(null);
+      setIsScroll(true);
       setIsLoading(false);
       setFields(true);
       setMsg("Image Format Not Allowed ☹");
       setAlertStatus("danger");
       setTimeout(() => {
         setFields(false);
+        setIsScroll(false);
       }, 5000);
       return;
     }
@@ -73,6 +113,7 @@ const CreateContainer = () => {
 
     fileToDataUri(imageFile).then((dataUri) => {
       setImageAsset(dataUri);
+      setProductImage(imageFile);
     });
     setFields(true);
     setMsg("Image added successfully 😎");
@@ -95,42 +136,57 @@ const CreateContainer = () => {
     }, 2000);
   };
   const saveDetails = () => {
-    setIsLoading(true);
     try {
       if (
         !productName ||
         !productCategory ||
         !productType ||
         !productPrice ||
-        !imageAsset
+        !imageAsset ||
+        !productImage
       ) {
         setFields(true);
+        setIsScroll(true);
         setMsg("Required fields can't be empty 😕");
         setAlertStatus("danger");
         setTimeout(() => {
+          setIsScroll(true);
           setFields(false);
-          setIsLoading(false);
         }, 4000);
-      } else {
-        const data = {
-          product_slug: `${Date.now()}`,
-          product_name: productName,
-          product_price: productPrice,
-          product_image: imageAsset,
-          product_category: productCategory,
-          product_type: productType
-        }
+      }
+      if (data !== null) {
+        setSending(true);
+        setFields(true);
+        setIsScroll(true);
+        setMsg("Item Has Been Uploaded :)");
+        setAlertStatus("success");
+        setTimeout(() => {
+          setFields(false);
+        }, 4000);
+        clearData();
+        console.log(data);
       }
     } catch (error) {
       console.log(error);
+      setIsScroll(true);
       setFields(true);
       setMsg("Error white uploading : Try Again 😕");
       setAlertStatus("danger");
       setTimeout(() => {
+        setIsScroll(true);
         setFields(false);
-        setIsLoading(false);
       }, 4000);
     }
+  };
+  const clearData = () => {
+    setProductName("");
+    setProductDescription("");
+    setProductPrice(null);
+    setProductCategory(null);
+    setProductType(null);
+    setProductCalories(null);
+    setProductImage(null);
+    setImageAsset(null);
   };
 
   return (
@@ -138,7 +194,7 @@ const CreateContainer = () => {
       <div className="w-[90%] md:w-[75%] border border-gray-300 rounded-lg p-4 flex flex-col items-center justify-center gap-4 transition-all duration-500">
         {fields && (
           <>
-            <ScrollToTopOnMount />
+            {isScroll && <ScrollToTopOnMount />}
             <motion.p
               initial={{ opacity: 0 }}
               animate={{ opacity: 1 }}
@@ -161,7 +217,7 @@ const CreateContainer = () => {
             value={productName}
             onChange={(e) => setProductName(e.target.value)}
             placeholder="Give me a name..."
-            className="w-full h-full text-lg bg-transparent outline-none border-none placeholder:text-gray-400 text-textColor"
+            className="w-full h-full text-lg bg-transparent outline-none focus:outline-none border-none placeholder:text-gray-400 text-textColor"
           />
         </div>
         {productName.length > 0 && (
@@ -172,7 +228,7 @@ const CreateContainer = () => {
               value={productDescription}
               onChange={(e) => setProductDescription(e.target.value)}
               placeholder="About this item (Optional)"
-              className="w-full h-full text-lg bg-transparent outline-none border-none placeholder:text-gray-400 text-textColor"
+              className="w-full h-full text-lg bg-transparent outline-none focus:outline-none border-none placeholder:text-gray-400 text-textColor"
             />
           </div>
         )}
@@ -185,40 +241,22 @@ const CreateContainer = () => {
             <option value="others" className="bg-white">
               Select Category
             </option>
-            {product_categories &&
-              product_categories.map((category) => (
-                <option
-                  key={category.id}
-                  className="text-base border-0 outline-none capitalize bg-white text-headingColor"
-                  value={category.urlParamName}
-                >
-                  {category.name}
-                </option>
-              ))}
+            <LoadItemAttribute type={1} />
           </select>
         </div>
-        {productCategory && product_categories && (
-          <div className="w-full">
-            <select
-              onChange={(e) => setProductType(e.target.value)}
-              className="outline-none w-full text-base border-b-2 border-gray-200 p-2 rounded-md cursor-pointer"
-            >
-              <option value="others" className="bg-white">
-                Select Type
-              </option>
-              {product_types &&
-                product_types.map((type) => (
-                  <option
-                    key={type.id}
-                    className="text-base border-0 outline-none capitalize bg-white text-headingColor"
-                    value={type.urlParamName}
-                  >
-                    {type.name}
-                  </option>
-                ))}
-            </select>
-          </div>
-        )}
+        <div className="w-full">
+          <select
+            onChange={(e) => setProductType(e.target.value)}
+            className={`outline-none w-full text-base border-b-2 border-gray-200 p-2 rounded-md cursor-pointer ${
+              productCategory && product_categories ? "block" : "hidden"
+            }`}
+          >
+            <option value="others" className="bg-white">
+              Select Type
+            </option>
+            <LoadItemAttribute type={0} />
+          </select>
+        </div>
 
         <div className="group flex justify-center items-center flex-col border-2 border-dotted border-gray-300 w-full h-225 md:h-420 cursor-pointer rounded-lg">
           {isLoading ? (
@@ -267,11 +305,11 @@ const CreateContainer = () => {
           <div className="w-full py-2 border-b border-gray-300 flex items-center gap-2">
             <MdFoodBank className="text-gray-700 text-2xl" />
             <input
-              type="text"
-              value={productCalories === 0 ? null : ""}
+              type="number"
+              value={productCalories === 0 ? null : productCalories}
               onChange={(e) => setProductCalories(e.target.value)}
               placeholder="Calories (Optional)"
-              className="w-full h-full text-lg bg-transparent outline-none border-none placeholder:text-gray-400 text-textColor"
+              className="shadow-none focus:outline-none w-full h-full text-lg bg-transparent border-none placeholder:text-gray-400 text-textColor"
             />
           </div>
         </div>
@@ -283,20 +321,55 @@ const CreateContainer = () => {
             <input
               type="number"
               required
-              value={productPrice === 0 ? null : ""}
+              value={productPrice === 0 ? null : productPrice}
               onChange={(e) => setProductPrice(e.target.value)}
               placeholder="Price"
-              className="w-full h-full text-lg bg-transparent outline-none border-none placeholder:text-gray-400 text-textColor"
+              className="w-full h-full text-lg bg-transparent outline-none focus:outline-none border-none placeholder:text-gray-400 text-textColor"
             />
           </div>
         </div>
         <div className="flex items-center w-full">
-          <button
-            className="ml-0 md:ml-auto w-full md:w-auto border-none outline-none bg-emerald-500 px-12 py-2 rounded-lg text-lg text-white font-semibold"
-            onClick={saveDetails}
-          >
-            Add
-          </button>
+          {loading ? (
+            <button
+              disabled
+              type="button"
+              className="ml-0 md:ml-auto w-full md:w-auto border-none outline-none bg-emerald-500 px-12 py-2 rounded-lg text-lg text-white font-semibold"
+            >
+              <svg
+                role="status"
+                className="inline w-4 h-4 mr-3 text-white animate-spin"
+                viewBox="0 0 100 101"
+                fill="none"
+                xmlns="http://www.w3.org/2000/svg"
+              >
+                <path
+                  d="M100 50.5908C100 78.2051 77.6142 100.591 50 100.591C22.3858 100.591 0 78.2051 0 50.5908C0 22.9766 22.3858 0.59082 50 0.59082C77.6142 0.59082 100 22.9766 100 50.5908ZM9.08144 50.5908C9.08144 73.1895 27.4013 91.5094 50 91.5094C72.5987 91.5094 90.9186 73.1895 90.9186 50.5908C90.9186 27.9921 72.5987 9.67226 50 9.67226C27.4013 9.67226 9.08144 27.9921 9.08144 50.5908Z"
+                  fill="#E5E7EB"
+                />
+                <path
+                  d="M93.9676 39.0409C96.393 38.4038 97.8624 35.9116 97.0079 33.5539C95.2932 28.8227 92.871 24.3692 89.8167 20.348C85.8452 15.1192 80.8826 10.7238 75.2124 7.41289C69.5422 4.10194 63.2754 1.94025 56.7698 1.05124C51.7666 0.367541 46.6976 0.446843 41.7345 1.27873C39.2613 1.69328 37.813 4.19778 38.4501 6.62326C39.0873 9.04874 41.5694 10.4717 44.0505 10.1071C47.8511 9.54855 51.7191 9.52689 55.5402 10.0491C60.8642 10.7766 65.9928 12.5457 70.6331 15.2552C75.2735 17.9648 79.3347 21.5619 82.5849 25.841C84.9175 28.9121 86.7997 32.2913 88.1811 35.8758C89.083 38.2158 91.5421 39.6781 93.9676 39.0409Z"
+                  fill="currentColor"
+                />
+              </svg>
+              Loading...
+            </button>
+          ) : (
+            <button
+              className="ml-0 md:ml-auto w-full md:w-auto disabled:bg-slate-300 border-none outline-none bg-emerald-500 px-12 py-2 rounded-lg text-lg text-white font-semibold"
+              disabled={
+                !productName &&
+                !productImage &&
+                !productPrice &&
+                !productCategory &&
+                !productType
+                  ? true
+                  : false
+              }
+              onClick={saveDetails}
+            >
+              Add
+            </button>
+          )}
         </div>
       </div>
     </div>

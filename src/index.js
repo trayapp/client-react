@@ -1,7 +1,7 @@
 import React from "react";
 import ReactDOM from "react-dom/client";
 import "./index.css";
-import "flowbite";
+// import "flowbite";
 
 import { BrowserRouter as Router } from "react-router-dom";
 
@@ -18,7 +18,7 @@ root.render(
       <StateProvider initialState={initialState} reducer={reducer}>
         <ScrollToTop>
           <App />
-          </ScrollToTop>
+        </ScrollToTop>
       </StateProvider>
     </Router>
   </React.StrictMode>

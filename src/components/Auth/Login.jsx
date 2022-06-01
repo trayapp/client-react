@@ -9,6 +9,7 @@ import { useStateValue } from "../../context/StateProvider";
 import { useMutation } from "@apollo/client";
 import { LOGIN_USER } from "../../GraphQL/mutations/auth";
 import { motion } from "framer-motion";
+import { AUTH_TOKEN, AUTH_TOKEN_REFRESH } from "../../constants";
 
 import { ReactComponent as LoginIllustration } from "../../img/login.svg";
 
@@ -20,7 +21,6 @@ export default function Login() {
   const [tokenAuth, { loading, error, data }] = useMutation(LOGIN_USER);
   const [{ user }, dispatch] = useStateValue();
   const [loginState, setLoginState] = useState(fieldsState);
-  const [isLoading, setIsLoading] = useState(false);
   const [isError, setIsError] = useState(false);
   const [msg, setMsg] = useState("");
   const [alertStatus, setAlertStatus] = useState("danger");
@@ -31,12 +31,54 @@ export default function Login() {
 
   const handleSubmit = (e) => {
     e.preventDefault();
-    setIsLoading(true);
-    if (e) authenticateUser();
-    setTimeout(() => {
-      setIsLoading(false);
-    }, 500);
+    authenticateUser();
   };
+  useEffect(() => {
+    if (error) {
+      setIsError(true);
+      setAlertStatus("danger");
+      setMsg("Server Error, Please Try Again");
+      setTimeout(() => {
+        setIsError(false);
+      }, 1000);
+    }
+    if (data && !loading) {
+      var qs = data.tokenAuth;
+      if (qs.errors) {
+        setIsError(true);
+        setAlertStatus("danger");
+        // console.log(qs.errors);
+        if (qs.errors.nonFieldErrors) {
+          setMsg(`${qs.errors.nonFieldErrors[0].message}`);
+        } else {
+          setMsg("Please Enter Correct Details");
+        }
+        setTimeout(() => {
+          setIsError(false);
+        }, 3000);
+      }
+      if (qs.errors === null) {
+        console.log(qs.refreshToken);
+        dispatch({
+          type: actionType.SET_USER,
+          user: qs.user,
+        });
+        let data = {
+          token: qs.token,
+          refreshToken: qs.refreshToken,
+        };
+        dispatch({
+          type: actionType.SET_TOKEN,
+          user: qs.user,
+          token: JSON.parse(JSON.stringify(data)),
+        });
+        localStorage.setItem("user", JSON.stringify(qs.user));
+        localStorage.setItem(AUTH_TOKEN, qs.token);
+        localStorage.setItem(AUTH_TOKEN_REFRESH, qs.refreshToken);
+      }
+      console.log(user);
+    }
+  }, [data, dispatch, loading, user, error]);
 
   const ScrollToTopOnMount = () => {
     useEffect(() => {
@@ -58,42 +100,6 @@ export default function Login() {
         password: loginState.password,
       },
     });
-    if (error) {
-      setIsError(true);
-      // console.log(error);
-      setAlertStatus("danger");
-      setMsg("Server Error, Please Try Again");
-      setTimeout(() => {
-        setIsError(false);
-      }, 1000);
-    }
-    if (!loading && loginState.password && loginState.username) {
-      if (data) {
-        var qs = data.tokenAuth;
-        if (qs.errors) {
-          setIsError(true);
-          setAlertStatus("danger");
-          // console.log(qs.errors);
-          if (qs.errors.nonFieldErrors) {
-            setMsg(`${qs.errors.nonFieldErrors[0].message}`);
-          } else {
-            setMsg("Please Enter Correct Details");
-          }
-          setTimeout(() => {
-            setIsError(false);
-          }, 3000);
-        }
-        if (qs.errors === null) {
-          console.log(qs.refreshToken);
-          dispatch({
-            type: actionType.SET_USER,
-            user: qs.user,
-          });
-          localStorage.setItem("user", JSON.stringify(qs.user));
-        }
-        console.log(user);
-      }
-    }
   };
 
   return (
@@ -136,6 +142,7 @@ export default function Login() {
                     value={loginState[field.id]}
                     labelText={field.labelText}
                     labelFor={field.labelFor}
+                    autoComplete={field.autoComplete}
                     id={field.id}
                     name={field.name}
                     type={field.type}
@@ -148,7 +155,7 @@ export default function Login() {
               <FormExtra />
               <FormAction
                 handleSubmit={handleSubmit}
-                loading={isLoading}
+                loading={loading === true}
                 text="Login"
               />
             </form>

@@ -10,8 +10,8 @@ export const heroData = [
 export const product_categories = [
     {
         id: 1,
-        name: "Dish",
-        urlParamName: "dishes",
+        name: "Food",
+        urlParamName: "food",
     },
     {
         id: 2,
@@ -28,8 +28,8 @@ export const product_categories = [
 export const product_types = [
     {
         id: 1,
-        name: "Dish",
-        urlParamName: "dishes",
+        name: "Not A Dish",
+        urlParamName: "not-a-dish",
     },
     {
         id: 2,

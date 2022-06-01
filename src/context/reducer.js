@@ -1,13 +1,16 @@
 export const initialState = {
   user: null,
+  token: null,
   cart: null,
   total: null,
 };
 
 export const actionType = {
   SET_USER: "SET_USER",
+  SET_TOKEN: "SET_TOKENIZATION",
   SET_CART: "SET_CART",
   SET_TOTAL: "SET_TOTAL",
+  SET_FOOD_ITEMS: "SET_FOOD_ITEMS",
 };
 
 const reducer = (state, action) => {
@@ -18,8 +21,19 @@ const reducer = (state, action) => {
       return {
         ...state,
         user: action.user,
+        token: action.token,
       };
-
+    case actionType.SET_FOOD_ITEMS:
+      return {
+        ...state,
+        foodItems: action.foodItems,
+      };
+    case actionType.SET_TOKEN:
+      return {
+        ...state,
+        user: action.user,
+        token: action.token,
+      };
     case actionType.SET_CART:
       return {
         ...state,
