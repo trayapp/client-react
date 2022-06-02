@@ -11,7 +11,8 @@ import { Link, useNavigate } from "react-router-dom";
 import { useSelector } from "react-redux";
 import Logo from "../img/logo.png";
 import Avatar from "../img/avatar.png";
-import { authTokenActions } from "../modAuth/actions";
+import { authTokenActions } from "../context/actions";
+import { AUTH_TOKEN, AUTH_TOKEN_REFRESH, USER } from "../constants";
 
 const Header = () => {
   const user = useSelector((state) => state.authToken.user);
@@ -40,7 +41,9 @@ const Header = () => {
   };
   const logout = () => {
     setIsMenu(false);
-    // localStorage.clear();
+    localStorage.removeItem(USER);
+    localStorage.removeItem(AUTH_TOKEN);
+    localStorage.removeItem(AUTH_TOKEN_REFRESH);
     authTokenActions.logOut();
   };
   return (

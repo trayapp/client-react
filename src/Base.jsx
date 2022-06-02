@@ -6,7 +6,7 @@ import Login from "./components/Auth/Login";
 import { useQuery } from "@apollo/client";
 import { LOAD_ITEMS } from "./GraphQL/queries/products/queries";
 import { ProtectedRoute } from "./utils/hooks";
-import { useIsAuthenticated } from "./modAuth/hooks";
+import { useIsAuthenticated } from "./context/hooks";
 
 const BaseContainer = () => {
   const isAuthenticated = useIsAuthenticated();

@@ -1,5 +1,5 @@
 import { reduxStoreMain } from "../redux";
-import { authTokenActions } from "../modAuth/actions";
+import { authTokenActions } from "./actions";
 import { apolloClientAuth } from "../apollo";
 import { REFRESH_TOKEN } from "../GraphQL/mutations/auth";
 import { fetchUser } from "../utils/fetchLocalStorageData";

@@ -1,7 +1,7 @@
 import { combineReducers } from '@reduxjs/toolkit'
 import { persistReducer } from 'redux-persist'
 import storage from 'redux-persist/lib/storage'
-import {authTokenSlice} from '../modAuth/slices'
+import {authTokenSlice} from '../context/slices'
 
 const persistConfigMain = {
   key: 'root',

@@ -2,7 +2,7 @@ import { onError } from "@apollo/client/link/error";
 // import { createHttpLink } from "@apollo/client";
 import { setContext } from "@apollo/client/link/context";
 import { createUploadLink as createHttpLink } from "apollo-upload-client";
-import { getAccessTokenPromise } from "../modAuth/utils";
+import { getAccessTokenPromise } from "../context/utils";
 
 export const errorHandler = ({ graphQLErrors, networkError }) => {
   if (graphQLErrors)

@@ -1,8 +1,8 @@
-import { AUTH_TOKEN_REFRESH, AUTH_TOKEN } from "../constants";
+import { AUTH_TOKEN_REFRESH, AUTH_TOKEN, USER } from "../constants";
 
 export const fetchUser = () => {
   const userInfo =
-    localStorage.getItem("user") !== "undefined"
+    localStorage.getItem(USER) !== "undefined"
       ? JSON.parse(localStorage.getItem("user"))
       : localStorage.clear();
 
@@ -21,13 +21,4 @@ export const fetchToken = () => {
       : localStorage.clear();
 
   return TokenInfo;
-};
-
-export const fetchHero = () => {
-  const heroInfo =
-    localStorage.getItem("hero_data") !== "undefined"
-      ? JSON.parse(localStorage.getItem("hero_data"))
-      : localStorage.clear();
-
-  return heroInfo;
 };

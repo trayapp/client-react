@@ -10,13 +10,13 @@ import { motion } from "framer-motion";
 import { AUTH_TOKEN, AUTH_TOKEN_REFRESH } from "../../constants";
 import { ReactComponent as LoginIllustration } from "../../img/login.svg";
 import { errorHandler, apolloClientAuth } from "../../apollo";
-import { authTokenActions } from "../../modAuth/actions";
+import { authTokenActions } from "../../context/actions";
 
 const fields = loginFields;
 let fieldsState = {};
 fields.forEach((field) => (fieldsState[field.id] = ""));
 
-export default function Login() {
+const Login = () => {
   const [tokenAuth, { loading, error, data }] = useMutation(LOGIN_USER, {
     client: apolloClientAuth,
   });
@@ -152,4 +152,5 @@ export default function Login() {
       </div>
     </section>
   );
-}
+};
+export default Login;
