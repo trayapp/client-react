@@ -1,24 +1,30 @@
-import React from "react";
-import BaseContainer from "./Base";
-import { Provider } from "react-redux";
-import { PersistGate } from "redux-persist/integration/react";
-import { reduxStoreMain, reduxStoreMainPersistor } from "./redux";
-
-import { ApolloProvider } from "@apollo/client";
-import { apolloClientMain } from "./apollo";
+import React, { useEffect } from "react";
+import Router from "./router"
+import { useQuery } from "@apollo/client";
+import { LOAD_ITEMS } from "./GraphQL/queries/products/queries";
+import { AnimatePresence } from "framer-motion";
+import { Header } from "./components";
 
 const App = () => {
+  const { loading, data } = useQuery(LOAD_ITEMS);
+  // const foodItems = useSelector();
+
+  useEffect(() => {
+    if (data) {
+      console.log(data);
+    }
+  }, [data]);
+  console.log(loading);
   return (
-    <Provider store={reduxStoreMain}>
-      <PersistGate
-        loading={<p>loading...</p>}
-        persistor={reduxStoreMainPersistor}
-      >
-        <ApolloProvider client={apolloClientMain}>
-          <BaseContainer />
-        </ApolloProvider>
-      </PersistGate>
-    </Provider>
+    <AnimatePresence exitBeforeEnter>
+      <div className="w-screen h-auto flex flex-col bg-primary">
+        <Header />
+
+        <main className="mt-14 md:mt-20 px-4 md:px-16 py-4 w-full">
+          <Router />
+        </main>
+      </div>
+    </AnimatePresence>
   );
 };
 
