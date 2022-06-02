@@ -1,9 +1,20 @@
-import React from "react";
+// import { useQuery } from "@apollo/client";
+import React, { useState } from "react";
+// import { LoadHeroData } from "../GraphQL/functions/graphqlFunctions";
+// import { LOAD_HERO_DATA } from "../GraphQL/queries/products";
 import Delivery from "../img/delivery.png";
 import HeroBg from "../img/heroBg.png";
 import { LoadHeroData } from "../GraphQL/functions";
 
 const HomeContainer = () => {
+  const [heroData, setHeroData] = useState([]);
+  const [isLoading, setIsLoading] = useState(false);
+  LoadHeroData().then((data) => {
+    setIsLoading(data.loading);
+    if (!isLoading) {
+      setHeroData(data.heroData);
+    }
+  });
   return (
     <section className="grid grid-cols-1 md:grid-cols-2 gap-2 w-full" id="home">
       <div className="py-2 flex-1 flex flex-col items-start justify-center gap-6">
@@ -51,7 +62,34 @@ const HomeContainer = () => {
           alt="hero-bg"
         />
 
-        <LoadHeroData />
+        <div className="w-full h-full absolute top-0 left-0 flex items-center justify-center lg:pr-32 gap-4 flex-wrap">
+          {heroData &&
+            heroData.map((p, index) => (
+              <div
+                key={index}
+                className=" lg:w-190 p-4 bg-cardOverlay backdrop-blur-md rounded-3xl flex flex-col items-center justify-center drop-shadow-lg"
+              >
+                <img
+                  src={p.productImages[0] && p.productImages[0].productImage}
+                  className={`${
+                    isLoading === true && "skeleton skeleton-image"
+                  } w-20 lg:w-40 -mt-10 lg:-mt-20 rounded-md`}
+                  alt=""
+                />
+                <p className="text-base lg:text-xl font-semibold capitalize text-textColor mt-2 lg:mt-4">
+                  {p.productName}
+                </p>
+
+                <p className="text-[12px] lg:text-sm w-full flex capitalize items-center justify-center text-lighttextGray font-semibold my-1 lg:my-3">
+                  {p.productCategory.name}
+                </p>
+                <div className="text-sm font-semibold text-headingColor">
+                  <span className="text-xs text-green-600">₦</span>
+                  {p.productPrice}
+                </div>
+              </div>
+            ))}
+        </div>
       </div>
     </section>
   );

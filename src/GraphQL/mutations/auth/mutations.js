@@ -55,3 +55,13 @@ export const REFRESH_TOKEN = gql`
     }
   }
 `;
+
+export const LOGOUT = gql`
+mutation LOGOUT($refreshToken: String!){
+  revokeToken(refreshToken: $refreshToken){
+    revoked
+    success
+    errors
+  }
+}
+`

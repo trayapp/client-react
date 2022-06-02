@@ -1,10 +1,10 @@
 import React from "react";
 import { Navigate, useLocation } from "react-router-dom";
-import { useStateValue } from "../../context/StateProvider";
+import { useSelector } from "react-redux";
 
 export const ProtectedRoute = (props) => {
   const { children, newItem, loginPage } = props;
-  const [{ user }] = useStateValue();
+  const user = useSelector(state => state.authToken.user);
   const location = useLocation();
   const origin = location.state?.from?.pathname || "/";
   if (user === null && !loginPage) {

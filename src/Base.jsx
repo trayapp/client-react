@@ -1,29 +1,26 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect } from "react";
 import { Route, Routes } from "react-router-dom";
 import { AnimatePresence } from "framer-motion";
 import { CreateContainer, Header, MainContainer } from "./components";
 import Login from "./components/Auth/Login";
-import { useLazyQuery } from "@apollo/client";
-import { RefreshToken } from "./GraphQL/functions/graphqlFunctions";
-import { useStateValue } from "./context/StateProvider";
+import { useQuery } from "@apollo/client";
 import { LOAD_ITEMS } from "./GraphQL/queries/products/queries";
 import { ProtectedRoute } from "./utils/hooks";
+import { useIsAuthenticated } from "./modAuth/hooks";
 
 const BaseContainer = () => {
-  const [items, { data }] = useLazyQuery(LOAD_ITEMS);
-  const [{ foodItems }, dispatch] = useStateValue();
-  const [isLoading, setIsLoading] = useState(true);
+  const isAuthenticated = useIsAuthenticated();
+  const { loading, data } = useQuery(LOAD_ITEMS);
+  // const foodItems = useSelector();
 
-  //   useEffect(() => {
-  //     if (isLoading) {
-  //       items({
-  //         variables: { count: 1 },
-  //       });
-  //       setIsLoading(false);
-  //     }
-  //   }, [isLoading, items]);
+  useEffect(() => {
+    if (data) {
+      console.log(data);
+    }
+  }, [data]);
+  console.log(loading);
+  console.log(isAuthenticated);
   return (
-    // <RefreshToken>
     <AnimatePresence exitBeforeEnter>
       <div className="w-screen h-auto flex flex-col bg-primary">
         <Header />
@@ -31,29 +28,33 @@ const BaseContainer = () => {
         <main className="mt-14 md:mt-20 px-4 md:px-16 py-4 w-full">
           <Routes>
             <Route path="/*" element={<MainContainer />} />
-            <Route
-              path="/createItem"
-              element={
-                <ProtectedRoute newItem={true}>
-                  <CreateContainer />
-                </ProtectedRoute>
-              }
-            />
-            <Route
-              path="/auth/login"
-              element={
-                <ProtectedRoute loginPage={true}>
-                  <RefreshToken protectedPage={true}>
-                    <Login />
-                  </RefreshToken>
-                </ProtectedRoute>
-              }
-            />
+            {isAuthenticated === true ? (
+              <>
+                <Route
+                  path="/createItem"
+                  element={
+                    <ProtectedRoute newItem={true}>
+                      <CreateContainer />
+                    </ProtectedRoute>
+                  }
+                />
+              </>
+            ) : (
+              <>
+                <Route
+                  path="/auth/login"
+                  element={
+                    <ProtectedRoute loginPage={true}>
+                      <Login />
+                    </ProtectedRoute>
+                  }
+                />
+              </>
+            )}
           </Routes>
         </main>
       </div>
     </AnimatePresence>
-    // </RefreshToken>
   );
 };
 

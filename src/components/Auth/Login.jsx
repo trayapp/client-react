@@ -4,22 +4,22 @@ import FormAction from "./FormAction";
 import FormExtra from "./FormExtra";
 import FormInput from "./FormInput";
 import FormHeader from "./FormHeader";
-import { actionType } from "../../context/reducer";
-import { useStateValue } from "../../context/StateProvider";
 import { useMutation } from "@apollo/client";
 import { LOGIN_USER } from "../../GraphQL/mutations/auth";
 import { motion } from "framer-motion";
 import { AUTH_TOKEN, AUTH_TOKEN_REFRESH } from "../../constants";
-
 import { ReactComponent as LoginIllustration } from "../../img/login.svg";
+import { errorHandler, apolloClientAuth } from "../../apollo";
+import { authTokenActions } from "../../modAuth/actions";
 
 const fields = loginFields;
 let fieldsState = {};
 fields.forEach((field) => (fieldsState[field.id] = ""));
 
 export default function Login() {
-  const [tokenAuth, { loading, error, data }] = useMutation(LOGIN_USER);
-  const [{ user }, dispatch] = useStateValue();
+  const [tokenAuth, { loading, error, data }] = useMutation(LOGIN_USER, {
+    client: apolloClientAuth,
+  });
   const [loginState, setLoginState] = useState(fieldsState);
   const [isError, setIsError] = useState(false);
   const [msg, setMsg] = useState("");
@@ -58,27 +58,15 @@ export default function Login() {
         }, 3000);
       }
       if (qs.errors === null) {
+        authTokenActions.setAuthToken(qs);
         console.log(qs.refreshToken);
-        dispatch({
-          type: actionType.SET_USER,
-          user: qs.user,
-        });
-        let data = {
-          token: qs.token,
-          refreshToken: qs.refreshToken,
-        };
-        dispatch({
-          type: actionType.SET_TOKEN,
-          user: qs.user,
-          token: JSON.parse(JSON.stringify(data)),
-        });
         localStorage.setItem("user", JSON.stringify(qs.user));
         localStorage.setItem(AUTH_TOKEN, qs.token);
         localStorage.setItem(AUTH_TOKEN_REFRESH, qs.refreshToken);
       }
-      console.log(user);
+      console.log(qs);
     }
-  }, [data, dispatch, loading, user, error]);
+  }, [data, loading, error]);
 
   const ScrollToTopOnMount = () => {
     useEffect(() => {
@@ -99,7 +87,7 @@ export default function Login() {
         username: loginState.username,
         password: loginState.password,
       },
-    });
+    }).catch(errorHandler);
   };
 
   return (

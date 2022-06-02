@@ -8,14 +8,14 @@ import {
 } from "react-icons/md";
 import { motion } from "framer-motion";
 import { Link, useNavigate } from "react-router-dom";
-
+import { useSelector } from "react-redux";
 import Logo from "../img/logo.png";
 import Avatar from "../img/avatar.png";
-import { useStateValue } from "../context/StateProvider";
-import { actionType } from "../context/reducer";
+import { authTokenActions } from "../modAuth/actions";
 
 const Header = () => {
-  const [{ user, token }, dispatch] = useStateValue();
+  const user = useSelector((state) => state.authToken.user);
+  const token = useSelector((state) => state.authToken.token);
   const [isMenu, setIsMenu] = useState(false);
   const navigate = useNavigate();
   const login = async () => {
@@ -40,17 +40,8 @@ const Header = () => {
   };
   const logout = () => {
     setIsMenu(false);
-    localStorage.clear();
-
-    dispatch({
-      type: actionType.SET_USER,
-      user: null,
-    });
-    dispatch({
-      type: actionType.SET_TOKEN,
-      user: null,
-      token: null,
-    });
+    // localStorage.clear();
+    authTokenActions.logOut();
   };
   return (
     <header className="fixed z-50 w-screen p-3 px-4 md:p-6 md:px-16 bg-navOverlay backdrop-blur-md">

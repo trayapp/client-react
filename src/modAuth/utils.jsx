@@ -2,6 +2,7 @@ import { reduxStoreMain } from "../redux";
 import { authTokenActions } from "../modAuth/actions";
 import { apolloClientAuth } from "../apollo";
 import { REFRESH_TOKEN } from "../GraphQL/mutations/auth";
+import { fetchUser } from "../utils/fetchLocalStorageData";
 
 export const possibleRefreshTokenErrors = [
   "Refresh token is required", // refresh token is not sent or Cookie is deleted
@@ -16,15 +17,27 @@ export const possibleAccessTokenErrors = [
 ];
 
 async function getRefreshedAccessTokenPromise() {
-  try {
-    const { data } = await apolloClientAuth.mutate({ mutation: REFRESH_TOKEN });
-    if (data && data.refreshToken)
-      authTokenActions.setAuthToken(data.refreshToken);
-    return data.refreshToken.token;
-  } catch (error) {
-    authTokenActions.logOut();
-    console.log(error);
-    return error;
+  const authTokenState = reduxStoreMain.getState().authToken;
+  if (authTokenState.refreshToken) {
+    try {
+      const { data } = await apolloClientAuth.mutate({
+        mutation: REFRESH_TOKEN,
+        variables: { refreshToken: `${authTokenState.refreshToken}` },
+      });
+      let new_data = {
+        user: fetchUser(),
+        token: data.refreshToken.token,
+        refreshToken: data.refreshToken.refreshToken,
+        refreshExpiresIn: data.refreshToken.payload.exp,
+      };
+      new_data = JSON.parse(JSON.stringify(new_data));
+      if (data && data.refreshToken) authTokenActions.setAuthToken(new_data);
+      return new_data;
+    } catch (error) {
+      authTokenActions.logOut();
+      console.log(error);
+      return error;
+    }
   }
 }
 
@@ -37,8 +50,8 @@ export function getAccessTokenPromise() {
   if (
     authTokenState &&
     authTokenState.token &&
-    authTokenState.payload &&
-    currentNumericDate + 1 * 60 <= authTokenState.payload.exp
+    authTokenState.user &&
+    currentNumericDate - 100 <= authTokenState.refreshExpiresIn
   ) {
     //if (currentNumericDate + 3 * 60 >= authTokenState.payload.exp) getRefreshedAccessTokenPromise()
     return new Promise((resolve) => resolve(authTokenState.token));

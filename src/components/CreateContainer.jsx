@@ -8,10 +8,7 @@ import {
   MdDescription,
 } from "react-icons/md";
 import { ReactComponent as NairaSign } from "../img/naira-currency.svg";
-import { product_categories } from "../utils/data";
 import Loader from "./Loader";
-import { useMutation } from "@apollo/client";
-import { ADD_NEW_PRODUCT } from "../GraphQL/mutations/products";
 import {
   LoadItemAttribute,
   saveItem,
@@ -19,12 +16,11 @@ import {
 
 // Saving new Items
 const CreateContainer = () => {
-  const [addProduct, { loading, error, data }] = useMutation(ADD_NEW_PRODUCT);
   const [productName, setProductName] = useState("");
   const [productImage, setProductImage] = useState(null);
   const [productDescription, setProductDescription] = useState("");
-  const [productPrice, setProductPrice] = useState(0);
-  const [productCalories, setProductCalories] = useState(0);
+  const [productPrice, setProductPrice] = useState("");
+  const [productCalories, setProductCalories] = useState("");
   const [productType, setProductType] = useState(null);
   const [productCategory, setProductCategory] = useState(null);
   const [imageAsset, setImageAsset] = useState(null);
@@ -34,8 +30,9 @@ const CreateContainer = () => {
   const [isLoading, setIsLoading] = useState(false);
   const [isScroll, setIsScroll] = useState(false);
   const [sending, setSending] = useState(false);
+  let res = null;
 
-  useEffect(() => {
+  if (sending === true && !isLoading && alertStatus !== "danger") {
     const data = {
       product_slug: `${Date.now()}`,
       product_name: productName,
@@ -46,22 +43,12 @@ const CreateContainer = () => {
       product_description: productDescription,
       product_calories: productCalories,
     };
-    if (sending === true && !sending === false) {
-      saveItem(addProduct, data);
+    res = saveItem(data);
+    console.log(res);
+    setTimeout(() => {
       setSending(false);
-    }
-  }, [
-    addProduct,
-    productCalories,
-    productCategory,
-    productDescription,
-    productImage,
-    productName,
-    productPrice,
-    productType,
-    sending,
-  ]);
-
+    }, 4000);
+  }
   const fileToDataUri = (file) =>
     new Promise((resolve, reject) => {
       const reader = new FileReader();
@@ -120,7 +107,7 @@ const CreateContainer = () => {
     setAlertStatus("success");
     setTimeout(() => {
       setFields(false);
-    }, 5000);
+    }, 4000);
   };
   const deleteImage = () => {
     setIsLoading(true);
@@ -135,7 +122,11 @@ const CreateContainer = () => {
       setIsLoading(false);
     }, 2000);
   };
-  const saveDetails = () => {
+  const saveDetails = (e) => {
+    e.preventDefault();
+    setSending(true);
+    setIsLoading(false);
+    setAlertStatus("success");
     try {
       if (
         !productName ||
@@ -152,19 +143,20 @@ const CreateContainer = () => {
         setTimeout(() => {
           setIsScroll(true);
           setFields(false);
+          setSending(false);
         }, 4000);
       }
-      if (data !== null) {
-        setSending(true);
+      if (res !== null) {
         setFields(true);
         setIsScroll(true);
         setMsg("Item Has Been Uploaded :)");
         setAlertStatus("success");
         setTimeout(() => {
+          setSending(false);
           setFields(false);
         }, 4000);
         clearData();
-        console.log(data);
+        console.log(res);
       }
     } catch (error) {
       console.log(error);
@@ -174,6 +166,7 @@ const CreateContainer = () => {
       setAlertStatus("danger");
       setTimeout(() => {
         setIsScroll(true);
+        setSending(false);
         setFields(false);
       }, 4000);
     }
@@ -190,7 +183,10 @@ const CreateContainer = () => {
   };
 
   return (
-    <div className="no-select w-full min-h-screen flex items-center justify-center transition-all duration-500">
+    <form
+      className="no-select w-full min-h-screen flex items-center justify-center transition-all duration-500"
+      onSubmit={saveDetails}
+    >
       <div className="w-[90%] md:w-[75%] border border-gray-300 rounded-lg p-4 flex flex-col items-center justify-center gap-4 transition-all duration-500">
         {fields && (
           <>
@@ -248,7 +244,7 @@ const CreateContainer = () => {
           <select
             onChange={(e) => setProductType(e.target.value)}
             className={`outline-none w-full text-base border-b-2 border-gray-200 p-2 rounded-md cursor-pointer ${
-              productCategory && product_categories ? "block" : "hidden"
+              productCategory ? "block" : "hidden"
             }`}
           >
             <option value="others" className="bg-white">
@@ -329,7 +325,7 @@ const CreateContainer = () => {
           </div>
         </div>
         <div className="flex items-center w-full">
-          {loading ? (
+          {sending ? (
             <button
               disabled
               type="button"
@@ -365,14 +361,14 @@ const CreateContainer = () => {
                   ? true
                   : false
               }
-              onClick={saveDetails}
+              onSubmit={saveDetails}
             >
               Add
             </button>
           )}
         </div>
       </div>
-    </div>
+    </form>
   );
 };
 

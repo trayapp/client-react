@@ -1,3 +1,3 @@
-import { saveItem, RefreshToken, LoadHeroData } from "./graphqlFunctions";
+import { saveItem, LoadHeroData, LoadItemAttribute } from "./graphqlFunctions";
 
-export { saveItem, RefreshToken, LoadHeroData };
+export { saveItem, LoadHeroData, LoadItemAttribute };

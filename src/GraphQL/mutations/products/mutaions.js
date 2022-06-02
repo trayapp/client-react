@@ -21,6 +21,7 @@ export const ADD_NEW_PRODUCT = gql`
       productDesc: $product_description
       productCalories: $product_calories
     ) {
+      success
       product {
         productName
         productPrice

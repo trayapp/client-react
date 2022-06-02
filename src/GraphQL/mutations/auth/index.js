@@ -1,6 +1,2 @@
-import {LOGIN_USER, REFRESH_TOKEN, VERIFY_TOKEN} from './mutations'
-export {
-    LOGIN_USER,
-    REFRESH_TOKEN,
-    VERIFY_TOKEN
-}
+import { LOGIN_USER, REFRESH_TOKEN, VERIFY_TOKEN, LOGOUT } from "./mutations";
+export { LOGIN_USER, REFRESH_TOKEN, VERIFY_TOKEN, LOGOUT };
