@@ -35,6 +35,28 @@ export const LOGIN_USER = gql`
   }
 `;
 
+export const REGISTER_USER = gql`
+  mutation registerUser(
+    $first_name: String!
+    $last_name: String!
+    $username: String!
+    $password1: String!
+    $password2: String!
+  ) {
+    register(
+      firstName: $first_name
+      lastName: $last_name
+      username: $username
+      password1: $password1
+      password2: $password2
+    ) {
+      success
+      errors
+      token
+    }
+  }
+`;
+
 export const VERIFY_TOKEN = gql`
   mutation verifyToken($token: String!) {
     verifyToken(token: $token) {
@@ -57,11 +79,11 @@ export const REFRESH_TOKEN = gql`
 `;
 
 export const LOGOUT = gql`
-mutation LOGOUT($refreshToken: String!){
-  revokeToken(refreshToken: $refreshToken){
-    revoked
-    success
-    errors
+  mutation LOGOUT($refreshToken: String!) {
+    revokeToken(refreshToken: $refreshToken) {
+      revoked
+      success
+      errors
+    }
   }
-}
-`
+`;

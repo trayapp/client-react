@@ -1,2 +1,2 @@
-export { apolloClientMain, apolloClientAuth } from "./clients";
+export { apolloClientMain, apolloClientAuth, getApolloClient } from "./clients";
 export { errorHandler } from "./links";

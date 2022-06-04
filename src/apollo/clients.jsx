@@ -1,10 +1,15 @@
 import { ApolloClient, ApolloLink, InMemoryCache } from "@apollo/client";
 import { linkError, linkAuth, linkMain, linkTokenHeader } from "./links";
+import { CachePersistor } from "apollo3-cache-persist";
 
 const inMemoryCache = new InMemoryCache();
+
+const SCHEMA_VERSION = "1";
+const SCHEMA_VERSION_KEY = "apollo-schema-version";
+
 export const apolloClientAuth = new ApolloClient({
   //DEV connectToDevTools to false in production
-  connectToDevTools: true,
+  connectToDevTools: false,
   link: linkAuth,
   cache: inMemoryCache,
   csrfPrevention: true,
@@ -30,7 +35,7 @@ const options = {
 
 export const apolloClientMain = new ApolloClient({
   //DEV connectToDevTools to false in production
-  connectToDevTools: true,
+  connectToDevTools: false,
   defaultOptions: options,
   link: ApolloLink.from([linkError, linkTokenHeader, linkMain]),
   cache: inMemoryCache,
@@ -40,3 +45,24 @@ export const apolloClientMain = new ApolloClient({
     credentials: true,
   },
 });
+
+export const getApolloClient = async () => {
+  const httpLink = ApolloLink.from([linkError, linkTokenHeader, linkMain]);
+  const cache = new InMemoryCache();
+
+  const persistor = new CachePersistor({
+    cache,
+    storage: window.localStorage,
+  });
+
+  const currentVersion = window.localStorage.getItem(SCHEMA_VERSION_KEY);
+
+  if (currentVersion === SCHEMA_VERSION) {
+    await persistor.restore();
+  } else {
+    await persistor.purge();
+    window.localStorage.setItem(SCHEMA_VERSION_KEY, SCHEMA_VERSION);
+  }
+
+  return new ApolloClient({ link: httpLink, cache });
+};

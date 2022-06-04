@@ -1,7 +1,7 @@
 import React from "react";
 import { Route, Routes } from "react-router-dom";
 import { CreateContainer, MainContainer } from "./components";
-import Login from "./components/Auth/Login";
+import { Login, Signup } from "./components/Auth";
 
 import { ProtectedRoute } from "./utils/hooks";
 import { useIsAuthenticated } from "./context/hooks";
@@ -30,6 +30,14 @@ const Router = () => {
             element={
               <ProtectedRoute loginPage={true}>
                 <Login />
+              </ProtectedRoute>
+            }
+          />
+          <Route
+            path="/auth/signup"
+            element={
+              <ProtectedRoute loginPage={true}>
+                <Signup />
               </ProtectedRoute>
             }
           />

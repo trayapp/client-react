@@ -3,15 +3,12 @@ import ReactDOM from "react-dom/client";
 import "./index.css";
 import "flowbite";
 
-import { BrowserRouter as Router } from "react-router-dom";
-
-import App from "./App";
-import { ScrollToTop } from "./utils/hooks";
-import { ApolloProvider } from "@apollo/client";
-import { apolloClientMain } from "./apollo";
 import { Provider } from "react-redux";
 import { PersistGate } from "redux-persist/integration/react";
 import { reduxStoreMain, reduxStoreMainPersistor } from "./redux";
+import BaseComponent from "./base";
+
+import * as serviceWorkerRegistration from './serviceWorkerRegistration';
 
 const root = ReactDOM.createRoot(document.getElementById("root"));
 root.render(
@@ -21,14 +18,10 @@ root.render(
         loading={<p>loading...</p>}
         persistor={reduxStoreMainPersistor}
       >
-        <ApolloProvider client={apolloClientMain}>
-          <Router>
-            <ScrollToTop>
-              <App />
-            </ScrollToTop>
-          </Router>
-        </ApolloProvider>
+        <BaseComponent />
       </PersistGate>
     </Provider>
   </React.StrictMode>
 );
+
+serviceWorkerRegistration.register();

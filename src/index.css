@@ -58,7 +58,13 @@ textarea:focus,
 select:focus {
   box-shadow: none !important;
 }
-
+.signup-ring{
+  transition: all 500ms ease;
+}
+.signup-svg:hover .signup-ring{
+  transform: skew(9deg, 13deg);
+  fill: orange;
+}
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
