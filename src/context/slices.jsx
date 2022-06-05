@@ -24,3 +24,33 @@ export const authTokenSlice = createSlice({
     },
   },
 });
+
+export const AlertSlice = createSlice({
+  name: "alert",
+  initialState: {
+    alerts: [],
+  },
+  reducers: {
+    createAlert: (state, action) => {
+      state.alerts.push({
+        message: action.payload.message,
+        type: action.payload.type,
+      });
+    },
+    clearAlerts: (state, action) => {
+      state.alerts = []
+    }
+  },
+});
+
+export const foodItemsSlice = createSlice({
+  name: "foodItems",
+  initialState: {
+    foodItems: null,
+  },
+  reducers: {
+    setFoodItems: (state, action) => {
+      state.foodItems = action.payload;
+    },
+  },
+});

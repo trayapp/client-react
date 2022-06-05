@@ -1,5 +1,5 @@
 import React from "react";
-import { Route, Routes } from "react-router-dom";
+import { Route, Routes, useLocation } from "react-router-dom";
 import { CreateContainer, MainContainer } from "./components";
 import { Login, Signup } from "./components/Auth";
 
@@ -7,10 +7,11 @@ import { ProtectedRoute } from "./utils/hooks";
 import { useIsAuthenticated } from "./context/hooks";
 
 const Router = () => {
+  const location = useLocation();
   const isAuthenticated = useIsAuthenticated();
 
   return (
-    <Routes>
+    <Routes location={location} key={location.pathname}>
       <Route path="/*" element={<MainContainer />} />
       {isAuthenticated === true ? (
         <>

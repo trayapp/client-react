@@ -11,7 +11,7 @@ import { Link, useNavigate } from "react-router-dom";
 import { useSelector } from "react-redux";
 import Logo from "../img/logo.png";
 import Avatar from "../img/avatar.png";
-import { authTokenActions } from "../context/actions";
+import { alertSliceActions, authTokenActions } from "../context/actions";
 import { AUTH_TOKEN, AUTH_TOKEN_REFRESH, USER } from "../constants";
 
 const Header = () => {
@@ -40,11 +40,21 @@ const Header = () => {
     }
   };
   const logout = () => {
+    alertSliceActions.createAlert({
+      type: "info",
+      message: `Logging You Out 🙂`,
+    });
     setIsMenu(false);
     localStorage.removeItem(USER);
     localStorage.removeItem(AUTH_TOKEN);
     localStorage.removeItem(AUTH_TOKEN_REFRESH);
     authTokenActions.logOut();
+    setTimeout(() => {
+      alertSliceActions.createAlert({
+        type: "success",
+        message: `Logout was Successful 😁`,
+      });
+    }, 3000);
   };
   return (
     <header className="fixed z-50 w-screen p-3 px-4 md:p-6 md:px-16 bg-navOverlay backdrop-blur-md">

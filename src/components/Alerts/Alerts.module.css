@@ -1,0 +1,24 @@
+/* @src/App.module.css */
+
+/* .notificationWrapper {
+  @apply flex items-center h-16 border border-gray-300 pr-4 w-full max-w-md shadow-lg hover:shadow-none transition-all duration-400;
+} */
+.iconWrapper {
+  @apply flex items-center justify-center bg-gray-300 w-12 h-full;
+}
+
+.contentWrapper {
+  @apply flex flex-col items-center justify-center ml-4 cursor-default;
+}
+
+.contentWrapper h1 {
+  @apply text-base text-gray-900 font-semibold leading-none tracking-wider;
+}
+
+.contentWrapper p {
+  @apply text-sm text-gray-600 mt-2 leading-relaxed tracking-wider;
+}
+
+.closeIcon {
+  @apply absolute top-2 right-2 cursor-pointer text-lg;
+}

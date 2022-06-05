@@ -1,7 +1,5 @@
 // import { useQuery } from "@apollo/client";
 import React, { useState } from "react";
-// import { LoadHeroData } from "../GraphQL/functions/graphqlFunctions";
-// import { LOAD_HERO_DATA } from "../GraphQL/queries/products";
 import Delivery from "../img/delivery.png";
 import HeroBg from "../img/heroBg.png";
 import { LoadHeroData } from "../GraphQL/functions";

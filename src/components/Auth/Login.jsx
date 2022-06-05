@@ -10,7 +10,7 @@ import { motion } from "framer-motion";
 import { AUTH_TOKEN, AUTH_TOKEN_REFRESH } from "../../constants";
 import { ReactComponent as LoginIllustration } from "../../img/login.svg";
 import { errorHandler, apolloClientAuth } from "../../apollo";
-import { authTokenActions } from "../../context/actions";
+import { authTokenActions, alertSliceActions } from "../../context/actions";
 
 const fields = loginFields;
 let fieldsState = {};
@@ -63,6 +63,10 @@ const Login = () => {
         localStorage.setItem("user", JSON.stringify(qs.user));
         localStorage.setItem(AUTH_TOKEN, qs.token);
         localStorage.setItem(AUTH_TOKEN_REFRESH, qs.refreshToken);
+        alertSliceActions.createAlert({
+          type: "success",
+          message: `You Logged In as ${qs.user.username} Successfully 🤩`
+        });
       }
       console.log(qs);
     }
@@ -91,7 +95,10 @@ const Login = () => {
   };
 
   return (
-    <section className="h-auto">
+    <motion.section
+    initial={{ width: 0 }}
+    animate={{ width: "100%" }}
+    exit={{ x: window.innerWidth, transition: {duration: 1} }}  className="h-auto">
       <div className="container px-6 py-12 h-full">
         <div className="flex justify-center items-center flex-wrap h-full g-6 text-gray-800">
           <div className="md:w-8/12 lg:w-6/12 mb-12 md:mb-0">
@@ -150,7 +157,7 @@ const Login = () => {
           </div>
         </div>
       </div>
-    </section>
+    </motion.section>
   );
 };
 export default Login;

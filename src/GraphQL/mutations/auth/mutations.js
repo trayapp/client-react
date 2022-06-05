@@ -40,6 +40,7 @@ export const REGISTER_USER = gql`
     $first_name: String!
     $last_name: String!
     $username: String!
+    $email: String!
     $password1: String!
     $password2: String!
   ) {
@@ -47,6 +48,7 @@ export const REGISTER_USER = gql`
       firstName: $first_name
       lastName: $last_name
       username: $username
+      email: $email
       password1: $password1
       password2: $password2
     ) {

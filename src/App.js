@@ -1,13 +1,12 @@
 import React, { useEffect } from "react";
-import Router from "./router"
+import Router from "./router";
 import { useQuery } from "@apollo/client";
 import { LOAD_ITEMS } from "./GraphQL/queries/products/queries";
 import { AnimatePresence } from "framer-motion";
-import { Header } from "./components";
+import { Header, Alerts } from "./components";
 
 const App = () => {
   const { loading, data } = useQuery(LOAD_ITEMS);
-  // const foodItems = useSelector();
 
   useEffect(() => {
     if (data) {
@@ -17,6 +16,7 @@ const App = () => {
   console.log(loading);
   return (
     <AnimatePresence exitBeforeEnter>
+      <Alerts />
       <div className="w-screen h-auto flex flex-col bg-primary">
         <Header />
 

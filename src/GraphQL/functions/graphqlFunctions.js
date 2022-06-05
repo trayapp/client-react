@@ -79,7 +79,7 @@ export const LoadHeroData = async () => {
     const { loading, data } = await apolloClientAuth.query({
       query: LOAD_HERO_DATA,
       variables: {
-        count: 6,
+        count: 3,
       },
     });
     if (data && data.heroData !== null) {

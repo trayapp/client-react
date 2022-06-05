@@ -3,11 +3,22 @@ import { onError } from "@apollo/client/link/error";
 import { setContext } from "@apollo/client/link/context";
 import { createUploadLink as createHttpLink } from "apollo-upload-client";
 import { getAccessTokenPromise } from "../context/utils";
+import { alertSliceActions } from "../context/actions";
 
 export const errorHandler = ({ graphQLErrors, networkError }) => {
   if (graphQLErrors)
-    graphQLErrors.forEach(({ message }) => console.log(message));
+    graphQLErrors.forEach(({ message }) => {
+      alertSliceActions.createAlert({
+        type: "error",
+        message: `${message} ❗`,
+      });
+      console.log(message);
+    });
   if (networkError) {
+    alertSliceActions.createAlert({
+      type: "error",
+      message: `${networkError} ❌`,
+    });
     console.log(networkError);
   }
   // response.errors = undefined

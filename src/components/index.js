@@ -3,6 +3,15 @@ import HomeContainer from "./HomeContainer";
 import MainContainer from "./MainContainer";
 import CreateContainer from "./CreateContainer";
 import Loader from "./Loader";
+import {Alerts, AlertWrapper } from "./Alerts";
 
 // Exporting Components So It Can Be Accessable Through `components module`
-export { Header, MainContainer, CreateContainer, HomeContainer, Loader };
+export {
+  Header,
+  MainContainer,
+  CreateContainer,
+  HomeContainer,
+  Loader,
+  Alerts,
+  AlertWrapper,
+};

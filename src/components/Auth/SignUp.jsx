@@ -86,13 +86,19 @@ const Signup = () => {
         last_name: signupState.last_name,
         username: signupState.username,
         email: signupState.email,
-        password: signupState.password,
+        password1: signupState.password1,
+        password2: signupState.password2,
       },
     }).catch(errorHandler);
   };
 
   return (
-    <section className="h-auto">
+    <motion.section
+      initial={{ width: 0 }}
+      animate={{ width: "100%" }}
+      exit={{ x: window.innerWidth, transition: { duration: 0.5 } }}
+      className="h-auto"
+    >
       <div className="container px-6 py-12 h-full">
         <div className="flex justify-center items-center flex-wrap h-full g-6 text-gray-800">
           <div className="md:w-8/12 lg:w-6/12 mb-12 md:mb-0">
@@ -149,7 +155,7 @@ const Signup = () => {
           </div>
         </div>
       </div>
-    </section>
+    </motion.section>
   );
 };
 export default Signup;
