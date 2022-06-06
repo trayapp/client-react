@@ -42,7 +42,7 @@ const Header = () => {
   const logout = () => {
     alertSliceActions.createAlert({
       type: "info",
-      message: `Logging You Out 🙂`,
+      message: `Logging You Out... 🙂`,
     });
     setIsMenu(false);
     localStorage.removeItem(USER);

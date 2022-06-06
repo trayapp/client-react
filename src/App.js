@@ -4,18 +4,22 @@ import { useQuery } from "@apollo/client";
 import { LOAD_ITEMS } from "./GraphQL/queries/products/queries";
 import { AnimatePresence } from "framer-motion";
 import { Header, Alerts } from "./components";
+import { foodItemsAction } from "./context/actions";
 
 const App = () => {
-  const { loading, data } = useQuery(LOAD_ITEMS);
+  const { data } = useQuery(LOAD_ITEMS, {
+    variables: { count: 20 },
+    fetchPolicy: "network-only",
+  });
 
   useEffect(() => {
     if (data) {
       console.log(data);
+      foodItemsAction.setFoodItems(data.items);
     }
   }, [data]);
-  console.log(loading);
   return (
-    <AnimatePresence exitBeforeEnter>
+    <AnimatePresence>
       <Alerts />
       <div className="w-screen h-auto flex flex-col bg-primary">
         <Header />

@@ -53,8 +53,9 @@ module.exports = {
         navOverlay: "#f5f3f3ad",
         cardOverlay: "rgba(256,256,256, 0.4)",
         lighttextGray: "#9ca0ab",
+        rowBg: "rgba(255,131,0,0.5)",
       },
     },
   },
-  plugins: [require("flowbite/plugin")],
+  plugins: [require("flowbite/plugin"), require("tailwind-scrollbar")],
 };

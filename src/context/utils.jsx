@@ -11,6 +11,7 @@ export const possibleRefreshTokenErrors = [
 ];
 
 export const possibleAccessTokenErrors = [
+  "Login required", // access token is not sent or Header key is not correct
   "Login required.", // access token is not sent or Header key is not correct
   "Error decoding signature", // access token or prefix is invalid
   "Signature has expired", // access token is expired
@@ -54,7 +55,7 @@ export function getAccessTokenPromise() {
     currentNumericDate - 100 <= authTokenState.refreshExpiresIn
   ) {
     //if (currentNumericDate + 3 * 60 >= authTokenState.payload.exp) getRefreshedAccessTokenPromise()
-    return new Promise((resolve) => resolve(authTokenState.token));
+    return new Promise((resolve) => resolve(authTokenState));
   }
 
   if (!pendingAccessTokenPromise)

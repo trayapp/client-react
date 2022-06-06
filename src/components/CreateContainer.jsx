@@ -9,14 +9,16 @@ import {
 } from "react-icons/md";
 import { ReactComponent as NairaSign } from "../img/naira-currency.svg";
 import Loader from "./Loader";
-import {
-  LoadItemAttribute,
-  saveItem,
-} from "../GraphQL/functions/graphqlFunctions";
+import { LoadItemAttribute } from "../GraphQL/functions/graphqlFunctions";
 import AnimatePage from "../AnimatePage";
+import { useMutation } from "@apollo/client";
+import { ADD_NEW_PRODUCT } from "../GraphQL/mutations/products";
+import { alertSliceActions } from "../context/actions";
+import { errorHandler } from "../apollo";
 
 // Saving new Items
 const CreateContainer = () => {
+  const [addProduct, { loading }] = useMutation(ADD_NEW_PRODUCT);
   const [productName, setProductName] = useState("");
   const [productImage, setProductImage] = useState(null);
   const [productDescription, setProductDescription] = useState("");
@@ -30,26 +32,7 @@ const CreateContainer = () => {
   const [msg, setMsg] = useState(null);
   const [isLoading, setIsLoading] = useState(false);
   const [isScroll, setIsScroll] = useState(false);
-  const [sending, setSending] = useState(false);
-  let res = null;
 
-  if (sending === true && !isLoading && alertStatus !== "danger") {
-    const data = {
-      product_slug: `${Date.now()}`,
-      product_name: productName,
-      product_price: parseInt(productPrice),
-      product_image: productImage,
-      product_category: productCategory,
-      product_type: productType,
-      product_description: productDescription,
-      product_calories: parseInt(productCalories),
-    };
-    res = saveItem(data);
-    console.log(res);
-    setTimeout(() => {
-      setSending(false);
-    }, 4000);
-  }
   const fileToDataUri = (file) =>
     new Promise((resolve, reject) => {
       const reader = new FileReader();
@@ -58,6 +41,7 @@ const CreateContainer = () => {
         resolve(event.target.result);
         setIsLoading(false);
       };
+      setProductImage(file);
       reader.readAsDataURL(file);
     });
   const ScrollToTopOnMount = () => {
@@ -74,7 +58,7 @@ const CreateContainer = () => {
 
   const uploadImage = (e) => {
     const imageFile = e.target.files[0];
-    if (!imageFile.name.match(/.(jpg|jpeg|png|webp)$/i)) {
+    if (!imageFile.name.match(/.(jpg|jpeg|png|gif|tif|tiff)$/i)) {
       setImageAsset(null);
       setIsScroll(true);
       setIsLoading(false);
@@ -101,7 +85,6 @@ const CreateContainer = () => {
 
     fileToDataUri(imageFile).then((dataUri) => {
       setImageAsset(dataUri);
-      setProductImage(imageFile);
     });
     setFields(true);
     setMsg("Image added successfully 😎");
@@ -109,6 +92,7 @@ const CreateContainer = () => {
     setTimeout(() => {
       setFields(false);
     }, 4000);
+    console.log(productImage);
   };
   const deleteImage = () => {
     setIsLoading(true);
@@ -123,10 +107,9 @@ const CreateContainer = () => {
       setIsLoading(false);
     }, 2000);
   };
+
   const saveDetails = (e) => {
     e.preventDefault();
-    setSending(true);
-    setIsLoading(false);
     setAlertStatus("success");
     try {
       if (
@@ -135,7 +118,7 @@ const CreateContainer = () => {
         !productType ||
         !productPrice ||
         !imageAsset ||
-        !productImage
+        productImage === null
       ) {
         setFields(true);
         setIsScroll(true);
@@ -144,30 +127,42 @@ const CreateContainer = () => {
         setTimeout(() => {
           setIsScroll(true);
           setFields(false);
-          setSending(false);
         }, 4000);
-      }
-      if (res !== null) {
-        setFields(true);
-        setIsScroll(true);
-        setMsg("Item Has Been Uploaded :)");
-        setAlertStatus("success");
-        setTimeout(() => {
-          setSending(false);
-          setFields(false);
-        }, 4000);
-        clearData();
-        console.log(res);
+      } else {
+        addProduct({
+          variables: {
+            product_slug: `${Date.now()}`,
+            product_name: productName,
+            product_price: parseInt(productPrice),
+            product_image: productImage,
+            product_category: productCategory,
+            product_type: productType,
+            product_description: productDescription,
+            product_calories: parseInt(productCalories),
+          },
+          onError: (error) => {
+            alertSliceActions.createAlert({
+              type: "error",
+              message: `${error} ❗`,
+            });
+          },
+          onCompleted: () => {
+            clearData();
+            alertSliceActions.createAlert({
+              type: "success",
+              message: "Item Was Added Successfully 💚",
+            });
+          },
+        }).then(errorHandler);
       }
     } catch (error) {
       console.log(error);
       setIsScroll(true);
       setFields(true);
-      setMsg("Error white uploading : Try Again 😕");
+      setMsg("Error while uploading : Try Again 😕");
       setAlertStatus("danger");
       setTimeout(() => {
         setIsScroll(true);
-        setSending(false);
         setFields(false);
       }, 4000);
     }
@@ -182,7 +177,6 @@ const CreateContainer = () => {
     setProductImage(null);
     setImageAsset(null);
   };
-
   return (
     <AnimatePage>
       <form
@@ -274,7 +268,10 @@ const CreateContainer = () => {
                         type="file"
                         name="uploadimage"
                         accept="image/*"
-                        onChange={uploadImage}
+                        onChange={(e) => {
+                          setProductImage(e.target.files[0]);
+                          uploadImage(e);
+                        }}
                         className="w-0 h-0"
                       />
                     </label>
@@ -331,7 +328,7 @@ const CreateContainer = () => {
             </div>
           </div>
           <div className="flex items-center w-full">
-            {sending ? (
+            {loading ? (
               <button
                 disabled
                 type="button"

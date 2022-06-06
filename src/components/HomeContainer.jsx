@@ -65,7 +65,7 @@ const HomeContainer = () => {
             heroData.map((p, index) => (
               <div
                 key={index}
-                className=" lg:w-190 p-4 bg-cardOverlay backdrop-blur-md rounded-3xl flex flex-col items-center justify-center drop-shadow-lg"
+                className=" lg:w-220 p-4 bg-cardOverlay backdrop-blur-md rounded-3xl flex flex-col items-center justify-center drop-shadow-lg"
               >
                 <img
                   src={p.productImages[0] && p.productImages[0].productImage}

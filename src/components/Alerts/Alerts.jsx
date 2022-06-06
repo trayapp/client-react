@@ -30,6 +30,7 @@ const Alerts = () => {
       toast.custom(
         (t) => (
           <div
+            key={t.id}
             className={classNames([
               "flex items-center h-16 border relative bg-white border-gray-300 pr-4 w-full max-w-md shadow-lg hover:shadow-none transition-all duration-400",
               t.visible ? "bottom-0" : "-bottom-96",
