@@ -7,17 +7,19 @@ import { Header, Alerts } from "./components";
 import { foodItemsAction } from "./context/actions";
 
 const App = () => {
-  const { data } = useQuery(LOAD_ITEMS, {
-    variables: { count: 20 },
+  const { data, loading } = useQuery(LOAD_ITEMS, {
+    variables: { count: 30 },
     fetchPolicy: "network-only",
+    nextFetchPolicy: 'cache-and-network',
+    pollInterval: 500,
   });
 
   useEffect(() => {
-    if (data) {
+    if (!loading && data) {
       console.log(data);
       foodItemsAction.setFoodItems(data.items);
     }
-  }, [data]);
+  }, [data, loading]);
   return (
     <AnimatePresence>
       <Alerts />

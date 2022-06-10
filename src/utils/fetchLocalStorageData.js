@@ -1,9 +1,9 @@
-import { AUTH_TOKEN_REFRESH, AUTH_TOKEN, USER } from "../constants";
+import { AUTH_TOKEN_REFRESH, AUTH_TOKEN, USER, CART_ITEMS } from "../constants";
 
 export const fetchUser = () => {
   const userInfo =
     localStorage.getItem(USER) !== "undefined"
-      ? JSON.parse(localStorage.getItem("user"))
+      ? JSON.parse(localStorage.getItem(USER))
       : localStorage.clear();
 
   return userInfo;
@@ -21,4 +21,13 @@ export const fetchToken = () => {
       : localStorage.clear();
 
   return TokenInfo;
+};
+
+export const fetchCartItems = () => {
+  const cartItemsInfo =
+    localStorage.getItem(CART_ITEMS) !== "undefined"
+      ? JSON.parse(localStorage.getItem(CART_ITEMS))
+      : localStorage.clear();
+
+  return cartItemsInfo;
 };

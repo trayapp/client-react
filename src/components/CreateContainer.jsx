@@ -15,6 +15,7 @@ import { useMutation } from "@apollo/client";
 import { ADD_NEW_PRODUCT } from "../GraphQL/mutations/products";
 import { alertSliceActions } from "../context/actions";
 import { errorHandler } from "../apollo";
+import { LOAD_ITEMS } from "../GraphQL/queries/products/queries";
 
 // Saving new Items
 const CreateContainer = () => {
@@ -144,6 +145,18 @@ const CreateContainer = () => {
             alertSliceActions.createAlert({
               type: "error",
               message: `${error} ❗`,
+            });
+          },
+          update: (cache, mutationResult) => {
+            const newItem = mutationResult.data.addProduct;
+            const data = cache.readQuery({
+              query: LOAD_ITEMS,
+              variables: { count: 30 },
+            });
+            cache.writeQuery({
+              query: LOAD_ITEMS,
+              variables: { count: 50 },
+              data: { tasks: [...data.items, newItem] },
             });
           },
           onCompleted: () => {

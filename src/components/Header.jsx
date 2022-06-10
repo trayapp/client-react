@@ -11,12 +11,17 @@ import { Link, useNavigate } from "react-router-dom";
 import { useSelector } from "react-redux";
 import Logo from "../img/logo.png";
 import Avatar from "../img/avatar.png";
-import { alertSliceActions, authTokenActions } from "../context/actions";
+import {
+  alertSliceActions,
+  authTokenActions,
+  cartAction,
+} from "../context/actions";
 import { AUTH_TOKEN, AUTH_TOKEN_REFRESH, USER } from "../constants";
 
 const Header = () => {
-  const user = useSelector((state) => state.authToken.user);
-  const token = useSelector((state) => state.authToken.token);
+  const user = useSelector((state) => state.authToken?.user);
+  const token = useSelector((state) => state.authToken?.token);
+  const cartShow = useSelector((state) => state.cartItems?.cartShow);
   const [isMenu, setIsMenu] = useState(false);
   const navigate = useNavigate();
   const login = async () => {
@@ -56,6 +61,9 @@ const Header = () => {
       });
     }, 3000);
   };
+  const showCart = () => {
+      cartAction.setCartShow(!cartShow);
+  };
   return (
     <header className="fixed z-50 w-screen p-3 px-4 md:p-6 md:px-16 bg-navOverlay backdrop-blur-md">
       {/* desktop & tablet */}
@@ -87,7 +95,10 @@ const Header = () => {
             )}
           </motion.ul>
 
-          <div className="relative flex rounded-full p-1 hover:bg-gray-300 transition-all duration-100 items-center ease-in-out justify-center">
+          <div
+            className="relative flex rounded-full p-1 hover:bg-gray-300 transition-all duration-100 items-center ease-in-out justify-center"
+            onClick={showCart}
+          >
             <MdShoppingBasket className="text-textColor text-2xl cursor-pointer hover:text-slate-600 transition-all duration-100 ease-in" />
             <div className="absolute -top-2 -right-2 w-5 h-5 rounded-full bg-cartNumBg flex items-center justify-center">
               <p className="text-xs text-white font-semibold">2</p>
@@ -166,6 +177,7 @@ const Header = () => {
         <motion.div
           whileTap={{ scale: 0.6 }}
           className="relative flex items-center justify-center"
+          onClick={showCart}
         >
           <MdShoppingBasket className="text-textColor text-2xl cursor-pointer" />
           <div className="absolute -top-2 -right-2 w-5 h-5 rounded-full bg-cartNumBg flex items-center justify-center">

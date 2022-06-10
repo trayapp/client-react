@@ -1,6 +1,6 @@
 import { bindActionCreators } from "@reduxjs/toolkit";
 import { reduxStoreMain } from "../redux/storeMain";
-import { authTokenSlice, AlertSlice, foodItemsSlice } from "./slices";
+import { authTokenSlice, cartSlice, AlertSlice, foodItemsSlice } from "./slices";
 
 export const authTokenActions = bindActionCreators(
   authTokenSlice.actions,
@@ -13,6 +13,11 @@ export const alertSliceActions = bindActionCreators(
 
 export const foodItemsAction = bindActionCreators(
   foodItemsSlice.actions,
+  reduxStoreMain.dispatch
+)
+
+export const cartAction = bindActionCreators(
+  cartSlice.actions,
   reduxStoreMain.dispatch
 )
 

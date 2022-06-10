@@ -1,5 +1,9 @@
 import { createSlice } from "@reduxjs/toolkit";
-import { fetchUser, fetchToken } from "../utils/fetchLocalStorageData";
+import {
+  fetchUser,
+  fetchToken,
+  fetchCartItems,
+} from "../utils/fetchLocalStorageData";
 
 export const authTokenSlice = createSlice({
   name: "authToken",
@@ -38,8 +42,8 @@ export const AlertSlice = createSlice({
       });
     },
     clearAlerts: (state, action) => {
-      state.alerts = []
-    }
+      state.alerts = [];
+    },
   },
 });
 
@@ -51,6 +55,27 @@ export const foodItemsSlice = createSlice({
   reducers: {
     setFoodItems: (state, action) => {
       state.foodItems = action.payload;
+    },
+  },
+});
+
+export const cartSlice = createSlice({
+  name: "cartItems",
+  initialState: {
+    cartItems: fetchCartItems(),
+    cartShow: false,
+  },
+  reducers: {
+    setCartItems: (state, action) => {
+      state.cartItems = action.payload;
+    },
+    setCartItem: (state, action) => {
+      state.cartItems.push({
+        cartItem: action.payload.cartItem,
+      });
+    },
+    setCartShow: (state, action) => {
+      state.cartShow = action.payload;
     },
   },
 });

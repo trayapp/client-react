@@ -2,7 +2,9 @@ import { ApolloClient, ApolloLink, InMemoryCache } from "@apollo/client";
 import { linkError, linkAuth, linkMain, linkTokenHeader } from "./links";
 import { CachePersistor } from "apollo3-cache-persist";
 
-const inMemoryCache = new InMemoryCache();
+const inMemoryCache = new InMemoryCache({
+  freezeResults: true,
+});
 
 const SCHEMA_VERSION = "1";
 const SCHEMA_VERSION_KEY = "apollo-schema-version";
@@ -48,7 +50,7 @@ export const apolloClientMain = new ApolloClient({
 
 export const getApolloClient = async () => {
   const httpLink = ApolloLink.from([linkError, linkTokenHeader, linkMain]);
-  const cache = new InMemoryCache();
+  const cache = inMemoryCache;
 
   const persistor = new CachePersistor({
     cache,
@@ -64,5 +66,5 @@ export const getApolloClient = async () => {
     window.localStorage.setItem(SCHEMA_VERSION_KEY, SCHEMA_VERSION);
   }
 
-  return new ApolloClient({ link: httpLink, cache });
+  return new ApolloClient({ link: httpLink, cache, assumeImmutableResults: true, });
 };

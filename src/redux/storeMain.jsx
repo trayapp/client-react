@@ -11,7 +11,7 @@ export const reduxStoreMain = configureStore({
       }
     }),
   // DEV set devTools to false in production
-  devTools: true
+  devTools: process.env.NODE_ENV !== 'production',
 })
 
 export const reduxStoreMainPersistor = persistStore(reduxStoreMain)

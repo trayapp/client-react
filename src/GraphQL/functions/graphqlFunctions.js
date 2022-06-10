@@ -1,7 +1,6 @@
 import { useQuery } from "@apollo/client";
 import { useEffect, useRef, useState } from "react";
-import { apolloClientAuth, apolloClientMain } from "../../apollo";
-import { ADD_NEW_PRODUCT } from "../mutations/products";
+import { apolloClientAuth } from "../../apollo";
 import { LOAD_HERO_DATA, LOAD_ITEM_ATTRIBUTE } from "../queries/products";
 
 export const LoadItemAttribute = ({ type }) => {
@@ -37,40 +36,6 @@ export const LoadItemAttribute = ({ type }) => {
         ))}
     </>
   );
-};
-export const saveItem = async (field) => {
-  let res = null;
-  try {
-    const { loading, data } = await apolloClientMain.mutate({
-      mutation: ADD_NEW_PRODUCT,
-      variables: {
-        product_slug: field.product_slug,
-        product_name: field.product_name,
-        product_price: field.product_price,
-        product_image: field.product_image,
-        product_category: field.product_category,
-        product_type: field.product_type,
-        product_description: field.product_description,
-        product_calories: field.product_calories,
-      },
-    });
-    if (data.product !== null) {
-      res = {
-        product: data.product,
-        success: true,
-        loading: loading,
-      };
-    }
-    return res;
-  } catch (error) {
-    console.log(error);
-    res = {
-      product: null,
-      success: false,
-      loading: false,
-    };
-    return res;
-  }
 };
 
 export const LoadHeroData = async () => {

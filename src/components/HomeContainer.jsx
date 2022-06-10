@@ -1,5 +1,5 @@
 // import { useQuery } from "@apollo/client";
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import Delivery from "../img/delivery.png";
 import HeroBg from "../img/heroBg.png";
 import { LoadHeroData } from "../GraphQL/functions";
@@ -7,12 +7,15 @@ import { LoadHeroData } from "../GraphQL/functions";
 const HomeContainer = () => {
   const [heroData, setHeroData] = useState([]);
   const [isLoading, setIsLoading] = useState(false);
-  LoadHeroData().then((data) => {
-    setIsLoading(data.loading);
-    if (!isLoading) {
-      setHeroData(data.heroData);
-    }
-  });
+
+  useEffect(() => {
+    LoadHeroData().then((data) => {
+      setIsLoading(data.loading);
+      if (!isLoading) {
+        setHeroData(data.heroData);
+      }
+    });
+  }, []);
   return (
     <section className="grid grid-cols-1 md:grid-cols-2 gap-2 w-full" id="home">
       <div className="py-2 flex-1 flex flex-col items-start justify-center gap-6">
