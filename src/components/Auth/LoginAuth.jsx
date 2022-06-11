@@ -7,7 +7,7 @@ import Loader from "../Loader";
 import { AUTH_TOKEN, AUTH_TOKEN_REFRESH } from "../../constants";
 
 const LoginAuth = (props) => {
-  const { username, password } = props;
+  const { username, password, msg } = props;
   const [tokenAuth, { loading, error, data }] = useMutation(LOGIN_USER, {
     client: apolloClientAuth,
   });
@@ -34,12 +34,12 @@ const LoginAuth = (props) => {
         localStorage.setItem(AUTH_TOKEN_REFRESH, qs.refreshToken);
         alertSliceActions.createAlert({
           type: "success",
-          message: `You Logged In as ${qs.user.username} Successfully 🤩`,
+          message: `${msg ? msg : `You Logged In as ${qs.user.username} Successfully 🤩`}`,
         });
       }
       console.log(qs);
     }
-  }, [data, loading, error]);
+  }, [data, loading, error, msg]);
   if (username && password) {
     tokenAuth({
       variables: {

@@ -1,7 +1,6 @@
 import { useQuery } from "@apollo/client";
 import { useEffect, useRef, useState } from "react";
-import { apolloClientAuth } from "../../apollo";
-import { LOAD_HERO_DATA, LOAD_ITEM_ATTRIBUTE } from "../queries/products";
+import { LOAD_ITEM_ATTRIBUTE } from "../queries/products";
 
 export const LoadItemAttribute = ({ type }) => {
   const { loading, error, data } = useQuery(LOAD_ITEM_ATTRIBUTE, {
@@ -36,32 +35,4 @@ export const LoadItemAttribute = ({ type }) => {
         ))}
     </>
   );
-};
-
-export const LoadHeroData = async () => {
-  let res = null;
-  try {
-    const { loading, data } = await apolloClientAuth.query({
-      query: LOAD_HERO_DATA,
-      variables: {
-        count: 3,
-      },
-    });
-    if (data && data.heroData !== null) {
-      res = {
-        heroData: data.heroData,
-        success: true,
-        loading: loading,
-      };
-    }
-    return res;
-  } catch (error) {
-    console.log(error);
-    res = {
-      heroData: null,
-      success: false,
-      loading: false,
-    };
-    return res;
-  }
 };

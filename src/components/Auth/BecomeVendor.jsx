@@ -1,39 +1,37 @@
-import { useState, useEffect } from "react";
-import { signupFields } from "./constants/formFields";
+import { useEffect, useState } from "react";
+import { becomeVendorFields } from "./constants/formFields";
 import FormAction from "./FormAction";
-import FormHeader from "./FormHeader";
 import FormInput from "./FormInput";
-import LoginAuth from "./LoginAuth";
-import { ReactComponent as SignUpIllustration } from "../../img/signup.svg";
+import FormHeader from "./FormHeader";
 import { useMutation } from "@apollo/client";
-import { REGISTER_USER } from "../../GraphQL/mutations/auth";
+import { LOGIN_USER } from "../../GraphQL/mutations/auth";
 import { motion } from "framer-motion";
-import { AUTH_TOKEN } from "../../constants";
+import { AUTH_TOKEN, AUTH_TOKEN_REFRESH } from "../../constants";
 import { errorHandler, apolloClientAuth } from "../../apollo";
+import { authTokenActions, alertSliceActions } from "../../context/actions";
+import AnimatePage from "../../AnimatePage";
+import { ReactComponent as BecomeAVendorIllustration } from "../../img/become-vendor.svg";
 
-const fields = signupFields;
+const fields = becomeVendorFields;
 let fieldsState = {};
-
 fields.forEach((field) => (fieldsState[field.id] = ""));
 
-const Signup = () => {
-  const [register, { loading, error, data }] = useMutation(REGISTER_USER, {
+const BecomeVendor = () => {
+  const [tokenAuth, { loading, error, data }] = useMutation(LOGIN_USER, {
     client: apolloClientAuth,
   });
-  const [signupState, setSignupState] = useState(fieldsState);
+  const [becomeVendorState, setLoginState] = useState(fieldsState);
   const [isError, setIsError] = useState(false);
   const [msg, setMsg] = useState("");
   const [alertStatus, setAlertStatus] = useState("danger");
-  const [loginRedirect, setLoginRedirect] = useState(false);
 
   const handleChange = (e) => {
-    setSignupState({ ...signupState, [e.target.id]: e.target.value });
+    setLoginState({ ...becomeVendorState, [e.target.id]: e.target.value });
   };
 
   const handleSubmit = (e) => {
     e.preventDefault();
-    console.log(signupState);
-    createAccount();
+    authenticateUser();
   };
   useEffect(() => {
     if (error) {
@@ -45,31 +43,13 @@ const Signup = () => {
       }, 1000);
     }
     if (data && !loading) {
-      var qs = data.register;
+      var qs = data.tokenAuth;
       if (qs.errors) {
         setIsError(true);
         setAlertStatus("danger");
         // console.log(qs.errors);
-        if (qs.errors) {
-          let error = qs.errors;
-          if (error.first_name) {
-            setMsg(`${error.first_name[0].message}`);
-          }
-          if (error.last_name) {
-            setMsg(`${error.last_name[0].message}`);
-          }
-          if (error.username) {
-            setMsg(`${error.username[0].message}`);
-          }
-          if (error.email) {
-            setMsg(`${error.email[0].message}`);
-          }
-          if (error.password1) {
-            setMsg(`${error.password1[0].message}`);
-          }
-          if (error.password2) {
-            setMsg(`${error.password2[0].message}`);
-          }
+        if (qs.errors.nonFieldErrors) {
+          setMsg(`${qs.errors.nonFieldErrors[0].message}`);
         } else {
           setMsg("Please Enter Correct Details");
         }
@@ -78,60 +58,51 @@ const Signup = () => {
         }, 3000);
       }
       if (qs.errors === null) {
+        authTokenActions.setAuthToken(qs);
         console.log(qs.refreshToken);
+        localStorage.setItem("user", JSON.stringify(qs.user));
         localStorage.setItem(AUTH_TOKEN, qs.token);
-        setLoginRedirect(true);
+        localStorage.setItem(AUTH_TOKEN_REFRESH, qs.refreshToken);
+        alertSliceActions.createAlert({
+          type: "success",
+          message: `You Logged In as ${qs.user.username} Successfully 🤩`,
+        });
       }
       console.log(qs);
     }
   }, [data, loading, error]);
+
   const ScrollToTopOnMount = () => {
-    window.scrollTo({
-      top: 0,
-      left: 0,
-      behavior: "smooth",
-    });
+    useEffect(() => {
+      window.scrollTo({
+        top: 0,
+        left: 0,
+        behavior: "smooth",
+      });
+    }, []);
+
     return null;
   };
-  //handle Signup API Integration here
-  const createAccount = () => {
-    register({
+
+  //Handling Become Vendor API Integration here
+  const authenticateUser = () => {
+    tokenAuth({
       variables: {
-        first_name: signupState.first_name,
-        last_name: signupState.last_name,
-        username: signupState.username,
-        email: signupState.email,
-        password1: signupState.password1,
-        password2: signupState.password2,
+        username: becomeVendorState.username,
+        password: becomeVendorState.password,
       },
     }).catch(errorHandler);
   };
-
   return (
-    <motion.section
-      initial={{ width: 50 }}
-      animate={{ width: "100%" }}
-      exit={{ x: window.innerWidth, transition: { duration: 0.5 } }}
-      className="h-auto"
-    >
-      {!loading && loginRedirect === true ? (
-        <LoginAuth
-          username={signupState.username}
-          password={signupState.password2}
-        />
-      ) : (
+    <AnimatePage>
+      <section className="h-auto">
         <div className="container px-6 py-12 h-full">
           <div className="flex justify-center items-center flex-wrap h-full g-6 text-gray-800">
             <div className="md:w-8/12 lg:w-6/12 mb-12 md:mb-0">
-              <SignUpIllustration className="w-full h-420 hidden lg:block signup-svg" />
+              <BecomeAVendorIllustration className="w-full h-420 hidden lg:block" />
             </div>
-            <div className="md:w-8/12 lg:w-5/12 lg:ml-20 py-3 px-5 shadow-lg border bg-loginColor rounded-lg">
-              <FormHeader
-                heading="Signup to create an account"
-                paragraph="Already have an account? "
-                linkName="Login"
-                linkUrl="login"
-              />
+            <div className="md:w-8/12 lg:w-5/12 lg:ml-20 py-3 px-5 shadow-lg border bg-becomeVendorColor rounded-lg">
+              <FormHeader heading="Create A Vendor Account" />
               {isError && (
                 <>
                   <ScrollToTopOnMount />
@@ -150,34 +121,36 @@ const Signup = () => {
                 </>
               )}
               <form className="mt-8 space-y-6" onSubmit={handleSubmit}>
-                <div className="">
+                <div className="-space-y-px">
                   {fields.map((field) => (
                     <FormInput
                       key={field.id}
                       handleChange={handleChange}
-                      value={signupState[field.id]}
+                      value={becomeVendorState[field.id]}
                       labelText={field.labelText}
                       labelFor={field.labelFor}
-                      id={field.id}
                       autoComplete={field.autoComplete}
+                      id={field.id}
                       name={field.name}
                       type={field.type}
                       isRequired={field.isRequired}
                       placeholder={field.placeholder}
+                      customClass={`my-6`}
                     />
                   ))}
-                  <FormAction
-                    handleSubmit={handleSubmit}
-                    loading={loading === true}
-                    text="Signup"
-                  />
                 </div>
+                <FormAction
+                  handleSubmit={handleSubmit}
+                  loading={loading === true}
+                  text="Become A Vendor"
+                />
               </form>
             </div>
           </div>
         </div>
-      )}
-    </motion.section>
+      </section>
+    </AnimatePage>
   );
 };
-export default Signup;
+
+export default BecomeVendor;

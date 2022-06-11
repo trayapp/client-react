@@ -96,7 +96,7 @@ const Login = () => {
 
   return (
     <motion.section
-    initial={{ width: 0 }}
+    initial={{ width: 50 }}
     animate={{ width: "100%" }}
     exit={{ x: window.innerWidth, transition: {duration: 1} }}  className="h-auto">
       <div className="container px-6 py-12 h-full">

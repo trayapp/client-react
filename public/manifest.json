@@ -1,17 +1,17 @@
 {
-    "theme_color": "#f69435",
+    "theme_color": "#E89314",
     "background_color": "#f5f3f3",
     "display": "standalone",
     "scope": "/",
     "start_url": "/",
-    "name": "Tray Food",
+    "name": "Tray Food App",
     "short_name": "Tray",
     "id": "/",
-    "description": "Multi-vendor Food Delivery",
+    "description": "Multi-Vendor Food Delivery Services For Students",
     "icons": [
         {
             "src": "favicon.ico",
-            "sizes": "16x16 32x32 48x48",
+            "sizes": "48x48",
             "type": "image/x-icon"
        },
         {

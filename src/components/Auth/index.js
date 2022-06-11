@@ -1,3 +1,4 @@
 import Login from "./Login";
 import Signup from "./SignUp";
-export { Login, Signup };
+import BecomeVendor from "./BecomeVendor";
+export { Login, Signup, BecomeVendor };

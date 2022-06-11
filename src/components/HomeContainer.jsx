@@ -2,20 +2,20 @@
 import React, { useState, useEffect } from "react";
 import Delivery from "../img/delivery.png";
 import HeroBg from "../img/heroBg.png";
-import { LoadHeroData } from "../GraphQL/functions";
+import { useQuery } from "@apollo/client";
+import { LOAD_HERO_DATA } from "../GraphQL/queries/products";
 
 const HomeContainer = () => {
+  const { data, loading } = useQuery(LOAD_HERO_DATA, {
+    variables: { count: 3 },
+  });
   const [heroData, setHeroData] = useState([]);
-  const [isLoading, setIsLoading] = useState(false);
 
   useEffect(() => {
-    LoadHeroData().then((data) => {
-      setIsLoading(data.loading);
-      if (!isLoading) {
-        setHeroData(data.heroData);
-      }
-    });
-  }, [isLoading]);
+    if (!loading && data && data.heroData) {
+      setHeroData(data.heroData);
+    }
+  }, [data, loading]);
   return (
     <section className="grid grid-cols-1 md:grid-cols-2 gap-2 w-full" id="home">
       <div className="py-2 flex-1 flex flex-col items-start justify-center gap-6">
@@ -64,7 +64,7 @@ const HomeContainer = () => {
         />
 
         <div className="w-full h-full absolute top-0 left-0 flex items-center justify-center lg:pr-32 gap-4 flex-wrap">
-          {heroData &&
+          {heroData.length > 0 &&
             heroData.map((p, index) => (
               <div
                 key={index}
@@ -73,7 +73,7 @@ const HomeContainer = () => {
                 <img
                   src={p.productImages[0] && p.productImages[0].productImage}
                   className={`${
-                    isLoading === true && "skeleton skeleton-image"
+                    loading === true && "skeleton skeleton-image"
                   } w-20 lg:w-40 -mt-10 lg:-mt-20 rounded-md`}
                   alt=""
                 />

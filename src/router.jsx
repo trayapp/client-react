@@ -1,7 +1,7 @@
 import React from "react";
 import { Route, Routes, useLocation } from "react-router-dom";
 import { CreateContainer, MainContainer } from "./components";
-import { Login, Signup } from "./components/Auth";
+import { Login, Signup, BecomeVendor } from "./components/Auth";
 
 import { ProtectedRoute } from "./utils/hooks";
 import { useIsAuthenticated } from "./context/hooks";
@@ -13,6 +13,14 @@ const Router = () => {
   return (
     <Routes location={location} key={location.pathname}>
       <Route path="/*" element={<MainContainer />} />
+      <Route
+        path="/auth/become-vendor"
+        element={
+          <ProtectedRoute>
+            <BecomeVendor />
+          </ProtectedRoute>
+        }
+      />
       {isAuthenticated === true ? (
         <>
           <Route
@@ -29,7 +37,7 @@ const Router = () => {
           <Route
             path="/auth/login"
             element={
-              <ProtectedRoute loginPage={true}>
+              <ProtectedRoute authPage={true}>
                 <Login />
               </ProtectedRoute>
             }
@@ -37,7 +45,7 @@ const Router = () => {
           <Route
             path="/auth/signup"
             element={
-              <ProtectedRoute loginPage={true}>
+              <ProtectedRoute authPage={true}>
                 <Signup />
               </ProtectedRoute>
             }

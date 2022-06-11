@@ -27,7 +27,7 @@ export default function Input({
         type={type}
         autoComplete={autoComplete}
         required={isRequired}
-        className={fixedInputClass + customClass}
+        className={fixedInputClass + " " + customClass}
         placeholder={placeholder}
       />
     </div>

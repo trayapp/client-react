@@ -24,6 +24,24 @@ const Header = () => {
   const cartShow = useSelector((state) => state.cartItems?.cartShow);
   const [isMenu, setIsMenu] = useState(false);
   const navigate = useNavigate();
+
+  const CreateAvater = ({ name, onClick }) => {
+    const colors = ["#fdba74", "#ff5722", "#ffc107", "#00bcd4", "#673ab7"];
+    let random_color = colors[Math.floor(Math.random() * colors.length)];
+    return (
+      <>
+        <div
+          onClick={onClick}
+          style={{ backgroundColor: `${random_color}` }}
+          className="bg-orange-300 w-[40px] min-w-[40px] flex justify-center select-none items-center border px-[20px] py-[20px] rounded-full uppercase cursor-pointer h-[40px] min-h-[40px]"
+        >
+          <span className="font-semibold text-primary backdrop-blur-sm leading-relaxed">
+            {name}
+          </span>
+        </div>
+      </>
+    );
+  };
   const login = async () => {
     if (!user) {
       if (window.location.pathname !== "/auth/login") {
@@ -62,10 +80,10 @@ const Header = () => {
     }, 3000);
   };
   const showCart = () => {
-      cartAction.setCartShow(!cartShow);
+    cartAction.setCartShow(!cartShow);
   };
   return (
-    <header className="fixed z-50 w-screen p-3 px-4 md:p-6 md:px-16 bg-navOverlay backdrop-blur-md">
+    <header className="fixed no-select z-50 w-screen p-3 px-4 md:p-6 md:px-16 bg-navOverlay backdrop-blur-md">
       {/* desktop & tablet */}
       <div className="hidden md:flex w-full h-full items-center justify-between">
         <Link to={"/"} className="flex items-center gap-2">
@@ -106,23 +124,37 @@ const Header = () => {
           </div>
 
           <div className="relative">
-            <motion.figure
-              whileTap={{ scale: 0.6 }}
-              onClick={login}
-              className="w-10 min-w-[40px] rounded-full bg-arrenge-center object-fit cursor-pointer h-10 min-h-[40px] drop-shadow-xl"
-              style={{
-                backgroundImage: `url("${
-                  user ? user.profile.image : Avatar
-                }"), url(${Avatar})`,
-              }}
-            >
-              <img
-                src={user ? user.profile.image : Avatar}
-                className="w-10 min-w-[40px] rounded-lg cursor-pointer h-10 min-h-[40px] opacity-0"
-                alt="profileimage"
+            {/* profile image */}
+            {user ? (
+              <>
+                <CreateAvater
+                  onClick={login}
+                  name={
+                    user ? `${user?.firstName[0] + user?.lastName[0]}` : "?"
+                  }
+                />
+              </>
+            ) : (
+              <motion.figure
+                whileTap={{ scale: 0.6 }}
                 onClick={login}
-              />
-            </motion.figure>
+                className="w-10 min-w-[40px] rounded-full bg-arrenge-center object-fit cursor-pointer h-10 min-h-[40px] drop-shadow-xl"
+                style={{
+                  backgroundImage: `url("${
+                    user && user.profile?.image
+                  }"), url(${Avatar})`,
+                }}
+              >
+                <img
+                  src={user ? user.profile.image : Avatar}
+                  className="w-10 min-w-[40px] rounded-lg cursor-pointer h-10 min-h-[40px] opacity-0"
+                  alt="profileimage"
+                  onClick={login}
+                />
+              </motion.figure>
+            )}
+
+            {/* menu */}
             {isMenu === true && (
               <motion.div
                 initial={{ opacity: 0, scale: 0.6 }}
@@ -141,7 +173,7 @@ const Header = () => {
                   </Link>
                 ) : user && user.profile.vendor === null ? (
                   <Link
-                    to={""}
+                    to="/auth/become-vendor"
                     className="px-4 py-2 flex items-center gap-3 cursor-pointer hover:bg-slate-100 transition-all duration-100 ease-in-out text-textColor text-base"
                     onClick={() => setIsMenu(false)}
                   >
@@ -189,23 +221,34 @@ const Header = () => {
           <p className="text-headingColor text-xl font-bold">Tray</p>
         </Link>
         <div className="relative no-select">
-          <motion.figure
-            whileTap={{ scale: 0.6 }}
-            onClick={login}
-            className="w-10 min-w-[40px] rounded-full bg-arrenge-center object-fit cursor-pointer h-10 min-h-[40px] drop-shadow-xl"
-            style={{
-              backgroundImage: `url("${
-                user ? user.profile.image : Avatar
-              }"), url(${Avatar})`,
-            }}
-          >
-            <img
-              src={user ? user.profile.image : Avatar}
-              className="w-10 min-w-[40px] rounded-lg cursor-pointer h-10 min-h-[40px] opacity-0"
-              alt="profileimage"
+          {/* profile image */}
+          {user ? (
+            <>
+              <CreateAvater
+                onClick={login}
+                name={user ? `${user?.firstName[0] + user?.lastName[0]}` : "?"}
+              />
+            </>
+          ) : (
+            <motion.figure
+              whileTap={{ scale: 0.6 }}
               onClick={login}
-            />
-          </motion.figure>
+              className="w-10 min-w-[40px] rounded-full bg-arrenge-center object-fit cursor-pointer h-10 min-h-[40px] drop-shadow-xl"
+              style={{
+                backgroundImage: `url("${
+                  user && user.profile?.image
+                }"), url(${Avatar})`,
+              }}
+            >
+              <img
+                src={user ? user.profile.image : Avatar}
+                className="w-10 min-w-[40px] rounded-lg cursor-pointer h-10 min-h-[40px] opacity-0"
+                alt="profileimage"
+                onClick={login}
+              />
+            </motion.figure>
+          )}
+          {/* menu */}
           {isMenu === true && (
             <motion.div
               initial={{ opacity: 0, scale: 0.6 }}
@@ -224,7 +267,7 @@ const Header = () => {
                 </Link>
               ) : user && user.profile.vendor === null ? (
                 <Link
-                  to={""}
+                  to="/auth/become-vendor"
                   className="px-4 py-2 flex items-center gap-3 cursor-pointer hover:bg-slate-100 transition-all duration-100 ease-in-out text-textColor text-base"
                   onClick={() => setIsMenu(false)}
                 >

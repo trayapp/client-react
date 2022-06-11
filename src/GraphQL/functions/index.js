@@ -1,3 +1,3 @@
-import { LoadHeroData, LoadItemAttribute } from "./graphqlFunctions";
+import { LoadItemAttribute } from "./graphqlFunctions";
 
-export { LoadHeroData, LoadItemAttribute };
+export { LoadItemAttribute };
