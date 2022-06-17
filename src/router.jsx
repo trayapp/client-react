@@ -1,6 +1,6 @@
 import React from "react";
 import { Route, Routes, useLocation } from "react-router-dom";
-import { CreateContainer, MainContainer } from "./components";
+import { CreateContainer, MainContainer, StoreComponent } from "./components";
 import { Login, Signup, BecomeVendor } from "./components/Auth";
 
 import { ProtectedRoute } from "./utils/hooks";
@@ -13,6 +13,7 @@ const Router = () => {
   return (
     <Routes location={location} key={location.pathname}>
       <Route path="/*" element={<MainContainer />} />
+      <Route path="/store/:storeNickname" element={<StoreComponent />} />
       <Route
         path="/auth/become-vendor"
         element={

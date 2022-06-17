@@ -60,7 +60,7 @@ export const foodItemsSlice = createSlice({
 });
 
 export const cartSlice = createSlice({
-  name: "cartItems",
+  name: "cart",
   initialState: {
     cartItems: fetchCartItems(),
     cartShow: false,
@@ -68,11 +68,6 @@ export const cartSlice = createSlice({
   reducers: {
     setCartItems: (state, action) => {
       state.cartItems = action.payload;
-    },
-    setCartItem: (state, action) => {
-      state.cartItems.push({
-        cartItem: action.payload.cartItem,
-      });
     },
     setCartShow: (state, action) => {
       state.cartShow = action.payload;

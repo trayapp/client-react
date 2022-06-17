@@ -7,25 +7,20 @@ import {
   MdStore,
 } from "react-icons/md";
 import { motion } from "framer-motion";
-import { Link, useNavigate } from "react-router-dom";
+import { Link } from "react-router-dom";
 import { useSelector } from "react-redux";
 import Logo from "../img/logo.png";
 import Avatar from "../img/avatar.png";
-import {
-  alertSliceActions,
-  authTokenActions,
-  cartAction,
-} from "../context/actions";
+import { alertSliceActions, authTokenActions } from "../context/actions";
+import { useStateValue, actionType } from "../context/old_context";
 import { AUTH_TOKEN, AUTH_TOKEN_REFRESH, USER } from "../constants";
 
 const Header = () => {
   const user = useSelector((state) => state.authToken?.user);
-  const token = useSelector((state) => state.authToken?.token);
-  const cartShow = useSelector((state) => state.cartItems?.cartShow);
+  const [{ cartShow, cartItems }, dispatch] = useStateValue();
   const [isMenu, setIsMenu] = useState(false);
-  const navigate = useNavigate();
 
-  const CreateAvater = ({ name, onClick }) => {
+  const CreateAvater = ({ user, onClick }) => {
     const colors = ["#fdba74", "#ff5722", "#ffc107", "#00bcd4", "#673ab7"];
     let random_color = colors[Math.floor(Math.random() * colors.length)];
     return (
@@ -36,31 +31,18 @@ const Header = () => {
           className="bg-orange-300 w-[40px] min-w-[40px] flex justify-center select-none items-center border px-[20px] py-[20px] rounded-full uppercase cursor-pointer h-[40px] min-h-[40px]"
         >
           <span className="font-semibold text-primary backdrop-blur-sm leading-relaxed">
-            {name}
+            {user && user.firstName && user.lastName
+              ? `${user?.firstName[0] + user?.lastName[0]}`
+              : user.username
+              ? `${user.username[0] + user.username[1]}`
+              : "?"}
           </span>
         </div>
       </>
     );
   };
-  const login = async () => {
-    if (!user) {
-      if (window.location.pathname !== "/auth/login") {
-        setIsMenu(false);
-        navigate("/auth/login");
-      } else {
-        setIsMenu(!isMenu);
-      }
-    } else if (user) {
-      if (!token) {
-        window.location.href = "/auth/login";
-      } else {
-        if (isMenu === true) {
-          setIsMenu(false);
-        } else {
-          setIsMenu(true);
-        }
-      }
-    }
+  const showMenu = () => {
+    setIsMenu(!isMenu);
   };
   const logout = () => {
     alertSliceActions.createAlert({
@@ -80,7 +62,10 @@ const Header = () => {
     }, 3000);
   };
   const showCart = () => {
-    cartAction.setCartShow(!cartShow);
+    dispatch({
+      type: actionType.SET_CART_SHOW,
+      cartShow: !cartShow,
+    });
   };
   return (
     <header className="fixed no-select z-50 w-screen p-3 px-4 md:p-6 md:px-16 bg-navOverlay backdrop-blur-md">
@@ -118,26 +103,25 @@ const Header = () => {
             onClick={showCart}
           >
             <MdShoppingBasket className="text-textColor text-2xl cursor-pointer hover:text-slate-600 transition-all duration-100 ease-in" />
-            <div className="absolute -top-2 -right-2 w-5 h-5 rounded-full bg-cartNumBg flex items-center justify-center">
-              <p className="text-xs text-white font-semibold">2</p>
-            </div>
+            {cartItems && cartItems.length > 0 && (
+              <div className="absolute -top-2 -right-2 w-5 h-5 rounded-full bg-cartNumBg flex items-center justify-center">
+                <p className="text-xs text-white font-semibold">
+                  {cartItems.length}
+                </p>
+              </div>
+            )}
           </div>
 
           <div className="relative">
             {/* profile image */}
-            {user ? (
+            {user && !user.profile?.image ? (
               <>
-                <CreateAvater
-                  onClick={login}
-                  name={
-                    user ? `${user?.firstName[0] + user?.lastName[0]}` : "?"
-                  }
-                />
+                <CreateAvater onClick={showMenu} user={user} />
               </>
             ) : (
               <motion.figure
                 whileTap={{ scale: 0.6 }}
-                onClick={login}
+                onClick={showMenu}
                 className="w-10 min-w-[40px] rounded-full bg-arrenge-center object-fit cursor-pointer h-10 min-h-[40px] drop-shadow-xl"
                 style={{
                   backgroundImage: `url("${
@@ -149,7 +133,7 @@ const Header = () => {
                   src={user ? user.profile.image : Avatar}
                   className="w-10 min-w-[40px] rounded-lg cursor-pointer h-10 min-h-[40px] opacity-0"
                   alt="profileimage"
-                  onClick={login}
+                  onClick={showMenu}
                 />
               </motion.figure>
             )}
@@ -212,9 +196,13 @@ const Header = () => {
           onClick={showCart}
         >
           <MdShoppingBasket className="text-textColor text-2xl cursor-pointer" />
-          <div className="absolute -top-2 -right-2 w-5 h-5 rounded-full bg-cartNumBg flex items-center justify-center">
-            <p className="text-xs text-white font-semibold">2</p>
-          </div>
+          {cartItems && cartItems.length > 0 && (
+            <div className="absolute -top-2 -right-2 w-5 h-5 rounded-full bg-cartNumBg flex items-center justify-center">
+              <p className="text-xs text-white font-semibold">
+                {cartItems.length}
+              </p>
+            </div>
+          )}
         </motion.div>
         <Link to={"/"} className="flex items-center gap-2">
           <img src={Logo} className="w-8 object-cover" alt="logo" />
@@ -222,17 +210,14 @@ const Header = () => {
         </Link>
         <div className="relative no-select">
           {/* profile image */}
-          {user ? (
+          {user && !user.profile?.image ? (
             <>
-              <CreateAvater
-                onClick={login}
-                name={user ? `${user?.firstName[0] + user?.lastName[0]}` : "?"}
-              />
+              <CreateAvater onClick={showMenu} user={user} />
             </>
           ) : (
             <motion.figure
               whileTap={{ scale: 0.6 }}
-              onClick={login}
+              onClick={showMenu}
               className="w-10 min-w-[40px] rounded-full bg-arrenge-center object-fit cursor-pointer h-10 min-h-[40px] drop-shadow-xl"
               style={{
                 backgroundImage: `url("${
@@ -244,7 +229,7 @@ const Header = () => {
                 src={user ? user.profile.image : Avatar}
                 className="w-10 min-w-[40px] rounded-lg cursor-pointer h-10 min-h-[40px] opacity-0"
                 alt="profileimage"
-                onClick={login}
+                onClick={showMenu}
               />
             </motion.figure>
           )}

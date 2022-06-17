@@ -36,3 +36,4 @@ export const LoadItemAttribute = ({ type }) => {
     </>
   );
 };
+

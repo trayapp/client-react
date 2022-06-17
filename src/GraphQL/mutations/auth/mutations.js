@@ -23,6 +23,7 @@ export const LOGIN_USER = gql`
           vendor {
             store {
               storeName
+              storeNickname
             }
           }
           client {
@@ -86,6 +87,46 @@ export const LOGOUT = gql`
       revoked
       success
       errors
+    }
+  }
+`;
+
+export const CREATE_VENDOR = gql`
+  mutation Create_Vendor(
+    $storeName: String!
+    $storeCategory: String!
+    $storeNickname: String!
+    $storeAbbv: String!
+  ) {
+    createVendor(
+      storeName: $storeName
+      storeCategory: $storeCategory
+      storeNickname: $storeNickname
+      storeAbbv: $storeAbbv
+    ) {
+      success
+      user {
+        id
+        username
+        firstName
+        lastName
+        email
+        verified
+        isActive
+        profile {
+          image
+          phoneNumber
+          vendor {
+            store {
+              storeName
+            }
+          }
+          client {
+            hostel
+            room
+          }
+        }
+      }
     }
   }
 `;

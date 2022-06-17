@@ -1,13 +1,27 @@
-import React, { useEffect, useRef } from "react";
+import React, { useEffect, useRef, useState } from "react";
 import { MdShoppingBasket } from "react-icons/md";
 import { motion } from "framer-motion";
 import { ReactComponent as NotFound } from "../img/not-found.svg";
+import { CART_ITEMS } from "../constants";
+import { actionType, useStateValue } from "../context/old_context";
+// import { fetchCartItems } from "../utils/fetchLocalStorageData";
 
 const RowContainer = ({ flag, data, scrollValue }) => {
   const rowContainer = useRef();
+  const [{ cartItems }, dispatch] = useStateValue();
+  const [items, setItems] = useState([]);
+  const addToCart = () => {
+    localStorage.setItem(CART_ITEMS, JSON.stringify(items));
+    dispatch({
+      type: actionType.SET_CART_ITEMS,
+      cartItems: items,
+    });
+  };
   useEffect(() => {
     rowContainer.current.scrollLeft += scrollValue;
-  }, [scrollValue]);
+    if (items && items.length > 0) addToCart();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [scrollValue, items]);
   return (
     <div
       ref={rowContainer}
@@ -42,6 +56,7 @@ const RowContainer = ({ flag, data, scrollValue }) => {
               <motion.div
                 whileTap={{ scale: 0.75 }}
                 className="w-8 h-8 rounded-full bg-red-600 flex items-center justify-center cursor-pointer hover:shadow-md"
+                onClick={() => setItems([...cartItems, item])}
               >
                 <MdShoppingBasket className="text-white" />
               </motion.div>
@@ -52,7 +67,7 @@ const RowContainer = ({ flag, data, scrollValue }) => {
               </p>
               <p className="mt-1 text-sm text-gray-500">
                 {item?.productCategory.name}
-                {item.productCalories && `> ${item?.productCalories} Calories`}
+                {item.productCalories && ` > ${item?.productCalories} Calories`}
               </p>
               <div className="flex items-center gap-8">
                 <p className="text-lg text-headingColor font-semibold">

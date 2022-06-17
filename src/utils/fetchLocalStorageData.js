@@ -6,7 +6,7 @@ export const fetchUser = () => {
       ? JSON.parse(localStorage.getItem(USER))
       : localStorage.clear();
 
-  return userInfo;
+  return userInfo ? userInfo : null;
 };
 
 export const fetchToken = () => {
@@ -20,7 +20,7 @@ export const fetchToken = () => {
       ? JSON.parse(JSON.stringify(data))
       : localStorage.clear();
 
-  return TokenInfo;
+  return TokenInfo ? TokenInfo : null;
 };
 
 export const fetchCartItems = () => {
@@ -29,5 +29,5 @@ export const fetchCartItems = () => {
       ? JSON.parse(localStorage.getItem(CART_ITEMS))
       : localStorage.clear();
 
-  return cartItemsInfo;
+  return cartItemsInfo ? cartItemsInfo : [];
 };

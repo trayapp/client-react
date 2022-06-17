@@ -13,8 +13,10 @@ export const LOAD_ITEMS = gql`
         urlParamName
       }
       productCalories
+      id
       productSlug
       productPrice
+      productQty
       productImages {
         productImage
         isPrimary
@@ -26,8 +28,10 @@ export const LOAD_ITEMS = gql`
 export const LOAD_HERO_DATA = gql`
   query LOAD_HERO_DATA($count: Int) {
     heroData(count: $count) {
+      id
       productName
       productPrice
+      productQty
       productCategory {
         name
         urlParamName

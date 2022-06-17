@@ -5,8 +5,9 @@ import CreateContainer from "./CreateContainer";
 import { Alerts, AlertWrapper } from "./Alerts";
 import RowContainer from "./RowContainer";
 import MenuContainer from "./MenuContainer";
-import CartContainer from "./CartContainer"
+import { CartContainer, CartItem } from "./Cart";
 import Loader from "./Loader";
+import { StoreComponent } from "./Store";
 
 // Exporting Components So It Can Be Accessable Through `components module`
 export {
@@ -19,5 +20,7 @@ export {
   AlertWrapper,
   RowContainer,
   MenuContainer,
-  CartContainer
+  CartContainer,
+  CartItem,
+  StoreComponent,
 };

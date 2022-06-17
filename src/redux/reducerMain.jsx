@@ -19,7 +19,7 @@ const rootReducerMain = combineReducers({
   authToken: persistReducer(persistConfigAuthToken, authTokenSlice.reducer),
   notifications: AlertSlice.reducer,
   foodItems: foodItemsSlice.reducer,
-  cartItems: cartSlice.reducer
+  cart: cartSlice.reducer
 });
 
 export const persistedReducerMain = persistReducer(

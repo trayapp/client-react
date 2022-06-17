@@ -1,3 +1,4 @@
+import { motion } from "framer-motion";
 export default function FormAction({
   handleSubmit,
   loading,
@@ -13,12 +14,12 @@ export default function FormAction({
             <button
               disabled
               type="button"
-              className="group relative w-full flex justify-center py-2 px-4 border text-sm font-medium text-gray-900 bg-white rounded-lg 
-              border-gray-200 hover:bg-gray-100 focus:z-10 focus:ring-2 focus:ring-orange-700 focus:text-orange-700 dark:bg-gray-800 dark:text-gray-400 dark:border-gray-600 dark:hover:text-white dark:hover:bg-gray-700 items-center"
+              className="group relative w-full flex justify-center py-2 px-4 border text-sm font-medium text-slate-900 bg-white rounded-lg 
+              border-gray-200 hover:bg-gray-100 focus:z-10 focus:ring-2 focus:ring-orange-700 focus:text-orange-700 items-center"
             >
               <svg
                 role="status"
-                className="inline w-4 h-4 mr-2 text-gray-200 animate-spin dark:text-gray-600"
+                className="inline w-4 h-4 mr-2 text-gray-200 animate-spin"
                 viewBox="0 0 100 101"
                 fill="none"
                 xmlns="http://www.w3.org/2000/svg"
@@ -35,13 +36,14 @@ export default function FormAction({
               Loading...
             </button>
           ) : (
-            <button
+            <motion.button
+              whileTap={{ scale: 0.9 }}
               type={action}
               className="group relative w-full flex justify-center py-2 px-4 border border-transparent text-sm font-medium rounded-md text-white bg-orange-600 hover:bg-orange-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-orange-500 mt-10"
               onSubmit={handleSubmit}
             >
               {text}
-            </button>
+            </motion.button>
           )}
         </>
       ) : (

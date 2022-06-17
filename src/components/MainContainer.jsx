@@ -4,14 +4,12 @@ import { motion } from "framer-motion";
 import { MdChevronLeft, MdChevronRight } from "react-icons/md";
 import { RowContainer, MenuContainer } from "./index";
 import { useSelector } from "react-redux";
-import CartContainer from "./CartContainer";
 
 const MainContainer = () => {
   const foodItems = useSelector((state) => state.foodItems.foodItems);
-  const cartShow = useSelector((state) => state.cartItems.cartShow);
   const [scrollValue, setScrollValue] = useState(0);
 
-  useEffect(() => {}, [scrollValue, cartShow]);
+  useEffect(() => {}, [scrollValue]);
   return (
     <div className="w-full h-auto flex flex-col items-center justify-center">
       <HomeContainer />
@@ -47,7 +45,6 @@ const MainContainer = () => {
       </section>
 
       <MenuContainer />
-      {cartShow && <CartContainer />}
     </div>
   );
 };

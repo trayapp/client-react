@@ -1,4 +1,3 @@
-// import { useQuery } from "@apollo/client";
 import React, { useState, useEffect } from "react";
 import Delivery from "../img/delivery.png";
 import HeroBg from "../img/heroBg.png";

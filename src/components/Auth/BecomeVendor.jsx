@@ -4,27 +4,27 @@ import FormAction from "./FormAction";
 import FormInput from "./FormInput";
 import FormHeader from "./FormHeader";
 import { useMutation } from "@apollo/client";
-import { LOGIN_USER } from "../../GraphQL/mutations/auth";
+import { CREATE_VENDOR } from "../../GraphQL/mutations/auth";
 import { motion } from "framer-motion";
-import { AUTH_TOKEN, AUTH_TOKEN_REFRESH } from "../../constants";
-import { errorHandler, apolloClientAuth } from "../../apollo";
+import { USER } from "../../constants";
+import { errorHandler } from "../../apollo";
 import { authTokenActions, alertSliceActions } from "../../context/actions";
 import AnimatePage from "../../AnimatePage";
 import { ReactComponent as BecomeAVendorIllustration } from "../../img/become-vendor.svg";
-
+import { useNavigate } from "react-router-dom";
+import { useSelector } from "react-redux";
 const fields = becomeVendorFields;
 let fieldsState = {};
 fields.forEach((field) => (fieldsState[field.id] = ""));
 
 const BecomeVendor = () => {
-  const [tokenAuth, { loading, error, data }] = useMutation(LOGIN_USER, {
-    client: apolloClientAuth,
-  });
+  const [createVendor, { loading, error, data }] = useMutation(CREATE_VENDOR);
   const [becomeVendorState, setLoginState] = useState(fieldsState);
   const [isError, setIsError] = useState(false);
   const [msg, setMsg] = useState("");
   const [alertStatus, setAlertStatus] = useState("danger");
-
+  const user = useSelector((state) => state.authToken?.user);
+  const navigate = useNavigate();
   const handleChange = (e) => {
     setLoginState({ ...becomeVendorState, [e.target.id]: e.target.value });
   };
@@ -34,43 +34,48 @@ const BecomeVendor = () => {
     authenticateUser();
   };
   useEffect(() => {
-    if (error) {
+    if (error && error.message.includes("You Already A Vendor")) {
+      alertSliceActions.createAlert({
+        type: "info",
+        message: `${error.message} 😉`,
+      });
+      if (user.profile.vendor)
+        navigate(`/store/@${user.profile.vendor.store?.storeNickname}`);
+    } else if (error && error.message.includes("Login Required.")) {
+      alertSliceActions.createAlert({
+        type: "error",
+        message: `There was an error, Reloading...`,
+      });
+      setTimeout(() => {
+        window.location.reload();
+      }, 2000);
+    } else if (error && error !== undefined) {
       setIsError(true);
       setAlertStatus("danger");
-      setMsg("Server Error, Please Try Again");
+      setMsg(`${error}`);
       setTimeout(() => {
         setIsError(false);
-      }, 1000);
+      }, 5000);
+    }
+    if (loading) {
+      alertSliceActions.createAlert({
+        type: "info",
+        message: `Creating Your Tray Store... (¬‿¬)`,
+      });
     }
     if (data && !loading) {
-      var qs = data.tokenAuth;
-      if (qs.errors) {
-        setIsError(true);
-        setAlertStatus("danger");
-        // console.log(qs.errors);
-        if (qs.errors.nonFieldErrors) {
-          setMsg(`${qs.errors.nonFieldErrors[0].message}`);
-        } else {
-          setMsg("Please Enter Correct Details");
-        }
-        setTimeout(() => {
-          setIsError(false);
-        }, 3000);
-      }
-      if (qs.errors === null) {
+      var qs = data.createVendor;
+      if (qs.success === true) {
         authTokenActions.setAuthToken(qs);
-        console.log(qs.refreshToken);
-        localStorage.setItem("user", JSON.stringify(qs.user));
-        localStorage.setItem(AUTH_TOKEN, qs.token);
-        localStorage.setItem(AUTH_TOKEN_REFRESH, qs.refreshToken);
+        localStorage.setItem(USER, JSON.stringify(qs.user));
         alertSliceActions.createAlert({
           type: "success",
-          message: `You Logged In as ${qs.user.username} Successfully 🤩`,
+          message: `Congratulation ${qs.user.username} you are now a Tray vendor 🚀`,
         });
+        navigate(`/store/@${becomeVendorState.storeNickname}`);
       }
-      console.log(qs);
     }
-  }, [data, loading, error]);
+  }, [data, loading, error, navigate, becomeVendorState.storeNickname, user.profile.vendor]);
 
   const ScrollToTopOnMount = () => {
     useEffect(() => {
@@ -86,10 +91,12 @@ const BecomeVendor = () => {
 
   //Handling Become Vendor API Integration here
   const authenticateUser = () => {
-    tokenAuth({
+    createVendor({
       variables: {
-        username: becomeVendorState.username,
-        password: becomeVendorState.password,
+        storeName: becomeVendorState.storeName,
+        storeCategory: becomeVendorState.storeCategory,
+        storeNickname: becomeVendorState.storeNickname,
+        storeAbbv: becomeVendorState.storeAbbv,
       },
     }).catch(errorHandler);
   };
