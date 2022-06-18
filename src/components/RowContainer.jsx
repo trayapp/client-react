@@ -6,7 +6,7 @@ import { CART_ITEMS } from "../constants";
 import { useSelector } from " react-redux";
 import { cartAction } from "../context/actions";
 
-/* Items Row Container */
+// Items Row Container
 const RowContainer = ({ flag, data, scrollValue }) => {
   const rowContainer = useRef();
   const cartItems = useSelector((state) => state.cart?.cartItems);
