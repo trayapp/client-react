@@ -17,6 +17,7 @@ const RowContainer = ({ flag, data, scrollValue }) => {
     localStorage.setItem(CART_ITEMS, JSON.stringify(items));
     cartAction.setCartItems(items);
   };
+
   useEffect(() => {
     /* 
     setting container left-scroll to the 
@@ -31,6 +32,8 @@ const RowContainer = ({ flag, data, scrollValue }) => {
     if (items && items.length > 0) addToCart();
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [scrollValue, items]);
+
+  
   return (
     <div
       ref={rowContainer}
