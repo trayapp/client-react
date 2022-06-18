@@ -11,18 +11,24 @@ import { Link } from "react-router-dom";
 import { useSelector } from "react-redux";
 import Logo from "../img/logo.png";
 import Avatar from "../img/avatar.png";
-import { alertSliceActions, authTokenActions } from "../context/actions";
-import { useStateValue, actionType } from "../context/old_context";
+import {
+  alertSliceActions,
+  authTokenActions,
+  cartAction,
+} from "../context/actions";
 import { AUTH_TOKEN, AUTH_TOKEN_REFRESH, USER } from "../constants";
 
 const Header = () => {
   const user = useSelector((state) => state.authToken?.user);
-  const [{ cartShow, cartItems }, dispatch] = useStateValue();
+  const cartShow = useSelector((state) => state.cart.cartShow);
+  const cartItems = useSelector((state) => state.cart?.cartItems);
   const [isMenu, setIsMenu] = useState(false);
 
+  /* Creating A Rounded div with text in it as user default avater, 
+  then create random colors for the div bg-color */
   const CreateAvater = ({ user, onClick }) => {
-    const colors = ["#fdba74", "#ff5722", "#ffc107", "#00bcd4", "#673ab7"];
-    let random_color = colors[Math.floor(Math.random() * colors.length)];
+    const colors = ["#fdba74", "#ff5722", "#ffc107", "#00bcd4", "#673ab7"]; // the 5 random colors
+    let random_color = colors[Math.floor(Math.random() * colors.length)]; // randomizing the colors with Math
     return (
       <>
         <div
@@ -31,7 +37,7 @@ const Header = () => {
           className="bg-orange-300 w-[40px] min-w-[40px] flex justify-center select-none items-center border px-[20px] py-[20px] rounded-full uppercase cursor-pointer h-[40px] min-h-[40px]"
         >
           <span className="font-semibold text-primary backdrop-blur-sm leading-relaxed">
-            {user && user.firstName && user.lastName
+            {user && user.firstName && user.lastName // getting the first letter from both the user's first and last name
               ? `${user?.firstName[0] + user?.lastName[0]}`
               : user.username
               ? `${user.username[0] + user.username[1]}`
@@ -41,9 +47,19 @@ const Header = () => {
       </>
     );
   };
+
+  // Menu Toggle
   const showMenu = () => {
     setIsMenu(!isMenu);
   };
+  // Cart Toggle
+  const showCart = () => {
+    cartAction.setCartShow(!cartShow);
+  };
+  /* 
+  Logging out user function by setting user state 
+  to null and clearing the localStorage 
+  */
   const logout = () => {
     alertSliceActions.createAlert({
       type: "info",
@@ -54,18 +70,14 @@ const Header = () => {
     localStorage.removeItem(AUTH_TOKEN);
     localStorage.removeItem(AUTH_TOKEN_REFRESH);
     authTokenActions.logOut();
+
+    // setting a 3secs timeout before the `Logout was Successful` message shows
     setTimeout(() => {
       alertSliceActions.createAlert({
         type: "success",
         message: `Logout was Successful 😁`,
       });
     }, 3000);
-  };
-  const showCart = () => {
-    dispatch({
-      type: actionType.SET_CART_SHOW,
-      cartShow: !cartShow,
-    });
   };
   return (
     <header className="fixed no-select z-50 w-screen p-3 px-4 md:p-6 md:px-16 bg-navOverlay backdrop-blur-md">
@@ -114,7 +126,7 @@ const Header = () => {
 
           <div className="relative">
             {/* profile image */}
-            {user && !user.profile?.image ? (
+            {user && !user.profile?.image ? ( // checking if user exists and if the user profile exists
               <>
                 <CreateAvater onClick={showMenu} user={user} />
               </>

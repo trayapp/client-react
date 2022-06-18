@@ -3,7 +3,7 @@ import { MdShoppingBasket } from "react-icons/md";
 import { motion } from "framer-motion";
 import { ReactComponent as NotFound } from "../img/not-found.svg";
 import { CART_ITEMS } from "../constants";
-import { useSelector } from " react-redux";
+import { useSelector } from "react-redux";
 import { cartAction } from "../context/actions";
 
 // Items Row Container
