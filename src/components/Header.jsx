@@ -81,7 +81,7 @@ const Header = () => {
       });
     }, 3000);
   };
-  
+
   return (
     <header className="fixed no-select z-50 w-screen p-3 px-4 md:p-6 md:px-16 bg-navOverlay backdrop-blur-md">
       {/* desktop & tablet */}

@@ -33,7 +33,6 @@ const RowContainer = ({ flag, data, scrollValue }) => {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [scrollValue, items]);
 
-  
   return (
     <div
       ref={rowContainer}
