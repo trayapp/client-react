@@ -6,20 +6,20 @@ import { useSelector } from "react-redux";
 import { ReactComponent as EmptyCart } from "../../img/emptyCart.svg";
 import { useNavigate } from "react-router-dom";
 import CartItem from "./CartItem";
-import { actionType, useStateValue } from "../../context/old_context";
 import { CART_ITEMS } from "../../constants";
+import { cartAction } from "../../context/actions";
 
 const CartContainer = () => {
   const user = useSelector((state) => state.authToken?.user);
-  const [{ cartItems, cartShow }, dispatch] = useStateValue();
+  const cartItems = useSelector((state) => state.cart?.cartItems);
+  const cartShow = useSelector((state) => state.cart?.cartShow);
   const [total, setTotal] = useState(0);
   const [flag, setFlag] = useState(0);
   const navigate = useNavigate();
+
+  
   const hideCart = () => {
-    dispatch({
-      type: actionType.SET_CART_SHOW,
-      cartShow: !cartShow,
-    });
+    cartAction.setCartShow(!cartShow);
   };
   useEffect(() => {
     if (cartItems && cartItems.length > 0) {
@@ -30,10 +30,7 @@ const CartContainer = () => {
     }
   }, [cartItems]);
   const clearCart = () => {
-    dispatch({
-      type: actionType.SET_CART_ITEMS,
-      cartItems: [],
-    });
+    cartAction.setCartItems([]);
     localStorage.setItem(CART_ITEMS, JSON.stringify([]));
   };
   return (
@@ -66,7 +63,7 @@ const CartContainer = () => {
               cartItems.map((item, index) => (
                 <CartItem
                   item={item}
-                  key={index+item?.id}
+                  key={index + item?.id}
                   flag={flag}
                   setFlag={setFlag}
                 />

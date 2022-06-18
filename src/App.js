@@ -1,11 +1,12 @@
 import React, { useEffect, useState } from "react";
 import Router from "./router";
+import { useSelector } from "react-redux";
 import { useQuery } from "@apollo/client";
 import { LOAD_ITEMS } from "./GraphQL/queries/products/queries";
 import { AnimatePresence } from "framer-motion";
 import { Header, Alerts, CartContainer } from "./components";
-import { foodItemsAction } from "./context/actions";
-import { useStateValue } from "./context/old_context";
+import { cartAction, foodItemsAction } from "./context/actions";
+
 const App = () => {
   const { data, loading } = useQuery(LOAD_ITEMS, {
     variables: { count: 30 },
@@ -13,12 +14,17 @@ const App = () => {
     nextFetchPolicy: "cache-and-network",
     pollInterval: 500,
   });
-  const [{ cartShow }] = useStateValue();
+  const cartShow = useSelector((state) => state.cart.cartShow);
+  const [cartInit, setCartInit] = useState(false);
   useEffect(() => {
     if (!loading && data) {
       foodItemsAction.setFoodItems(data.items);
     }
-  }, [data, loading, cartShow]);
+    if (cartInit === false && cartShow === true) {
+      cartAction.setCartShow(false);
+      setCartInit(true);
+    }
+  }, [data, loading, cartShow, cartInit]);
   return (
     <AnimatePresence>
       <Alerts />

@@ -3,22 +3,31 @@ import { MdShoppingBasket } from "react-icons/md";
 import { motion } from "framer-motion";
 import { ReactComponent as NotFound } from "../img/not-found.svg";
 import { CART_ITEMS } from "../constants";
-import { actionType, useStateValue } from "../context/old_context";
-// import { fetchCartItems } from "../utils/fetchLocalStorageData";
+import { useSelector } from " react-redux";
+import { cartAction } from "../context/actions";
 
+/* Items Row Container */
 const RowContainer = ({ flag, data, scrollValue }) => {
   const rowContainer = useRef();
-  const [{ cartItems }, dispatch] = useStateValue();
+  const cartItems = useSelector((state) => state.cart?.cartItems);
   const [items, setItems] = useState([]);
+
+  // Adding Item to cart Function -> dispatch the `items` from state and set it in the localStorage
   const addToCart = () => {
     localStorage.setItem(CART_ITEMS, JSON.stringify(items));
-    dispatch({
-      type: actionType.SET_CART_ITEMS,
-      cartItems: items,
-    });
+    cartAction.setCartItems(items);
   };
   useEffect(() => {
+    /* 
+    setting container left-scroll to the 
+    current value of the `scrollValue`
+    */
     rowContainer.current.scrollLeft += scrollValue;
+
+    /* Automatically calling the functions 
+    when ever the length of the `items` 
+    array is greater than 0
+    */
     if (items && items.length > 0) addToCart();
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [scrollValue, items]);
@@ -26,7 +35,7 @@ const RowContainer = ({ flag, data, scrollValue }) => {
     <div
       ref={rowContainer}
       className={`w-full flex no-select items-center gap-3 my-12 scroll-smooth ${
-        flag === true
+        flag === true // configuring the flex of the container, depending if ther flag is true/false
           ? "overflow-x-scroll scrollbar-none"
           : "overflow-x-hidden flex-wrap justify-center"
       }`}

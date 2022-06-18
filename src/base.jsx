@@ -5,7 +5,6 @@ import { Loader } from "./components";
 import { ScrollToTop } from "./utils/hooks";
 import { ApolloProvider } from "@apollo/client";
 import { BrowserRouter as Router } from "react-router-dom";
-import { initialState, reducer, StateProvider } from "./context/old_context";
 
 const BaseComponent = () => {
   const [client, setClient] = useState(null);
@@ -29,9 +28,7 @@ const BaseComponent = () => {
     <ApolloProvider client={client}>
       <Router>
         <ScrollToTop>
-          <StateProvider initialState={initialState} reducer={reducer}>
           <App />
-          </StateProvider>
         </ScrollToTop>
       </Router>
     </ApolloProvider>

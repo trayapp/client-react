@@ -1,46 +1,39 @@
+/* eslint-disable array-callback-return */
 import React, { useEffect, useState } from "react";
 import { BiMinus, BiPlus } from "react-icons/bi";
 import { motion } from "framer-motion";
-import { actionType, useStateValue } from "../../context/old_context";
 import { CART_ITEMS } from "../../constants";
-let items = [];
+import { useSelector } from 'react-redux'
+import {cartAction} from '../../context/actions'
 
-const CartItem = ({ item, key, flag, setFlag }) => {
-  // const cartItems = useSelector((state) => state.cart?.cartItems);
-  const [{cartItems}, dispatch] = useStateValue()
+var items = [];
+const CartItem = ({ item, flag, setFlag }) => {
+  const cartItems = useSelector(state=>state.cart?.cartItems)
   const [qty, setQty] = useState(item.productQty);
 
   const cartDispatch = () => {
     localStorage.setItem(CART_ITEMS, JSON.stringify(items));
-    dispatch({
-      type: actionType.SET_CART_ITEMS,
-      cartItems: items,
-    });
+    cartAction.setCartItems(items);
   };
+
   const updateQty = (action, id) => {
     if (action === "add") {
       setQty(qty + 1);
-      // eslint-disable-next-line array-callback-return
-      cartItems.map((item) => {
+      items.map((item) => {
         if (item.id === id) {
-          console.log(item)
           item.productQty += 1;
           setFlag(flag + 1);
         }
       });
       cartDispatch();
     } else {
-      /* initial state value is one, 
-      so you need to check if its 1,
-      then remove it
-      */
+      // initial state value is one so you need to check if 1 then remove it
       if (qty === 1) {
         items = cartItems.filter((item) => item.id !== id);
         setFlag(flag + 1);
         cartDispatch();
       } else {
         setQty(qty - 1);
-        // eslint-disable-next-line array-callback-return
         cartItems.map((item) => {
           if (item.id === id) {
             item.productQty -= 1;
@@ -51,15 +44,13 @@ const CartItem = ({ item, key, flag, setFlag }) => {
       }
     }
   };
+
   useEffect(() => {
     items = cartItems;
-    // eslint-disable-next-line react-hooks/exhaustive-deps
+  // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [qty, items]);
   return (
-    <div
-      key={key}
-      className="w-full p-1 px-2 rounded-lg bg-cartItem flex items-center gap-2"
-    >
+    <div className="w-full p-1 px-2 rounded-lg bg-cartItem flex items-center gap-2">
       <img
         src={
           item.productImages &&
@@ -91,6 +82,9 @@ const CartItem = ({ item, key, flag, setFlag }) => {
         </p>
         <motion.div
           whileTap={{ scale: 0.75 }}
+          className={
+            item.productQty < 2 && qty > 4 && `opacity-5 pointer-events-none`
+          }
           onClick={() => updateQty("add", item?.id)}
         >
           <BiPlus className="text-gray-50" />
