@@ -162,14 +162,24 @@ const Header = () => {
                 className="w-50 bg-gray-50 shadow-xl rounded-lg flex flex-col absolute top-12 right-0"
               >
                 {user && user.profile.vendor !== null ? (
-                  <Link
-                    to={"/createItem"}
-                    className="px-4 py-2 flex items-center gap-3 cursor-pointer hover:bg-slate-100 transition-all duration-100 ease-in-out text-textColor text-base"
-                    onClick={() => setIsMenu(false)}
-                  >
-                    <MdAdd />
-                    New Item
-                  </Link>
+                  <>
+                    <Link
+                      to={"/createItem"}
+                      className="px-4 py-2 flex items-center gap-3 cursor-pointer hover:bg-slate-100 transition-all duration-100 ease-in-out text-textColor text-base"
+                      onClick={() => setIsMenu(false)}
+                    >
+                      <MdAdd />
+                      New Item
+                    </Link>
+                    <Link
+                      to={"/store/@" + user.profile.vendor.store?.storeNickname}
+                      className="px-4 py-2 flex items-center gap-3 cursor-pointer hover:bg-slate-100 transition-all duration-100 ease-in-out text-textColor text-base"
+                      onClick={() => setIsMenu(false)}
+                    >
+                      <MdStore />
+                      My Store
+                    </Link>
+                  </>
                 ) : user && user.profile.vendor === null ? (
                   <Link
                     to="/auth/become-vendor"
@@ -257,14 +267,24 @@ const Header = () => {
               className="w-50 bg-gray-50 shadow-xl rounded-lg flex flex-col absolute top-12 right-1"
             >
               {user && user.profile.vendor !== null ? (
-                <Link
-                  to={"/createItem"}
-                  className="px-4 py-2 flex items-center gap-3 cursor-pointer hover:bg-slate-100 transition-all duration-100 ease-in-out text-textColor text-base"
-                  onClick={() => setIsMenu(false)}
-                >
-                  <MdAdd />
-                  New Item
-                </Link>
+                <>
+                  <Link
+                    to={"/createItem"}
+                    className="px-4 py-2 flex items-center gap-3 cursor-pointer hover:bg-slate-100 transition-all duration-100 ease-in-out text-textColor text-base"
+                    onClick={() => setIsMenu(false)}
+                  >
+                    <MdAdd />
+                    New Item
+                  </Link>
+                  <Link
+                    to={"/store/@" + user.profile.vendor.store?.storeNickname}
+                    className="px-4 py-2 flex items-center gap-3 cursor-pointer hover:bg-slate-100 transition-all duration-100 ease-in-out text-textColor text-base"
+                    onClick={() => setIsMenu(false)}
+                  >
+                    <MdStore />
+                    My Store
+                  </Link>
+                </>
               ) : user && user.profile.vendor === null ? (
                 <Link
                   to="/auth/become-vendor"

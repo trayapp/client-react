@@ -1,24 +1,37 @@
 import React, { useEffect, useRef, useState } from "react";
-import { MdShoppingBasket } from "react-icons/md";
+import { MdLaptopWindows, MdShoppingBasket } from "react-icons/md";
 import { motion } from "framer-motion";
 import { ReactComponent as NotFound } from "../img/not-found.svg";
 import { CART_ITEMS } from "../constants";
 import { useSelector } from "react-redux";
 import { cartAction } from "../context/actions";
+import { useMutation } from "@apollo/client";
+import { ADD_PRODUCT_CLICK } from "../GraphQL/mutations/products/mutaions";
 
 // Items Row Container
-const RowContainer = ({ flag, data, scrollValue }) => {
+const RowContainer = ({ flag, rowData, scrollValue, className }) => {
   const rowContainer = useRef();
   const cartItems = useSelector((state) => state.cart?.cartItems);
+  const [addProductClick, { loading, data }] = useMutation(ADD_PRODUCT_CLICK);
   const [items, setItems] = useState([]);
-
+  className = className
+    ? className
+    : "w-full flex no-select items-center gap-3 my-12 scroll-smooth";
   // Adding Item to cart Function -> dispatch the `items` from state and set it in the localStorage
   const addToCart = () => {
     localStorage.setItem(CART_ITEMS, JSON.stringify(items));
     cartAction.setCartItems(items);
   };
-
+  // const
   useEffect(() => {
+    if (!loading && data) {
+      if (
+        data.addProductClick === null ||
+        data.addProductClick.success === false
+      ) {
+        MdLaptopWindows.location.reload();
+      }
+    }
     /* 
     setting container left-scroll to the 
     current value of the `scrollValue`
@@ -34,16 +47,19 @@ const RowContainer = ({ flag, data, scrollValue }) => {
   }, [scrollValue, items]);
 
   return (
-    <div
+    <motion.div
       ref={rowContainer}
-      className={`w-full flex no-select items-center gap-3 my-12 scroll-smooth ${
+      initial={{ opacity: 0 }}
+      animate={{ opacity: 1 }}
+      exit={{ opacity: 0 }}
+      className={`${className} ${
         flag === true // configuring the flex of the container, depending if ther flag is true/false
           ? "overflow-x-scroll scrollbar-none"
           : "overflow-x-hidden flex-wrap justify-center"
       }`}
     >
-      {data && data.length > 0 ? (
-        data.map((item) => (
+      {rowData && rowData.length > 0 ? (
+        rowData.map((item) => (
           <div
             key={item?.productSlug}
             className="w-275 h-auto min-w-[275px] md:w-300 md:min-w-[300px] bg-cardOverlay rounded-lg p-2 px-4 my-12 backdrop-blur-lg hover:drop-shadow-lg flex flex-col items-center justify-evenly relative"
@@ -67,7 +83,14 @@ const RowContainer = ({ flag, data, scrollValue }) => {
               <motion.div
                 whileTap={{ scale: 0.75 }}
                 className="w-8 h-8 rounded-full bg-red-600 flex items-center justify-center cursor-pointer hover:shadow-md"
-                onClick={() => setItems([...cartItems, item])}
+                onClick={() => {
+                  setItems([...cartItems, item]);
+                  addProductClick({
+                    variables: {
+                      slug: item?.productSlug,
+                    },
+                  });
+                }}
               >
                 <MdShoppingBasket className="text-white" />
               </motion.div>
@@ -97,7 +120,7 @@ const RowContainer = ({ flag, data, scrollValue }) => {
           </p>
         </div>
       )}
-    </div>
+    </motion.div>
   );
 };
 

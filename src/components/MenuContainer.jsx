@@ -77,7 +77,7 @@ const MenuContainer = () => {
         <div className="w-full">
           <RowContainer
             flag={false}
-            data={foodItems?.filter(
+            rowData={foodItems?.filter(
               (n) => n.productCategory.urlParamName === filter
             )}
           />
