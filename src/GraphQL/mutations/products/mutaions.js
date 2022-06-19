@@ -49,6 +49,9 @@ export const ADD_PRODUCT_CLICK = gql`
 mutation ADD_PRODUCT_CLICK($slug: String!){
   addProductClick(slug: $slug){
     success
+    item{
+      productClicks
+    }
   }
 }
 `
