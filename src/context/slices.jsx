@@ -74,7 +74,7 @@ export const cartSlice = createSlice({
       state.cartItems = state.cartItems
         .filter((item) => item.id === action.payload.id)
         .map((item) => {
-          let data = state.cartItems[0];
+          let data = state.cartItems;
           if (action.payload.action === "add") {
             item.productQty += 1;
           } else {
@@ -83,12 +83,12 @@ export const cartSlice = createSlice({
                 state.cartItems && state.cartItems.length > 1
                   ? state.cartItems.filter(
                       (item) => item.id !== action.payload.id
-                    )[0]
+                    )
                   : [...state.cartItems];
             }
             item.productQty -= 1;
           }
-          return data;
+          return data[0];
         });
     },
     setCartShow: (state, action) => {
