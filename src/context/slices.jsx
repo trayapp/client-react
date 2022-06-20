@@ -84,7 +84,7 @@ export const cartSlice = createSlice({
                   ? state.cartItems.filter(
                       (item) => item.id !== action.payload.id
                     )
-                  : [...state.cartItems];
+                  : [item];
             }
             item.productQty -= 1;
           }
