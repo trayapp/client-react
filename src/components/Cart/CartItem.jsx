@@ -2,52 +2,38 @@
 import React, { useEffect, useState } from "react";
 import { BiMinus, BiPlus } from "react-icons/bi";
 import { motion } from "framer-motion";
-import { CART_ITEMS } from "../../constants";
-import { useSelector } from 'react-redux'
-import {cartAction} from '../../context/actions'
+import { useSelector } from "react-redux";
+import { cartAction } from "../../context/actions";
 
 var items = [];
 const CartItem = ({ item, flag, setFlag }) => {
-  const cartItems = useSelector(state=>state.cart?.cartItems)
+  const cartItems = useSelector((state) => state.cart?.cartItems);
   const [qty, setQty] = useState(item.productQty);
-
-  const cartDispatch = () => {
-    localStorage.setItem(CART_ITEMS, JSON.stringify(items));
-    cartAction.setCartItems(items);
-  };
 
   const updateQty = (action, id) => {
     if (action === "add") {
       setQty(qty + 1);
-      items.map((item) => {
+      cartItems.map((item) => {
         if (item.id === id) {
-          item.productQty += 1;
+          cartAction.updateCartItem({ id: item.id, action: action });
           setFlag(flag + 1);
         }
       });
-      cartDispatch();
     } else {
       // initial state value is one so you need to check if 1 then remove it
-      if (qty === 1) {
-        items = cartItems.filter((item) => item.id !== id);
-        setFlag(flag + 1);
-        cartDispatch();
-      } else {
         setQty(qty - 1);
         cartItems.map((item) => {
           if (item.id === id) {
-            item.productQty -= 1;
+            cartAction.updateCartItem({ id: item.id, action: action });
             setFlag(flag + 1);
           }
         });
-        cartDispatch();
-      }
     }
   };
 
   useEffect(() => {
     items = cartItems;
-  // eslint-disable-next-line react-hooks/exhaustive-deps
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [qty, items]);
   return (
     <div className="w-full p-1 px-2 rounded-lg bg-cartItem flex items-center gap-2">

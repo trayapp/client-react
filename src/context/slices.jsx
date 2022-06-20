@@ -69,6 +69,28 @@ export const cartSlice = createSlice({
     setCartItems: (state, action) => {
       state.cartItems = action.payload;
     },
+    updateCartItem: (state, action) => {
+      // eslint-disable-next-line array-callback-return
+      state.cartItems = state.cartItems
+        .filter((item) => item.id === action.payload.id)
+        .map((item) => {
+          let data = state.cartItems[0];
+          if (action.payload.action === "add") {
+            item.productQty += 1;
+          } else {
+            if (item.productQty === 1) {
+              data =
+                state.cartItems && state.cartItems.length > 1
+                  ? state.cartItems.filter(
+                      (item) => item.id !== action.payload.id
+                    )[0]
+                  : [...state.cartItems];
+            }
+            item.productQty -= 1;
+          }
+          return data;
+        });
+    },
     setCartShow: (state, action) => {
       state.cartShow = action.payload;
     },

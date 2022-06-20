@@ -19,7 +19,7 @@ export const StoreComponent = () => {
   const [filter, setFilter] = useState("all");
   const [scrollValue, setScrollValue] = useState(50);
   // const [scrollValue, setScrollValue] = useState(0);
-  let menu = ["all", "items", "avaliable"];
+  let menu = ["all", "about", "avaliable"];
   const is_user =
     user && user.profile.vendor.store.storeNickname === storeNickname
       ? true
