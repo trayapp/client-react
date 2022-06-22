@@ -5,11 +5,9 @@ import { motion } from "framer-motion";
 import { useSelector } from "react-redux";
 import { cartAction } from "../../context/actions";
 
-var items = [];
 const CartItem = ({ item, flag, setFlag }) => {
   const cartItems = useSelector((state) => state.cart?.cartItems);
-  const [qty, setQty] = useState(item.productQty);
-
+  const [qty, setQty] = useState(item?.productQty);
   const updateQty = (action, id) => {
     if (action === "add") {
       setQty(qty + 1);
@@ -21,22 +19,23 @@ const CartItem = ({ item, flag, setFlag }) => {
       });
     } else {
       // initial state value is one so you need to check if 1 then remove it
-        setQty(qty - 1);
-        cartItems.map((item) => {
-          if (item.id === id) {
+      cartItems.map((item) => {
+        if (item.id === id) {
+          if (qty !== 1) {
             cartAction.updateCartItem({ id: item.id, action: action });
-            setFlag(flag + 1);
+          } else {
+            cartAction.RemoveCartItem({ id: item.id, action: action });
           }
-        });
+          setQty(qty - 1);
+          setFlag(flag + 1);
+        }
+      });
     }
   };
 
-  useEffect(() => {
-    items = cartItems;
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [qty, items]);
+  useEffect(() => {}, [qty]);
   return (
-    <div className="w-full p-1 px-2 rounded-lg bg-cartItem flex items-center gap-2">
+    <div className="w-full p-1 px-2 mb-2 rounded-lg bg-cartItem flex items-center gap-2">
       <img
         src={
           item.productImages &&
@@ -68,9 +67,7 @@ const CartItem = ({ item, flag, setFlag }) => {
         </p>
         <motion.div
           whileTap={{ scale: 0.75 }}
-          className={
-            item.productQty < 2 && qty > 4 && `opacity-5 pointer-events-none`
-          }
+          className={qty > 4 ? `opacity-5 pointer-events-none` : ""}
           onClick={() => updateQty("add", item?.id)}
         >
           <BiPlus className="text-gray-50" />

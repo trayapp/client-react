@@ -1,4 +1,5 @@
 import { gql } from "@apollo/client";
+import { product_const } from "../contants";
 
 export const GET_STORE_QUERY = gql`
   query GET_STORE($storeNickname: String!) {
@@ -15,40 +16,7 @@ export const GET_STORE_QUERY = gql`
           storeNickname
           storeCategory
           storeProducts {
-            id
-            isAvaliable
-            productName
-            productQty
-            productType {
-              name
-              id
-              urlParamName
-            }
-            productCategory {
-              name
-              id
-              urlParamName
-            }
-            productSlug
-            productPrice
-            productImages {
-              productImage
-              isPrimary
-            }
-            productCalories
-            productViews
-            productClicks
-            productAvaliableIn {
-              storeName
-              storeNickname
-            }
-            productCreator {
-              profile {
-                user {
-                  username
-                }
-              }
-            }
+            ${product_const}
           }
         }
       }

@@ -1,9 +1,5 @@
 import { createSlice } from "@reduxjs/toolkit";
-import {
-  fetchUser,
-  fetchToken,
-  fetchCartItems,
-} from "../utils/fetchLocalStorageData";
+import { fetchUser, fetchToken } from "../utils/fetchLocalStorageData";
 
 export const authTokenSlice = createSlice({
   name: "authToken",
@@ -58,37 +54,54 @@ export const foodItemsSlice = createSlice({
     },
   },
 });
+export const getUniqueArrays = (array, key) => {
+  if (typeof key !== "function") {
+    const property = key;
+    key = function (item) {
+      return item[property];
+    };
+  }
+  return Array.from(
+    array
+      .reduce(function (map, item) {
+        const k = key(item);
+        if (!map.has(k)) map.set(k, item);
+        return map;
+      }, new Map())
+      .values()
+  );
+};
 
 export const cartSlice = createSlice({
   name: "cart",
   initialState: {
-    cartItems: fetchCartItems(),
+    cartItems: [],
     cartShow: false,
   },
   reducers: {
     setCartItems: (state, action) => {
-      state.cartItems = action.payload;
+      state.cartItems = getUniqueArrays(action.payload, "id");
     },
     updateCartItem: (state, action) => {
-      // eslint-disable-next-line array-callback-return
       state.cartItems = state.cartItems
         .filter((item) => item.id === action.payload.id)
         .map((item) => {
-          let data = state.cartItems;
-          if (action.payload.action === "add") {
-            item.productQty += 1;
-          } else {
-            if (item.productQty === 1) {
-              data =
-                state.cartItems && state.cartItems.length > 1
-                  ? state.cartItems.filter(
-                      (item) => item.id !== action.payload.id
-                    )
-                  : [item];
+          if (item.id === action.payload.id) {
+            if (action.payload.action !== "add") {
+              item.productQty -= 1;
+            } else {
+              item.productQty += 1;
             }
-            item.productQty -= 1;
           }
-          return data[0];
+            return [...state.cartItems, item][0]
+          // return state.cartItems[0];
+        });
+    },
+    RemoveCartItem: (state, action) => {
+      state.cartItems = state.cartItems
+        .filter((item) => item.id !== action.payload.id)
+        .map((item) => {
+          return state.cartItems[0];
         });
     },
     setCartShow: (state, action) => {

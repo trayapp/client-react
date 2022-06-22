@@ -64,7 +64,7 @@ const HomeContainer = () => {
 
         <div className="w-full h-full absolute top-0 left-0 flex items-center justify-center lg:pr-32 gap-4 flex-wrap">
           {heroData.length > 0 &&
-            heroData.map((p, index) => (
+            heroData?.filter((n)=>n.isAvaliable === true).map((p, index) => (
               <div
                 key={index}
                 className=" lg:w-220 p-4 bg-cardOverlay backdrop-blur-md rounded-3xl flex flex-col items-center justify-center drop-shadow-lg"

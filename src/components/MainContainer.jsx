@@ -6,7 +6,7 @@ import { RowContainer, MenuContainer } from "./index";
 import { useSelector } from "react-redux";
 
 const MainContainer = () => {
-  const foodItems = useSelector((state) => state.foodItems.foodItems);
+  const foodItems = useSelector((state) => state.foodItems?.foodItems);
   const [scrollValue, setScrollValue] = useState(0);
 
   useEffect(() => {}, [scrollValue]);
@@ -40,7 +40,7 @@ const MainContainer = () => {
         <RowContainer
           scrollValue={scrollValue}
           flag={true}
-          data={foodItems?.filter((n) => n.productCategory.name === "Food")}
+          rowData={foodItems?.filter((n) => n.productCategory.urlParamName === "food")}
         />
       </section>
 

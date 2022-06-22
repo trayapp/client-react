@@ -6,6 +6,7 @@ import { GET_STORE_QUERY } from "../../GraphQL/queries/store/queries";
 import { motion } from "framer-motion";
 import RowContainer from "../RowContainer";
 import { MdChevronLeft, MdChevronRight } from "react-icons/md";
+import Loader from "../Loader";
 
 export const StoreComponent = () => {
   const user = useSelector((state) => state.authToken?.user); // getting user state
@@ -14,8 +15,9 @@ export const StoreComponent = () => {
   const { loading, data } = useQuery(GET_STORE_QUERY, {
     variables: { storeNickname: storeNickname },
     fetchPolicy: "cache-and-network",
+    nextFetchPolicy: "cache-first",
   });
-  const [store, setStore] = useState(null);
+  const [store, setStore] = useState([]);
   const [filter, setFilter] = useState("all");
   const [scrollValue, setScrollValue] = useState(50);
   // const [scrollValue, setScrollValue] = useState(0);
@@ -33,15 +35,15 @@ export const StoreComponent = () => {
 
   return (
     <div className="w-full h-full flex flex-col items-center justify-center">
-      {!loading && (
+      {!loading ? (
         <>
-          {store === null ? (
+          {!loading && store && store.length > 0 ? (
             "Store Not Found"
           ) : (
             <div className="w-full flex flex-col items-center justify-center mt-3">
               <div
                 style={{ transform: "skew(227deg, 343deg)" }}
-                className="absolute flex justify-between top-[13rem] md:top-[21rem] pointer-events-none w-full h-screen 
+                className="absolute flex justify-between top-[21rem] pointer-events-none w-full h-screen 
                 rounded-lg bg-gradient-to-b bg-gradient-to-t from-orange-200 to-transparent"
               ></div>
               <figure className="w-[15rem] h-[15rem] drop-shadow-lg">
@@ -62,10 +64,10 @@ export const StoreComponent = () => {
                   {storeNickname} {store.vendor.store?.storeCategory}
                 </p>
               </div>
-              <div class="text-sm font-medium text-center mt-[3rem]">
+              <div className="text-sm font-medium text-center mt-[3rem]">
                 <ul className="flex flex-row gap-3 -mb-px m-auto no-select">
-                  {menu.map((menu) => (
-                    <li className="mr-2">
+                  {menu.map((menu, index) => (
+                    <li className="mr-2" key={index}>
                       <motion.div
                         whileTap={{ scale: 0.8 }}
                         aria-current={menu}
@@ -123,7 +125,7 @@ export const StoreComponent = () => {
                             n.productType.urlParamName === "a-dish"
                         )
                         .sort((a, b) => -parseInt(a.id) - parseInt(b.id))}
-                      className="w-full flex no-select rounded-lg bg-gradient-to-l from-orange-400 to-transparent backdrop-blur-lg items-center gap-3 my-6 scroll-smooth overflow-x-scroll scrollbar-none"
+                      className="w-full flex no-select md:rounded-lg rounded-md bg-gradient-to-l from-orange-400 to-transparent backdrop-blur-lg items-center gap-3 my-6 scroll-smooth overflow-x-scroll scrollbar-none"
                       flag={true}
                     />
 
@@ -149,6 +151,10 @@ export const StoreComponent = () => {
             </div>
           )}
         </>
+      ) : (
+        <div className="main-loader h-screen w-screen m-auto flex justify-center items-center">
+          <Loader className="top-50" />
+        </div>
       )}
     </div>
   );

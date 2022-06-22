@@ -16,12 +16,12 @@ const MenuContainer = () => {
     nextFetchPolicy: "cache-and-network"
   });
   const [categories, setCategories] = useState(null);
-  const foodItems = useSelector((state) => state.foodItems?.foodItems);
+  const foodItems = useSelector((state) => state.foodItems?.foodItems?.filter((n)=>n.isAvaliable === true));
   useEffect(() => {
     if (!loading && data) {
       setCategories(data?.itemAttributes);
     }
-  }, [categories, data, loading]);
+  }, [data, loading]);
 
   return (
     <section className="w-full my-6" id="menu">

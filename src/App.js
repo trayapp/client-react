@@ -10,21 +10,21 @@ import { cartAction, foodItemsAction } from "./context/actions";
 const App = () => {
   const { data, loading } = useQuery(LOAD_ITEMS, {
     variables: { count: 30 },
-    fetchPolicy: "network-only",
-    nextFetchPolicy: "cache-and-network",
-    pollInterval: 500,
+    fetchPolicy: "cache-and-network",
+    nextFetchPolicy: "cache-first",
+    pollInterval: 1000,
   });
   const cartShow = useSelector((state) => state.cart.cartShow);
   const [cartInit, setCartInit] = useState(false);
+  if (cartInit === false) {
+    setCartInit(true);
+    cartAction.setCartShow(false);
+  }
   useEffect(() => {
     if (!loading && data) {
       foodItemsAction.setFoodItems(data.items);
     }
-    if (cartInit === false && cartShow === true) {
-      cartAction.setCartShow(false);
-      setCartInit(true);
-    }
-  }, [data, loading, cartShow, cartInit]);
+  }, [data, loading]);
   return (
     <AnimatePresence>
       <Alerts />

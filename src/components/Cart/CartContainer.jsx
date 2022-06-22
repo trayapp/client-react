@@ -5,7 +5,7 @@ import { motion } from "framer-motion";
 import { useSelector } from "react-redux";
 import { ReactComponent as EmptyCart } from "../../img/emptyCart.svg";
 import { useNavigate } from "react-router-dom";
-import CartItem from "./CartItem";
+import CartVendorGrouping from "./CartVendorGrouping";
 import { CART_ITEMS } from "../../constants";
 import { cartAction } from "../../context/actions";
 
@@ -16,11 +16,82 @@ const CartContainer = () => {
   const [total, setTotal] = useState(0);
   const [flag, setFlag] = useState(0);
   const navigate = useNavigate();
+  let hostelprice =
+    cartItems && cartItems.length > 8
+      ? 500
+      : cartItems.length > 6
+      ? 300
+      : cartItems.length > 4
+      ? 200
+      : 100;
+  let portalprice =
+    cartItems && cartItems.length > 8
+      ? 350
+      : cartItems.length > 6
+      ? 200
+      : cartItems.length > 4
+      ? 100
+      : 50;
 
-  
   const hideCart = () => {
     cartAction.setCartShow(!cartShow);
   };
+  // const searchStoreNickName = (item) => {
+  //   let store_Nickname = null;
+  //   if (item?.productCreator === null) {
+  //     store_Nickname = item?.productAvaliableIn[0].storeNickname;
+  //   } else {
+  //     let data = item?.productAvaliableIn.filter(
+  //       (n) =>
+  //         n.storeNickname ===
+  //         item.productCreator.profile.vendor.store?.storeNickname
+  //     );
+  //     store_Nickname =
+  //       data && data.length > 0
+  //         ? data[0].storeNickname
+  //         : item?.productAvaliableIn[0].storeNickname;
+  //   }
+  //   return item?.productAvaliableIn && item?.productAvaliableIn.length > 0
+  //     ? store_Nickname
+  //     : null;
+  // };
+  
+  let cartData = [];
+  cartData =
+    cartItems &&
+    cartItems.length > 0 &&
+    cartItems.map((item, index) => {
+      let dat = cartItems.filter(
+        (n) => n.avaliableStore === item?.avaliableStore
+      );
+      // console.log(dat);
+      return dat && dat.length > 0
+        && {
+            id: index,
+            store: `${item?.avaliableStore}`,
+            items: dat,
+          }
+    });
+    const getUniqueArrays = (array, key) => {
+      if (typeof key !== "function") {
+        const property = key;
+        key = function (item) {
+          return item[property];
+        };
+      }
+      return Array.from(
+        array
+          .reduce(function (map, item) {
+            const k = key(item);
+            if (!map.has(k)) map.set(k, item);
+            return map;
+          }, new Map())
+          .values()
+      );
+    };
+  cartData = cartData && cartData.length > 0 && getUniqueArrays(cartData, 'store');
+  // console.log(cartData)
+  
   useEffect(() => {
     if (cartItems && cartItems.length > 0) {
       let totalprice = cartItems.reduce(function (accumulator, item) {
@@ -59,14 +130,17 @@ const CartContainer = () => {
           {/* cart items section */}
           <div className="w-full h-225 md:h-42 px-6 py-10 flex flex-col gap-3 overflow-y-scroll scrollbar-none">
             {/* cart item */}
-            {cartItems &&
-              cartItems.map((item, index) => (
-                <CartItem
-                  item={item}
-                  key={index + item?.id}
-                  flag={flag}
-                  setFlag={setFlag}
-                />
+            {cartData &&
+              cartData.map((item) => (
+                <>
+                  <CartVendorGrouping
+                    items={item?.items && item?.items.length > 0 ? item?.items : null}
+                    vendor={item?.store}
+                    key={item?.id}
+                    flag={flag}
+                    setFlag={setFlag}
+                  />
+                </>
               ))}
           </div>
           {/* cart total section */}
@@ -77,15 +151,11 @@ const CartContainer = () => {
             </div>
             <div className="w-full flex items-center justify-between">
               <p className="text-gray-400 text-lg">Portal Delivery</p>
-              <p className="text-gray-400 text-lg">
-                ₦{parseInt((total / 100) * 10)}
-              </p>
+              <p className="text-gray-400 text-lg">₦{portalprice}</p>
             </div>
             <div className="w-full flex items-center justify-between">
               <p className="text-gray-400 text-lg">Hostel Delivery</p>
-              <p className="text-gray-400 text-lg">
-                ₦{parseInt((total / 100) * 20)}
-              </p>
+              <p className="text-gray-400 text-lg">₦{hostelprice}</p>
             </div>
             <div className="w-full border-b border-gray-600 my-2"></div>
 
@@ -94,7 +164,7 @@ const CartContainer = () => {
                 Total For Portal
               </p>
               <p className="text-gray-200 text-xl font-semibold">
-                ₦{parseInt(total + (total / 100) * 10)}
+                ₦{parseInt(total + portalprice)}
               </p>
             </div>
             <div className="w-full flex items-center justify-between">
@@ -102,7 +172,7 @@ const CartContainer = () => {
                 Total For Hostel
               </p>
               <p className="text-gray-200 text-xl font-semibold">
-                ₦{parseInt(total + (total / 100) * 20)}
+                ₦{parseInt(total + hostelprice)}
               </p>
             </div>
             {user ? (

@@ -1,26 +1,10 @@
 import { gql } from "@apollo/client";
+import { product_const } from "../contants";
 
 export const LOAD_ITEMS = gql`
   query LOAD_ITEMS($count: Int) {
     items(count: $count) {
-      productName
-      productType {
-        name
-        urlParamName
-      }
-      productCategory {
-        name
-        urlParamName
-      }
-      productCalories
-      id
-      productSlug
-      productPrice
-      productQty
-      productImages {
-        productImage
-        isPrimary
-      }
+      ${product_const}
     }
   }
 `;
@@ -28,19 +12,7 @@ export const LOAD_ITEMS = gql`
 export const LOAD_HERO_DATA = gql`
   query LOAD_HERO_DATA($count: Int) {
     heroData(count: $count) {
-      id
-      productName
-      productPrice
-      productQty
-      productCategory {
-        name
-        urlParamName
-        Type
-      }
-      productImages {
-        productImage
-        isPrimary
-      }
+      ${product_const}
     }
   }
 `;
