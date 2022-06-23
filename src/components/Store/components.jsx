@@ -7,6 +7,7 @@ import { motion } from "framer-motion";
 import RowContainer from "../RowContainer";
 import { MdChevronLeft, MdChevronRight } from "react-icons/md";
 import Loader from "../Loader";
+import EditScreen from "./EditScreen";
 
 export const StoreComponent = () => {
   const user = useSelector((state) => state.authToken?.user); // getting user state
@@ -18,19 +19,26 @@ export const StoreComponent = () => {
     nextFetchPolicy: "cache-and-network",
   });
   const [store, setStore] = useState(null);
-  const [filter, setFilter] = useState("all");
+  const windowHash = window.location.hash ? window.location.hash : false;
+  const [filter, setFilter] = useState(
+    windowHash !== false ? windowHash.replaceAll("#", "") : "all"
+  );
   const [scrollValue, setScrollValue] = useState(50);
-  let menu = ["all", "about", "avaliable"];
+
+  let menu = ["all", "items", "about"];
   const is_user =
     user && user.profile.vendor.store.storeNickname === storeNickname
       ? true
       : false;
-
+  if (is_user) {
+    menu = menu.concat(["edit"]);
+  }
   useEffect(() => {
     if (!loading && data) {
       setStore(data.getStore);
     }
-  }, [data, loading, scrollValue]);
+    window.location.hash = filter;
+  }, [data, filter, loading, scrollValue, windowHash]);
 
   return (
     <div className="w-full h-full flex flex-col items-center justify-center">
@@ -74,7 +82,12 @@ export const StoreComponent = () => {
                         onClick={() => setFilter(menu)}
                         className={`inline-block p-3 rounded-lg py-2 px-3 capitalize cursor-pointer transition-colors ease-in-out
                           ${
-                            filter === menu
+                            filter === menu ||
+                            (menu === "edit" &&
+                              menu ===
+                                window.location.hash
+                                  .split("&")[0]
+                                  .replace("#", ""))
                               ? `text-white bg-cartNumBg drop-shadow-md`
                               : `text-orange-600 border-transparent hover:text-white hover:bg-cartNumBg`
                           }`}
@@ -86,6 +99,7 @@ export const StoreComponent = () => {
                 </ul>
               </div>
               <div className="w-full my-10">
+                {/* All Menu */}
                 {filter === menu[0] && (
                   <>
                     {/* Top Dishes */}
@@ -137,9 +151,22 @@ export const StoreComponent = () => {
                       className="w-full flex items-center justify-between"
                     >
                       <p className="text-2xl font-semibold capitalize text-headingColor relative before:absolute before:rounded-lg before:content before:w-32 before:h-1 before:-bottom-2 before:left-0 before:bg-gradient-to-tr from-orange-400 to-orange-600 transition-all ease-in-out duration-100">
-                        {store.vendor.store?.storeName} Items
+                        {store.vendor.store?.storeName} Avaliable Items
                       </p>
                     </motion.div>
+                    <RowContainer
+                      rowData={store.vendor.store?.storeProducts?.filter(
+                        (n) => n.isAvaliable === true
+                      )}
+                      className="w-full flex no-select items-center gap-3 my-6 scroll-smooth overflow-x-scroll scrollbar-none"
+                      flag={false}
+                    />
+                  </>
+                )}
+
+                {/* Items */}
+                {filter === menu[1] && (
+                  <>
                     <RowContainer
                       rowData={store.vendor.store?.storeProducts}
                       className="w-full flex no-select items-center gap-3 my-6 scroll-smooth overflow-x-scroll scrollbar-none"
@@ -147,6 +174,17 @@ export const StoreComponent = () => {
                     />
                   </>
                 )}
+                {is_user &&
+                  (filter === menu[3] ||
+                    menu[3] ===
+                      window.location.hash.split("&")[0].replace("#", "")) && (
+                    <EditScreen
+                      is_user={is_user}
+                      filter={filter}
+                      setFilter={setFilter}
+                      store={store}
+                    />
+                  )}
               </div>
             </div>
           )}

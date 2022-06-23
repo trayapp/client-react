@@ -91,7 +91,6 @@ export const cartSlice = createSlice({
           }
           return state.cartItems[0];
         });
-      console.log(filtered);
       state.cartItems = [state.cartItems, filtered][0];
     },
     RemoveQty: (state, action) => {
