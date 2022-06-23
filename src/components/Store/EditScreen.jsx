@@ -1,5 +1,5 @@
 import React from "react";
-import { MdFoodBank, MdPerson, MdSearch } from "react-icons/md";
+import { MdFoodBank, MdPerson } from "react-icons/md";
 import { motion } from "framer-motion";
 import { useNavigate } from "react-router-dom";
 import { useEffect } from "react";
@@ -32,7 +32,6 @@ const EditScreen = ({ is_user, filter, setFilter, store }) => {
   console.log(
     filter.split("&") && filter.split("&").length >= 1 && filter.split("&")[1]
   );
-  console.log(menu[1].name);
   return (
     <motion.div
       initial={{ opacity: 0 }}

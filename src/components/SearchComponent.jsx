@@ -7,6 +7,7 @@ export const ProductSearch = () => {
 
 export const SearchComponent = ({ product_only }) => {
   const [show, setShow] = useState(false);
+  const [searchQuery, setSearchQuery] = useState("");
   const showList = () => {
     setShow(true);
   };
@@ -17,20 +18,21 @@ export const SearchComponent = ({ product_only }) => {
     <>
       {/* Search Bar */}
       <div
-        className={`w-[30rem] flex flex-row justify-start p-1 items-start focus:border backdrop-blur-md bg-gray-100 transition-all duration-150 ease-in-out shadow-md ${
-          show ? `border-b z-10 rounded-tr-md rounded-tl-md` : `rounded-md`
+        className={`md:w-[30rem] mr-auto md:m-0 w-[20em] w-full flex flex-row justify-start p-1 items-start focus:border backdrop-blur-md bg-gray-100 transition-all duration-150 ease-in-out ${
+          show ? `${searchQuery && searchQuery.length > 0 ? `border-b rounded-tr-md rounded-tl-md shadow-md`: `shadow-md rounded-md`} z-10 ` : `rounded-md border`
         }`}
       >
         <div className="w-10 h-10 rounded-bl-md rounded-tl-md cursor-pointer">
-          <MdSearch className="p-1 w-10 h-10 border-r rounded-bl-md rounded-tl-md" />
+          <MdSearch className="p-1 w-10 h-10 border-r text-gray-400 rounded-bl-md rounded-tl-md" />
         </div>
         <div className="w-full h-10 rounded-tr-md rounded-br-md flex justify-start items-center">
           <input
             type="text"
             name=""
+            onChange={(e) => setSearchQuery(e.target.value)}
+            value={searchQuery}
             className="w-full text-lg px-2 font-semibold border-none h-full bg-transparent
                            rounded-tr-md rounded-br-md outline-none"
-            id=""
             onClick={showList}
           />
         </div>
@@ -44,9 +46,11 @@ export const SearchComponent = ({ product_only }) => {
       {/* List Of Products */}
       <div
         className={`${
-          show ? `h-10 z-10` : `h-[0px]`
-        } w-[30rem] transition-all duration-100 ease-in-out rounded-bl-lg shadow-md backdrop-blur-md rounded-br-lg bg-gray-100`}
-      ></div>
+          show && searchQuery && searchQuery.length > 0 ? `h-10 z-10` : `h-[0px]`
+        } md:w-[30rem] mr-auto md:m-0 w-[20em] w-full transition-all duration-100 ease-in-out rounded-bl-lg shadow-md backdrop-blur-md rounded-br-lg bg-gray-100`}
+      >
+        
+      </div>
     </>
   );
 };
