@@ -26,3 +26,10 @@ export const LOAD_ITEM_ATTRIBUTE = gql`
     }
   }
 `;
+export const SEARCH_ITEMS = gql`
+  query SEARCH_ITEMS($query: String!) {
+    searchItems(query: $query) {
+      ${product_const}
+    }
+  }
+`;
