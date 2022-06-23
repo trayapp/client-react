@@ -13,7 +13,7 @@ const CartItem = ({ item, flag, setFlag }) => {
       setQty(qty + 1);
       cartItems.map((item) => {
         if (item.id === id) {
-          cartAction.updateCartItem({ id: item.id, action: action });
+          cartAction.AddQty(item);
           setFlag(flag + 1);
         }
       });
@@ -22,9 +22,9 @@ const CartItem = ({ item, flag, setFlag }) => {
       cartItems.map((item) => {
         if (item.id === id) {
           if (qty !== 1) {
-            cartAction.updateCartItem({ id: item.id, action: action });
+            cartAction.RemoveQty(item);
           } else {
-            cartAction.RemoveCartItem({ id: item.id, action: action });
+            cartAction.RemoveCartItem(item);
           }
           setQty(qty - 1);
           setFlag(flag + 1);

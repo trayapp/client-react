@@ -82,27 +82,33 @@ export const cartSlice = createSlice({
     setCartItems: (state, action) => {
       state.cartItems = getUniqueArrays(action.payload, "id");
     },
-    updateCartItem: (state, action) => {
-      state.cartItems = state.cartItems
+    AddQty: (state, action) => {
+      const filtered = state.cartItems
         .filter((item) => item.id === action.payload.id)
         .map((item) => {
           if (item.id === action.payload.id) {
-            if (action.payload.action !== "add") {
-              item.productQty -= 1;
-            } else {
-              item.productQty += 1;
-            }
+            item.productQty += 1;
           }
-            return [...state.cartItems, item][0]
-          // return state.cartItems[0];
-        });
-    },
-    RemoveCartItem: (state, action) => {
-      state.cartItems = state.cartItems
-        .filter((item) => item.id !== action.payload.id)
-        .map((item) => {
           return state.cartItems[0];
         });
+      console.log(filtered);
+      state.cartItems = [state.cartItems, filtered][0];
+    },
+    RemoveQty: (state, action) => {
+      const filtered = state.cartItems
+        .filter((item) => item.id === action.payload.id)
+        .map((item) => {
+          if (item.id === action.payload.id) {
+            item.productQty -= 1;
+          }
+          return state.cartItems[0];
+        });
+      state.cartItems = [state.cartItems, filtered][0];
+    },
+    RemoveCartItem: (state, action) => {
+      state.cartItems = state.cartItems.filter(
+        (item) => item.id !== action.payload.id
+      );
     },
     setCartShow: (state, action) => {
       state.cartShow = action.payload;

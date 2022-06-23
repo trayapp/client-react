@@ -11,20 +11,22 @@ const App = () => {
   const { data, loading } = useQuery(LOAD_ITEMS, {
     variables: { count: 30 },
     fetchPolicy: "cache-and-network",
-    nextFetchPolicy: "cache-first",
-    pollInterval: 1000,
+    nextFetchPolicy: "cache-first"
   });
   const cartShow = useSelector((state) => state.cart.cartShow);
   const [cartInit, setCartInit] = useState(false);
+  const [foodItems, setFoodItems] = useState(null);
   if (cartInit === false) {
     setCartInit(true);
     cartAction.setCartShow(false);
   }
   useEffect(() => {
-    if (!loading && data) {
-      foodItemsAction.setFoodItems(data.items);
+    if (!loading && data && foodItems === null) {
+      setFoodItems(data.items);
+    } else {
+      foodItemsAction.setFoodItems(foodItems);
     }
-  }, [data, loading]);
+  }, [data, loading, foodItems]);
   return (
     <AnimatePresence>
       <Alerts />

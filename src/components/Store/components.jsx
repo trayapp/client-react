@@ -14,13 +14,12 @@ export const StoreComponent = () => {
   storeNickname = storeNickname.replace("@", ""); // removing the `@` symbol
   const { loading, data } = useQuery(GET_STORE_QUERY, {
     variables: { storeNickname: storeNickname },
-    fetchPolicy: "cache-and-network",
-    nextFetchPolicy: "cache-first",
+    fetchPolicy: "cache-first",
+    nextFetchPolicy: "cache-and-network",
   });
-  const [store, setStore] = useState([]);
+  const [store, setStore] = useState(null);
   const [filter, setFilter] = useState("all");
   const [scrollValue, setScrollValue] = useState(50);
-  // const [scrollValue, setScrollValue] = useState(0);
   let menu = ["all", "about", "avaliable"];
   const is_user =
     user && user.profile.vendor.store.storeNickname === storeNickname
@@ -37,7 +36,7 @@ export const StoreComponent = () => {
     <div className="w-full h-full flex flex-col items-center justify-center">
       {!loading ? (
         <>
-          {!loading && store && store.length > 0 ? (
+          {!loading && store === null ? (
             "Store Not Found"
           ) : (
             <div className="w-full flex flex-col items-center justify-center mt-3">
@@ -49,7 +48,8 @@ export const StoreComponent = () => {
               <figure className="w-[15rem] h-[15rem] drop-shadow-lg">
                 <img
                   src={store && store.vendor.profile?.image}
-                  className="rounded-lg w-full h-full"
+                  className="rounded-lg bg-orange-100 w-full h-full"
+                  loading="lazy"
                   alt=""
                 />
                 <p

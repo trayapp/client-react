@@ -3,6 +3,9 @@ import { useQuery } from "@apollo/client";
 import { GET_STORE_QUERY } from "../../GraphQL/queries/store/queries";
 import CartItem from "./CartItem";
 import { useEffect } from "react";
+import { motion } from "framer-motion";
+import { useNavigate } from "react-router-dom";
+import { cartAction } from "../../context/actions";
 
 const CartVendorGrouping = ({ items, vendor, key, flag, setFlag }) => {
   vendor = vendor !== "null" && vendor;
@@ -11,7 +14,9 @@ const CartVendorGrouping = ({ items, vendor, key, flag, setFlag }) => {
     fetchPolicy: "cache-first",
     nextFetchPolicy: "cache-and-network",
   });
-  const [store, setStore] = useState([]);
+  const [store, setStore] = useState(null);
+  const navigate = useNavigate();
+
   useEffect(() => {
     if (!loading && data) {
       if (data.getStore !== null) {
@@ -19,19 +24,30 @@ const CartVendorGrouping = ({ items, vendor, key, flag, setFlag }) => {
       }
     }
   }, [data, loading]);
+
+  const handleStoreRedirect = (storeNickname) => {
+    cartAction.setCartShow(false);
+    navigate(`/store/@${storeNickname}`);
+  };
   return (
     <div>
-      {!loading && store && store.length > 0 && (
-        <div className="w-full flex justify-start items-start mb-2 gap-3">
+      {store && store !== null && (
+        <motion.div
+          onClick={() => handleStoreRedirect(store.vendor.store?.storeNickname)}
+          whileTap={{ scale: 0.85 }}
+          className="w-max flex p-1 justify-start hover:bg-gray-700 transition-all 
+        duration-100 cursor-pointer rounded-md items-start mb-2 gap-3"
+        >
           <img
             src={store.vendor.profile?.image}
+            loading="lazy"
             className="w-8 h-8 rounded-full"
             alt=""
           />
           <p className="text-base font-semibold text-yellow-500 mt-1">
             {store.vendor.store?.storeName}
           </p>
-        </div>
+        </motion.div>
       )}
       {items &&
         items.map((item, index) => (
