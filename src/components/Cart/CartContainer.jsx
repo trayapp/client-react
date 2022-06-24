@@ -131,16 +131,14 @@ const CartContainer = () => {
           <div className="w-full h-225 md:h-42 px-6 py-10 flex flex-col gap-3 overflow-y-scroll scrollbar-none">
             {/* cart item */}
             {cartData &&
-              cartData.map((item) => (
-                <>
+              cartData.map((item, index) => (
                   <CartVendorGrouping
                     items={item?.items && item?.items.length > 0 ? item?.items : null}
                     vendor={item?.store}
-                    key={item?.id}
+                    key={index+parseInt(item?.id)}
                     flag={flag}
                     setFlag={setFlag}
                   />
-                </>
               ))}
           </div>
           {/* cart total section */}

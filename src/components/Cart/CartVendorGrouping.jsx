@@ -7,7 +7,7 @@ import { motion } from "framer-motion";
 import { useNavigate } from "react-router-dom";
 import { cartAction } from "../../context/actions";
 
-const CartVendorGrouping = ({ items, vendor, key, flag, setFlag }) => {
+const CartVendorGrouping = ({ items, vendor, flag, setFlag }) => {
   vendor = vendor !== "null" && vendor;
   const { loading, data } = useQuery(GET_STORE_QUERY, {
     variables: { storeNickname: vendor },
@@ -54,7 +54,7 @@ const CartVendorGrouping = ({ items, vendor, key, flag, setFlag }) => {
           <CartItem
             item={item}
             vendor={vendor}
-            key={key + index}
+            key={index+parseInt(item?.id)}
             flag={flag}
             setFlag={setFlag}
           />

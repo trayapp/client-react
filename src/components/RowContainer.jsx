@@ -1,12 +1,13 @@
 import React, { useEffect, useRef, useState } from "react";
-import { MdLaptopWindows, MdShoppingBasket } from "react-icons/md";
+import { MdShoppingBasket } from "react-icons/md";
 import { motion } from "framer-motion";
 import { ReactComponent as NotFound } from "../img/not-found.svg";
 import { CART_ITEMS } from "../constants";
 import { useSelector } from "react-redux";
-import { cartAction } from "../context/actions";
+import { alertSliceActions, cartAction } from "../context/actions";
 import { useMutation } from "@apollo/client";
 import { ADD_PRODUCT_CLICK } from "../GraphQL/mutations/products/mutaions";
+import Loader from "./Loader";
 
 // Items Row Container
 const RowContainer = ({ flag, rowData, scrollValue, className }) => {
@@ -17,19 +18,20 @@ const RowContainer = ({ flag, rowData, scrollValue, className }) => {
   className = className
     ? className
     : "w-full flex no-select items-center gap-3 my-12 scroll-smooth";
+
   // Adding Item to cart Function -> dispatch the `items` from state and set it in the localStorage
   const addToCart = () => {
     localStorage.setItem(CART_ITEMS, JSON.stringify(items));
     cartAction.setCartItems(items);
   };
-  // const
+
   useEffect(() => {
     if (!loading && data) {
       if (
         data.addProductClick === null ||
         data.addProductClick.success === false
       ) {
-        MdLaptopWindows.location.reload();
+        window.location.reload();
       }
     }
     /* 
@@ -45,7 +47,6 @@ const RowContainer = ({ flag, rowData, scrollValue, className }) => {
     if (items && items.length > 0) addToCart();
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [scrollValue, items]);
-
   return (
     <motion.div
       ref={rowContainer}
@@ -58,7 +59,7 @@ const RowContainer = ({ flag, rowData, scrollValue, className }) => {
           : "overflow-x-hidden flex-wrap justify-center"
       }`}
     >
-      {rowData && rowData.length > 0 ? (
+      {!loading && rowData && rowData.length > 0 ? (
         rowData.map((item) => (
           <div
             key={item?.productSlug}
@@ -84,12 +85,30 @@ const RowContainer = ({ flag, rowData, scrollValue, className }) => {
                 whileTap={{ scale: 0.75 }}
                 className="w-8 h-8 rounded-full bg-red-600 flex items-center justify-center cursor-pointer hover:shadow-md"
                 onClick={() => {
-                  setItems([...cartItems, item]);
-                  addProductClick({
-                    variables: {
-                      slug: item?.productSlug,
-                    },
-                  });
+                  let inCart =
+                    cartItems.find((n) => n.id === item?.id) !== item;
+                  if (item?.isAvaliable === true && inCart) {
+                    alertSliceActions.createAlert({
+                      type: "info",
+                      message: `${item?.productName} was Added to Cart`,
+                    });
+                    setItems([...cartItems, item]);
+                    addProductClick({
+                      variables: {
+                        slug: item?.productSlug,
+                      },
+                    });
+                  } else if (!inCart) {
+                    alertSliceActions.createAlert({
+                      type: "info",
+                      message: `${item?.productImage} is Already Added Cart`,
+                    });
+                  } else {
+                    alertSliceActions.createAlert({
+                      type: "info",
+                      message: `Item is not Available`,
+                    });
+                  }
                 }}
               >
                 <MdShoppingBasket className="text-white" />
@@ -114,10 +133,18 @@ const RowContainer = ({ flag, rowData, scrollValue, className }) => {
         ))
       ) : (
         <div className="w-full flex flex-col items-center justify-center">
-          <NotFound className="w-340 h-340" />
-          <p className="text-xl text-headingColor font-semibold my-2">
-            Items Not Available
-          </p>
+          {rowData && rowData.length < 0 ? (
+            <>
+              <NotFound className="w-340 h-340" />
+              <p className="text-xl text-headingColor font-semibold my-2">
+                Items Not Available
+              </p>
+            </>
+          ) : (
+            <div className="flex justify-center items-center w-340 h-340">
+              <Loader />
+            </div>
+          )}
         </div>
       )}
     </motion.div>

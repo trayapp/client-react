@@ -83,26 +83,18 @@ export const cartSlice = createSlice({
       state.cartItems = getUniqueArrays(action.payload, "id");
     },
     AddQty: (state, action) => {
-      const filtered = state.cartItems
-        .filter((item) => item.id === action.payload.id)
-        .map((item) => {
-          if (item.id === action.payload.id) {
-            item.productQty += 1;
-          }
-          return state.cartItems[0];
-        });
-      state.cartItems = [state.cartItems, filtered][0];
+      const filtered = state.cartItems.find(
+        (item) => item.id === action.payload.id
+      );
+      filtered.productQty += 1;
+      state.cartItems = [...state.cartItems];
     },
     RemoveQty: (state, action) => {
-      const filtered = state.cartItems
-        .filter((item) => item.id === action.payload.id)
-        .map((item) => {
-          if (item.id === action.payload.id) {
-            item.productQty -= 1;
-          }
-          return state.cartItems[0];
-        });
-      state.cartItems = [state.cartItems, filtered][0];
+      const filtered = state.cartItems.find(
+        (item) => item.id === action.payload.id
+      );
+      filtered.productQty -= 1;
+      state.cartItems = [...state.cartItems];
     },
     RemoveCartItem: (state, action) => {
       state.cartItems = state.cartItems.filter(

@@ -9,7 +9,7 @@ import { cartAction, foodItemsAction } from "./context/actions";
 
 const App = () => {
   const { data, loading } = useQuery(LOAD_ITEMS, {
-    variables: { count: 30 },
+    variables: { count: 100 },
     fetchPolicy: "cache-and-network",
     nextFetchPolicy: "cache-first"
   });

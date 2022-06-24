@@ -40,7 +40,7 @@ const MainContainer = () => {
         <RowContainer
           scrollValue={scrollValue}
           flag={true}
-          rowData={foodItems?.filter((n) => n.productCategory.urlParamName === "food")}
+          rowData={foodItems?.filter((n) => n.productCategory.urlParamName === "food" && n.isAvaliable === true)}
         />
       </section>
 
