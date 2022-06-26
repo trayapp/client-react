@@ -210,7 +210,7 @@ export const SearchComponent = ({ flag }) => {
           onClick={hideList}
         ></div>
       )}
-      <div className="md:w-[30rem] mr-5 md:m-0 w-[27rem] transition-all duration-100">
+      <div className="md:w-[30rem] z-30 mr-5 md:m-0 w-[27rem] transition-all duration-100">
         {/* Search Bar */}
         <div
           className={`w-full flex flex-row justify-start p-1 items-start focus:border backdrop-blur-md bg-gray-100 transition-all duration-150 ease-in-out ${
