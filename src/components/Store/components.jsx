@@ -7,7 +7,7 @@ import { motion } from "framer-motion";
 import RowContainer from "../RowContainer";
 import { MdChevronLeft, MdChevronRight } from "react-icons/md";
 import Loader from "../Loader";
-import EditScreen from "./EditScreen";
+import {EditInitialScreen} from "./menu";
 
 export const StoreComponent = () => {
   const user = useSelector((state) => state.authToken?.user); // getting user state
@@ -68,7 +68,7 @@ export const StoreComponent = () => {
               {storeNickname} {store.vendor.store?.storeCategory}
             </p>
           </div>
-          <div className="text-sm font-medium z-10 text-center mt-[3rem]">
+          <div className="text-sm font-medium z-50 text-center mt-[3rem]">
             <ul className="flex flex-row gap-3 -mb-px m-auto no-select">
               {menu.map((menu, index) => (
                 <li className="mr-2" key={index}>
@@ -174,7 +174,7 @@ export const StoreComponent = () => {
               (filter === menu[3] ||
                 menu[3] ===
                   window.location.hash.split("&")[0].replace("#", "")) && (
-                <EditScreen
+                <EditInitialScreen
                   is_user={is_user}
                   filter={filter}
                   setFilter={setFilter}

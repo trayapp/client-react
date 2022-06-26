@@ -114,7 +114,7 @@ const becomeVendorFields = [
     isRequired: true,
     placeholder: "Store Popular Name",
     helpText:
-      "This need to be unique because it will be your link name to your store",
+      "This will be your store unique name that will be used for your link.",
   },
 ];
 export { loginFields, signupFields, becomeVendorFields };

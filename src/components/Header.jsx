@@ -79,6 +79,12 @@ const Header = () => {
 
   return (
     <header className="fixed no-select z-50 w-screen p-3 px-4 md:p-6 md:px-16 bg-navOverlay backdrop-blur-md">
+            {isMenu && (
+        <div
+          className="w-screen fixed h-screen z-10 top-0 bottom-0"
+          onClick={showMenu}
+        ></div>
+      )}
       {/* desktop & tablet */}
       <div className="hidden md:flex w-full h-full items-center justify-between">
         <Link to={"/"} className="flex items-center gap-2">
@@ -122,7 +128,7 @@ const Header = () => {
             )}
           </div>
 
-          <div className="relative">
+          <div className="z-30 relative">
             {/* profile image */}
             {user && !user.profile?.image ? ( // checking if user exists and if the user profile exists
               <>
@@ -228,7 +234,7 @@ const Header = () => {
           <img src={Logo} className="w-8 object-cover" alt="logo" />
           <p className="text-headingColor text-xl font-bold">Tray</p>
         </Link>
-        <div className="relative no-select">
+        <div className="relative z-30 no-select">
           {/* profile image */}
           {user && !user.profile?.image ? (
             <>

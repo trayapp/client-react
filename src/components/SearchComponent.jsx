@@ -5,10 +5,10 @@ import { MdSearch } from "react-icons/md";
 import { SEARCH_ITEMS } from "../GraphQL/queries/products";
 import Loader from "./Loader";
 import "flowbite";
-import { useSelector } from "react-redux";
-import { storeAction } from "../context/actions";
 import { ADD_PRODUCT_TO_AVAILABLE_PRODUCTS } from "../GraphQL/mutations/store";
 import { alertSliceActions } from "../context/actions";
+import { GET_STORE_QUERY } from "../GraphQL/queries/store/queries";
+import { useParams } from "react-router-dom";
 
 const ToggleSwitch = ({ item }) => {
   const [checked, setChecked] = useState(
@@ -17,11 +17,15 @@ const ToggleSwitch = ({ item }) => {
   const [addAvaliableProduct, { data, loading }] = useMutation(
     ADD_PRODUCT_TO_AVAILABLE_PRODUCTS
   );
-
+  var { storeNickname } = useParams(); // getting storename from parameters
+  storeNickname = storeNickname.replace("@", ""); // removing the `@` symbol
   useEffect(() => {
     if (!loading && data) {
       alertSliceActions.clearAlerts([]);
-      if (data.avaliableProducts && data.avaliableProducts.success !== false) {
+      if (
+        data.addAvaliableProduct &&
+        data.addAvaliableProduct.success === true
+      ) {
         alertSliceActions.createAlert({
           type: "success",
           message: `Item was ${
@@ -55,6 +59,31 @@ const ToggleSwitch = ({ item }) => {
               variables: {
                 product_slug: item?.productSlug,
                 action: checked === true ? "remove" : "add",
+              },
+              update: (cache, { data: { addAvaliableProduct } }) => {
+                // read data from cache
+                const { getStore } = cache.readQuery({
+                  query: GET_STORE_QUERY,
+                  variables: { storeNickname: storeNickname },
+                });
+                // update the cache with new data
+                cache.writeQuery({
+                  query: GET_STORE_QUERY,
+                  data: {
+                    getStore: {
+                      vendor: {
+                        profile: { ...getStore.vendor.profile },
+                        store: {
+                          ...getStore.vendor.store,
+                          storeProducts: [
+                            ...getStore.vendor.store.storeProducts,
+                            addAvaliableProduct.product,
+                          ],
+                        },
+                      },
+                    },
+                  },
+                });
               },
             });
           }}
@@ -115,7 +144,7 @@ const ToggleSwitch = ({ item }) => {
 export const SearchResultComponent = ({ data, key }) => {
   return (
     <div
-      key={key}
+      key={key+data?.id}
       className="w-full flex flex-row border-t p-4 justify-start items-start"
     >
       <figure
@@ -152,7 +181,6 @@ export const SearchComponent = ({ flag }) => {
   const [searchQuery, setSearchQuery] = useState("");
   const [searchResults, setsearchResults] = useState([]);
   const [didLookUp, setDidLookUp] = useState(true);
-  const storeSearchItems = useSelector((state) => state.store?.searchItems);
   const showList = () => {
     setShow(true);
   };
@@ -162,26 +190,23 @@ export const SearchComponent = ({ flag }) => {
   const handleSearch = () => {
     setDidLookUp(false);
   };
-  console.log(storeSearchItems[0]);
   useEffect(() => {
     if (searchQuery && searchQuery.length > 0 && !didLookUp) {
       setDidLookUp(true);
       searchItems({
         variables: { query: searchQuery },
+        fetchPolicy: "no-cache",
       });
     }
     if (!loading && data) {
       setsearchResults(data.searchItems);
-      if (searchResults && searchResults.length > 0 && didLookUp) {
-        storeAction.setSearchItems(searchResults);
-      }
     }
   }, [data, didLookUp, loading, searchItems, searchQuery, searchResults]);
   return (
     <>
       {show && (
         <div
-          className="w-screen fixed h-screen top-0 bottom-0"
+          className="w-screen fixed h-screen z-10 top-0 bottom-0"
           onClick={hideList}
         ></div>
       )}
@@ -229,15 +254,24 @@ export const SearchComponent = ({ flag }) => {
           } overflow-auto relative w-full transition-all duration-100 ease-in-out rounded-bl-lg shadow-md backdrop-blur-md rounded-br-lg bg-gray-100`}
         >
           {show &&
-            searchQuery &&
-            searchQuery.length > 0 &&
-            storeSearchItems &&
-            storeSearchItems.length > 0 &&
-            storeSearchItems.map((data) => {
+          searchQuery &&
+          searchQuery.length > 0 &&
+          searchResults &&
+          searchResults.length > 0 ? (
+            searchResults.map((data, idx) => {
               return (
-                <SearchResultComponent data={data} flag={flag} key={data.id} />
+                <SearchResultComponent
+                  data={data}
+                  flag={flag}
+                  key={`${data?.id}-${idx}`}
+                />
               );
-            })}
+            })
+          ) : (
+            <div className="w-full flex flex-row border-t p-4 justify-center items-center">
+              {loading ? <Loader /> : <span>No Results found!</span>}
+            </div>
+          )}
         </div>
       </div>
     </>

@@ -6,6 +6,7 @@ mutation ADD_PRODUCT_TO_AVAILABLE_PRODUCTS($product_slug: String!, $action: Stri
     addAvaliableProduct(productSlug: $product_slug, action: $action){
         success
         product {
+            isAvaliableForStore
             ${product_const}
         }
     }

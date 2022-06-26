@@ -2,18 +2,20 @@ import React from "react";
 import { MdFoodBank, MdPerson } from "react-icons/md";
 import { motion } from "framer-motion";
 import { useNavigate } from "react-router-dom";
-import { SearchComponent } from "../SearchComponent";
+import { MdOutlineKeyboardArrowRight, MdOutlineKeyboardArrowLeft } from "react-icons/md";
+import AvaliabiltyScreen from "./AvaliabiltyScreen";
 
-const EditScreen = ({ is_user, filter, setFilter, store }) => {
+const EditInitialScreen = ({ is_user, filter, setFilter, store }) => {
   const navigate = useNavigate();
   let iconClassName =
     "fill-white shadow-sm text-white w-10 h-10 bg-orange-300 p-1 rounded-md";
   let storeUrl = `/store/@${store.vendor.store?.storeNickname}`;
+  let filteredMenu = filter.split("&") === undefined ? null : filter.split("&");
   let menu = [
     {
       name: "change_account_info",
       icon: <MdPerson className={iconClassName} />,
-      link: "/",
+      link: `${storeUrl}#change_account_info`,
     },
     {
       name: "update_available_items",
@@ -33,14 +35,10 @@ const EditScreen = ({ is_user, filter, setFilter, store }) => {
       initial={{ opacity: 0 }}
       animate={{ opacity: 1 }}
       exit={{ opacity: 0 }}
-      className="flex flex-col justify-center md:flex-wrap m-auto gap-3 flex-nowrap md:flex-row h-max"
+      className="flex flex-col justify-center items-center no-select md:flex-wrap m-auto gap-3 flex-nowrap md:flex-row h-max"
     >
       {/* List */}
-      {!(
-        filter.split("&") &&
-        filter.split("&").length >= 1 &&
-        filter.split("&")[1] !== undefined
-      ) &&
+      {!(filteredMenu && filteredMenu.length > 1) &&
         menu &&
         menu.map((n, index) => (
           <motion.div
@@ -56,15 +54,22 @@ const EditScreen = ({ is_user, filter, setFilter, store }) => {
             </p>
           </motion.div>
         ))}
-      {filter.split("&") &&
-        filter.split("&").length >= 1 &&
-        filter.split("&")[1] === menu[1].name && (
-          <div className="w-screen p-2 flex flex-col justify-center items-center">
-            <SearchComponent />
+      {filteredMenu && filteredMenu.length > 1 && (
+        <>
+          <div className="flex mb-2 gap-2 justify-start text-xl md:w-auto w-full font-bold">
+            <MdOutlineKeyboardArrowRight className="mt-1" />
+            <span className="capitalize">
+              {filteredMenu && filteredMenu[1].replaceAll("_", " ")}
+            </span>
+            <MdOutlineKeyboardArrowLeft className="mt-1 md:block hidden" />
           </div>
-        )}
+          {filteredMenu[1] === menu[1].name && (
+            <AvaliabiltyScreen />
+          )}
+        </>
+      )}
     </motion.div>
   );
 };
 
-export default EditScreen;
+export default EditInitialScreen;

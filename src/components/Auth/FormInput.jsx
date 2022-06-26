@@ -43,7 +43,7 @@ export default function Input({
         placeholder={placeholder}
       />
       {helpText && error === null ? (
-        <p className="text-xs mt-1 font-semibold">{helpText}</p>
+        <p className="text-xs mt-1 font-semibold pl-1 opacity-80">{helpText}</p>
       ) : (
         <p className="text-xs mt-1 font-semibold">{error}</p>
       )}
