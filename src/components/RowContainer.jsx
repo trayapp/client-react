@@ -133,7 +133,7 @@ const RowContainer = ({ flag, rowData, scrollValue, className }) => {
         ))
       ) : (
         <div className="w-full flex flex-col items-center justify-center">
-          {rowData && rowData.length < 0 ? (
+          {rowData && rowData.length <= 0 ? (
             <>
               <NotFound className="w-340 h-340" />
               <p className="text-xl text-headingColor font-semibold my-2">

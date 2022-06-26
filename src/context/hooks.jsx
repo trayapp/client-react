@@ -13,6 +13,9 @@ export function useIsAuthenticated() {
   const syncTabLogout = (event) => {
     if (event.key === "isAuthenticated" && event.newValue === "false")
       authTokenActions.logOut();
+    localStorage.removeItem(USER);
+    localStorage.removeItem(AUTH_TOKEN);
+    localStorage.removeItem(AUTH_TOKEN_REFRESH);
   };
 
   useEffect(() => {

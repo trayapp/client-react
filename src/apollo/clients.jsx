@@ -7,7 +7,7 @@ const inMemoryCache = new InMemoryCache({
 });
 
 const SCHEMA_VERSION = "1";
-const SCHEMA_VERSION_KEY = "apollo-schema-version";
+const SCHEMA_VERSION_KEY = `tray-version-${Date.now()}`;
 
 export const apolloClientAuth = new ApolloClient({
   //DEV connectToDevTools to false in production
@@ -31,7 +31,6 @@ const options = {
     errorPolicy: "none",
   },
   mutate: {
-    fetchPolicy: "network-only",
     errorPolicy: "none",
   },
 };
@@ -67,5 +66,9 @@ export const getApolloClient = async () => {
     window.localStorage.setItem(SCHEMA_VERSION_KEY, SCHEMA_VERSION);
   }
 
-  return new ApolloClient({ link: httpLink, cache, assumeImmutableResults: true, });
+  return new ApolloClient({
+    link: httpLink,
+    cache,
+    assumeImmutableResults: true,
+  });
 };

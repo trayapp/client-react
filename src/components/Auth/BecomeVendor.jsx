@@ -59,6 +59,7 @@ const BecomeVendor = () => {
       }, 5000);
     }
     if (loading) {
+      alertSliceActions.clearAlerts([])
       alertSliceActions.createAlert({
         type: "info",
         message: `Creating Your Tray Store... (¬‿¬)`,

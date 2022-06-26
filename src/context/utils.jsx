@@ -3,6 +3,7 @@ import { authTokenActions } from "./actions";
 import { apolloClientAuth } from "../apollo";
 import { REFRESH_TOKEN } from "../GraphQL/mutations/auth";
 import { fetchUser } from "../utils/fetchLocalStorageData";
+import { AUTH_TOKEN, AUTH_TOKEN_REFRESH, USER } from "../constants";
 
 export const possibleRefreshTokenErrors = [
   "Refresh token is required", // refresh token is not sent or Cookie is deleted
@@ -19,11 +20,12 @@ export const possibleAccessTokenErrors = [
 
 async function getRefreshedAccessTokenPromise() {
   const authTokenState = reduxStoreMain.getState().authToken;
-  if (authTokenState.refreshToken) {
+  let refreshToken = authTokenState.refreshToken ? authTokenState.refreshToken: localStorage.getItem(AUTH_TOKEN_REFRESH)
+  if (refreshToken && refreshToken !== undefined) {
     try {
       const { data } = await apolloClientAuth.mutate({
         mutation: REFRESH_TOKEN,
-        variables: { refreshToken: `${authTokenState.refreshToken}` },
+        variables: { refreshToken: `${refreshToken}` },
       });
       let new_data = {
         user: fetchUser(),
@@ -36,6 +38,9 @@ async function getRefreshedAccessTokenPromise() {
       return new_data;
     } catch (error) {
       authTokenActions.logOut();
+      localStorage.removeItem(USER);
+      localStorage.removeItem(AUTH_TOKEN);
+      localStorage.removeItem(AUTH_TOKEN_REFRESH);
       console.log(error);
       return error;
     }
