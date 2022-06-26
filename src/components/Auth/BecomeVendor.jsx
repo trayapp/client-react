@@ -23,6 +23,7 @@ const BecomeVendor = () => {
   const [isError, setIsError] = useState(false);
   const [msg, setMsg] = useState("");
   const [alertStatus, setAlertStatus] = useState("danger");
+  const [errors, setErrors] = useState(null)
   const user = useSelector((state) => state.authToken?.user);
   const navigate = useNavigate();
   const handleChange = (e) => {
@@ -73,9 +74,20 @@ const BecomeVendor = () => {
           message: `Congratulation ${qs.user.username} you are now a Tray vendor 🚀`,
         });
         navigate(`/store/@${becomeVendorState.storeNickname}`);
+      } else {
+        if (qs.errors) {
+          setErrors(qs.errors);
+        }
       }
     }
-  }, [data, loading, error, navigate, becomeVendorState.storeNickname, user.profile.vendor]);
+  }, [
+    data,
+    loading,
+    error,
+    navigate,
+    becomeVendorState.storeNickname,
+    user.profile.vendor,
+  ]);
 
   const ScrollToTopOnMount = () => {
     useEffect(() => {
@@ -96,7 +108,6 @@ const BecomeVendor = () => {
         storeName: becomeVendorState.storeName,
         storeCategory: becomeVendorState.storeCategory,
         storeNickname: becomeVendorState.storeNickname,
-        storeAbbv: becomeVendorState.storeAbbv,
       },
     }).catch(errorHandler);
   };
@@ -142,6 +153,8 @@ const BecomeVendor = () => {
                       type={field.type}
                       isRequired={field.isRequired}
                       placeholder={field.placeholder}
+                      helpText={field.helpText}
+                      errors={errors}
                       customClass={`my-6`}
                     />
                   ))}

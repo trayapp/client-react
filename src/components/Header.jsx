@@ -16,7 +16,6 @@ import {
   authTokenActions,
   cartAction,
 } from "../context/actions";
-import { AUTH_TOKEN, AUTH_TOKEN_REFRESH, USER } from "../constants";
 
 const Header = () => {
   const user = useSelector((state) => state.authToken?.user);
@@ -68,18 +67,14 @@ const Header = () => {
       message: `Logging You Out... 🙂`,
     });
     setIsMenu(false);
-    localStorage.removeItem(USER);
-    localStorage.removeItem(AUTH_TOKEN);
-    localStorage.removeItem(AUTH_TOKEN_REFRESH);
     authTokenActions.logOut();
-
     // setting a 3secs timeout before the `Logout was Successful` message shows
     setTimeout(() => {
       alertSliceActions.createAlert({
         type: "success",
         message: `Logout was Successful 😁`,
       });
-    }, 3000);
+    }, 200);
   };
 
   return (

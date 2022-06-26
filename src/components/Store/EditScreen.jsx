@@ -33,7 +33,7 @@ const EditScreen = ({ is_user, filter, setFilter, store }) => {
       initial={{ opacity: 0 }}
       animate={{ opacity: 1 }}
       exit={{ opacity: 0 }}
-      className="flex flex-col md:flex-wrap flex-nowrap md:flex-row gap-3 h-max"
+      className="flex flex-col justify-center md:flex-wrap m-auto gap-3 flex-nowrap md:flex-row h-max"
     >
       {/* List */}
       {!(
@@ -46,7 +46,7 @@ const EditScreen = ({ is_user, filter, setFilter, store }) => {
           <motion.div
             key={index}
             whileTap={{ scale: 0.88 }}
-            className="flex flex-row cursor-pointer m-auto w-[350px] justify-start gap-4 items-start p-2 shadow-md text-center rounded-md bg-orange-500
+            className="flex flex-row cursor-pointer w-[350px] justify-start gap-4 items-start p-2 shadow-md text-center rounded-md bg-orange-500
             md:hover:bg-orange-600 backdrop-blur-md"
             onClick={() => handleListLink(n.link)}
           >

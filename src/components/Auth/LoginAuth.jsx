@@ -28,7 +28,6 @@ const LoginAuth = (props) => {
       }
       if (qs.errors === null) {
         authTokenActions.setAuthToken(qs);
-        console.log(qs.refreshToken);
         localStorage.setItem("user", JSON.stringify(qs.user));
         localStorage.setItem(AUTH_TOKEN, qs.token);
         localStorage.setItem(AUTH_TOKEN_REFRESH, qs.refreshToken);

@@ -1,6 +1,3 @@
-const fixedInputClass =
-  "rounded-md appearance-none relative block w-full px-3 py-2 border border-gray-300 placeholder-gray-500 text-gray-900 focus:outline-none focus:ring-orange-500 focus:border-orange-500 focus:z-10 sm:text-sm";
-
 export default function Input({
   handleChange,
   value,
@@ -11,9 +8,14 @@ export default function Input({
   type,
   isRequired = false,
   placeholder,
-  customClass,
+  customClass = "",
   autoComplete,
+  helpText,
+  error = null
 }) {
+  const fixedInputClass = `rounded-md appearance-none relative block w-full 
+  px-3 py-2 border border-gray-300 placeholder-gray-500 text-gray-900 
+  focus:outline-none focus:ring-orange-500 focus:border-orange-500 focus:z-10 sm:text-sm`;
   return (
     <div className="my-5">
       <label htmlFor={labelFor} className="sr-only">
@@ -21,7 +23,11 @@ export default function Input({
       </label>
       <input
         onChange={handleChange}
-        value={value}
+        value={
+          id === "storeNickname" || id === "username"
+            ? value.toLocaleLowerCase()
+            : value
+        }
         id={id}
         name={name}
         type={type}
@@ -30,6 +36,7 @@ export default function Input({
         className={fixedInputClass + " " + customClass}
         placeholder={placeholder}
       />
+      {helpText && error === null ? <p className="text-xs mt-1 font-semibold">{helpText}</p> : <p className="text-xs mt-1 font-semibold">{error}</p>}
     </div>
   );
 }

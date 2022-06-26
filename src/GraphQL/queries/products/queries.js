@@ -1,5 +1,5 @@
 import { gql } from "@apollo/client";
-import { product_const } from "../contants";
+import { product_const } from "../../contants";
 
 export const LOAD_ITEMS = gql`
   query LOAD_ITEMS($count: Int) {
@@ -29,6 +29,7 @@ export const LOAD_ITEM_ATTRIBUTE = gql`
 export const SEARCH_ITEMS = gql`
   query SEARCH_ITEMS($query: String!) {
     searchItems(query: $query) {
+      isAvaliableForStore
       ${product_const}
     }
   }

@@ -41,3 +41,13 @@ productCreator {
   }
 }
 `;
+
+export const store_const = `
+  storeName
+  storeRank
+  storeNickname
+  storeCategory
+  storeProducts {
+    ${product_const}
+  }
+`;

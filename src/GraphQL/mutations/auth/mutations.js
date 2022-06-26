@@ -96,13 +96,11 @@ export const CREATE_VENDOR = gql`
     $storeName: String!
     $storeCategory: String!
     $storeNickname: String!
-    $storeAbbv: String!
   ) {
     createVendor(
       storeName: $storeName
       storeCategory: $storeCategory
       storeNickname: $storeNickname
-      storeAbbv: $storeAbbv
     ) {
       success
       user {
@@ -119,6 +117,7 @@ export const CREATE_VENDOR = gql`
           vendor {
             store {
               storeName
+              storeNickname
             }
           }
           client {

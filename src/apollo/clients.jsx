@@ -31,6 +31,7 @@ const options = {
     errorPolicy: "none",
   },
   mutate: {
+    fetchPolicy: "network-only",
     errorPolicy: "none",
   },
 };

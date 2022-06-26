@@ -185,7 +185,8 @@ export const StoreComponent = () => {
         </div>
       ) : (
         <div className="bg-primary store-loader fixed top-0 h-screen w-screen m-auto flex justify-center items-center">
-          {store === null ? "Store Not Found!" : <Loader className="top-50" />}
+          {!loading && store === null && "Store Not Found!"}
+          {loading && <Loader className="top-50" />}
         </div>
       )}
     </div>

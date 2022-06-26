@@ -111,18 +111,10 @@ const becomeVendorFields = [
     name: "store-nickname",
     type: "text",
     autoComplete: "store-nickname",
-    isRequired: false,
-    placeholder: "Store Popular Name (Optional)",
-  },
-  {
-    labelText: "Store Abbrivation",
-    labelFor: "store-abbv",
-    id: "storeAbbv",
-    name: "store-abbv",
-    type: "text",
-    autoComplete: "store-abbv",
-    isRequired: false,
-    placeholder: "Store Short Name (Optional)",
+    isRequired: true,
+    placeholder: "Store Popular Name",
+    helpText:
+      "This need to be unique because it will be your link name to your store",
   },
 ];
 export { loginFields, signupFields, becomeVendorFields };

@@ -4,9 +4,11 @@ import { authTokenActions } from "./actions";
 import { LOGOUT } from "../GraphQL/mutations/auth";
 import { apolloClientAuth, apolloClientMain } from "../apollo";
 import { possibleRefreshTokenErrors } from "./utils";
+import { USER, AUTH_TOKEN, AUTH_TOKEN_REFRESH } from "../constants";
 export function useIsAuthenticated() {
   const isAuthenticated = useSelector((state) => state.authToken.user !== null);
-  const refreshToken = useSelector((state) => state.authToken.refreshToken);
+  let refreshToken = localStorage.getItem(AUTH_TOKEN_REFRESH);
+  refreshToken = refreshToken ? refreshToken : null;
 
   const syncTabLogout = (event) => {
     if (event.key === "isAuthenticated" && event.newValue === "false")
@@ -33,10 +35,13 @@ export function useIsAuthenticated() {
               console.log(error.message);
             }
           });
+        localStorage.removeItem(AUTH_TOKEN_REFRESH);
       }
       apolloClientAuth.clearStore(); //apolloClientAuth.resetStore()
       apolloClientMain.clearStore(); //apolloClientMain.resetStore()
       localStorage.setItem("isAuthenticated", false);
+      localStorage.removeItem(USER);
+      localStorage.removeItem(AUTH_TOKEN);
     } else {
       localStorage.setItem("isAuthenticated", true);
     }

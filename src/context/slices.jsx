@@ -106,3 +106,19 @@ export const cartSlice = createSlice({
     },
   },
 });
+
+
+export const storeSlice = createSlice({
+  name: "store",
+  initialState: {
+    searchItems: []
+  },
+  reducers: {
+    setSearchItems: (state, action) => {
+      state.searchItems = getUniqueArrays(action.payload, "id");
+    },
+    clearSearchItems: (state, action) => {
+      state.searchItems = []
+    }
+  }
+})
