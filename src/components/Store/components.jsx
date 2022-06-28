@@ -47,7 +47,7 @@ export const StoreComponent = () => {
           <div
             style={{ transform: "skew(227deg, 343deg)" }}
             className="absolute flex justify-between top-[21rem] pointer-events-none w-full h-screen 
-                rounded-lg bg-gradient-to-b bg-gradient-to-t from-orange-200 to-transparent"
+                rounded-lg bg-gradient-to-t from-orange-200 to-transparent"
           ></div>
           <figure className="w-[15rem] h-[15rem] drop-shadow-lg">
             <img
@@ -68,7 +68,7 @@ export const StoreComponent = () => {
               {storeNickname} {store.vendor.store?.storeCategory}
             </p>
           </div>
-          <div className="text-sm font-medium z-50 text-center mt-[3rem]">
+          <div className="text-sm font-medium z-40 text-center mt-[3rem]">
             <ul className="flex flex-row gap-3 -mb-px m-auto no-select">
               {menu.map((menu, index) => (
                 <li className="mr-2" key={index}>
@@ -178,7 +178,7 @@ export const StoreComponent = () => {
                   is_user={is_user}
                   filter={filter}
                   setFilter={setFilter}
-                  store={store}
+                  store={store.vendor?.store}
                 />
               )}
           </div>

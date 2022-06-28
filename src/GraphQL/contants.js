@@ -48,6 +48,7 @@ export const store_const = `
   storeNickname
   storeCategory
   storeProducts {
+    isAvaliableForStore
     ${product_const}
   }
 `;

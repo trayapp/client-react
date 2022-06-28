@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import React, { useRef, useEffect, useState } from "react";
 import { becomeVendorFields } from "./constants/formFields";
 import FormAction from "./FormAction";
 import FormInput from "./FormInput";
@@ -13,6 +13,7 @@ import AnimatePage from "../../AnimatePage";
 import { ReactComponent as BecomeAVendorIllustration } from "../../img/become-vendor.svg";
 import { useNavigate } from "react-router-dom";
 import { useSelector } from "react-redux";
+import { ScrollToElement } from "../../utils/hooks";
 const fields = becomeVendorFields;
 let fieldsState = {};
 fields.forEach((field) => (fieldsState[field.id] = ""));
@@ -23,7 +24,8 @@ const BecomeVendor = () => {
   const [isError, setIsError] = useState(false);
   const [msg, setMsg] = useState("");
   const [alertStatus, setAlertStatus] = useState("danger");
-  const [errors, setErrors] = useState(null)
+  const [errors, setErrors] = useState(null);
+  const ref = useRef(null);
   const user = useSelector((state) => state.authToken?.user);
   const navigate = useNavigate();
   const handleChange = (e) => {
@@ -59,13 +61,14 @@ const BecomeVendor = () => {
       }, 5000);
     }
     if (loading) {
-      alertSliceActions.clearAlerts([])
       alertSliceActions.createAlert({
         type: "info",
         message: `Creating Your Tray Store... (¬‿¬)`,
       });
+      alertSliceActions.clearAlerts([]);
     }
     if (data && !loading) {
+      alertSliceActions.clearAlerts([]);
       var qs = data.createVendor;
       if (qs.success === true) {
         authTokenActions.setAuthToken(qs);
@@ -90,18 +93,6 @@ const BecomeVendor = () => {
     user.profile.vendor,
   ]);
 
-  const ScrollToTopOnMount = () => {
-    useEffect(() => {
-      window.scrollTo({
-        top: 0,
-        left: 0,
-        behavior: "smooth",
-      });
-    }, []);
-
-    return null;
-  };
-
   //Handling Become Vendor API Integration here
   const authenticateUser = () => {
     createVendor({
@@ -114,7 +105,7 @@ const BecomeVendor = () => {
   };
   return (
     <AnimatePage>
-      <section className="h-auto">
+      <section className="h-auto" ref={ref}>
         <div className="container px-6 py-12 h-full">
           <div className="flex justify-center items-center flex-wrap h-full g-6 text-gray-800">
             <div className="md:w-8/12 lg:w-6/12 mb-12 md:mb-0">
@@ -124,7 +115,7 @@ const BecomeVendor = () => {
               <FormHeader heading="Create A Vendor Account" />
               {isError && (
                 <>
-                  <ScrollToTopOnMount />
+                  <ScrollToElement refrence={ref} />
                   <motion.p
                     initial={{ opacity: 0 }}
                     animate={{ opacity: 1 }}

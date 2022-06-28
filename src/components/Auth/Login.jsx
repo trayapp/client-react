@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import React, { useEffect, useState, useRef } from "react";
 import { loginFields } from "./constants/formFields";
 import FormAction from "./FormAction";
 import FormExtra from "./FormExtra";
@@ -11,6 +11,7 @@ import { AUTH_TOKEN, AUTH_TOKEN_REFRESH } from "../../constants";
 import { ReactComponent as LoginIllustration } from "../../img/login.svg";
 import { errorHandler, apolloClientAuth } from "../../apollo";
 import { authTokenActions, alertSliceActions } from "../../context/actions";
+import { ScrollToElement } from "../../utils/hooks";
 
 const fields = loginFields;
 let fieldsState = {};
@@ -24,7 +25,7 @@ const Login = () => {
   const [isError, setIsError] = useState(false);
   const [msg, setMsg] = useState("");
   const [alertStatus, setAlertStatus] = useState("danger");
-
+  const ref = useRef(null);
   const handleChange = (e) => {
     setLoginState({ ...loginState, [e.target.id]: e.target.value });
   };
@@ -65,24 +66,12 @@ const Login = () => {
         localStorage.setItem(AUTH_TOKEN_REFRESH, qs.refreshToken);
         alertSliceActions.createAlert({
           type: "success",
-          message: `You Logged In as ${qs.user.username} Successfully 🤩`
+          message: `You Logged In as ${qs.user.username} Successfully 🤩`,
         });
       }
       console.log(qs);
     }
   }, [data, loading, error]);
-
-  const ScrollToTopOnMount = () => {
-    useEffect(() => {
-      window.scrollTo({
-        top: 0,
-        left: 0,
-        behavior: "smooth",
-      });
-    }, []);
-
-    return null;
-  };
 
   //Handling Login API Integration here
   const authenticateUser = () => {
@@ -96,9 +85,12 @@ const Login = () => {
 
   return (
     <motion.section
-    initial={{ width: 50 }}
-    animate={{ width: "100%" }}
-    exit={{ x: window.innerWidth, transition: {duration: 1} }}  className="h-auto">
+      ref={ref}
+      initial={{ opacity: 0 }}
+      animate={{ opacity: 1 }}
+      exit={{ opacity: 0 }}
+      className="h-auto"
+    >
       <div className="container px-6 py-12 h-full">
         <div className="flex justify-center items-center flex-wrap h-full g-6 text-gray-800">
           <div className="md:w-8/12 lg:w-6/12 mb-12 md:mb-0">
@@ -113,7 +105,7 @@ const Login = () => {
             />
             {isError && (
               <>
-                <ScrollToTopOnMount />
+                <ScrollToElement refrence={ref} />
                 <motion.p
                   initial={{ opacity: 0 }}
                   animate={{ opacity: 1 }}

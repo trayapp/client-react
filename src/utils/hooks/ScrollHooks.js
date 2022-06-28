@@ -1,7 +1,7 @@
 import { useEffect, useState } from "react";
 import { useLocation } from "react-router-dom";
 
-const ScrollToTop = ({ children }) => {
+export const ScrollToTop = ({ children }) => {
   const { pathname } = useLocation();
   const [scroll, setScroll] = useState(false);
   const previousLocation = localStorage.getItem("prev");
@@ -26,4 +26,14 @@ const ScrollToTop = ({ children }) => {
   return children;
 };
 
-export default ScrollToTop;
+export const ScrollToElement = ({ refrence = null }) => {
+  const [scroll, setScroll] = useState(true);
+  useEffect(() => {
+  if (scroll && refrence) {
+    refrence.current.scrollIntoView({ behavior: "smooth" });
+    setScroll(false);
+  }
+  }, [refrence, scroll]);
+
+  return null;
+};

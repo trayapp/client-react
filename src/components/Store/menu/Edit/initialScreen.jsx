@@ -1,15 +1,25 @@
-import React from "react";
+import React, { useState } from "react";
 import { MdFoodBank, MdPerson } from "react-icons/md";
 import { motion } from "framer-motion";
 import { useNavigate } from "react-router-dom";
-import { MdOutlineKeyboardArrowRight, MdOutlineKeyboardArrowLeft } from "react-icons/md";
+import {
+  MdOutlineKeyboardArrowRight,
+  MdOutlineKeyboardArrowLeft,
+} from "react-icons/md";
 import AvaliabiltyScreen from "./AvaliabiltyScreen";
 
-const EditInitialScreen = ({ is_user, filter, setFilter, store }) => {
+const EditInitialScreen = ({
+  is_user = false,
+  filter,
+  setFilter,
+  store = [],
+}) => {
+  const [show, setShow] = useState(false);
+  const [showText, setShowText] = useState("");
   const navigate = useNavigate();
   let iconClassName =
     "fill-white shadow-sm text-white w-10 h-10 bg-orange-300 p-1 rounded-md";
-  let storeUrl = `/store/@${store.vendor.store?.storeNickname}`;
+  let storeUrl = `/store/@${store?.storeNickname}`;
   let filteredMenu = filter.split("&") === undefined ? null : filter.split("&");
   let menu = [
     {
@@ -29,7 +39,6 @@ const EditInitialScreen = ({ is_user, filter, setFilter, store }) => {
       setFilter("#edit&" + link.split("#")[1]);
     }, 100);
   };
-
   return (
     <motion.div
       initial={{ opacity: 0 }}
@@ -64,7 +73,15 @@ const EditInitialScreen = ({ is_user, filter, setFilter, store }) => {
             <MdOutlineKeyboardArrowLeft className="mt-1 md:block hidden" />
           </div>
           {filteredMenu[1] === menu[1].name && (
-            <AvaliabiltyScreen />
+            <AvaliabiltyScreen
+              setShow={setShow}
+              showText={showText}
+              setShowText={setShowText}
+              show={show}
+              items={store.storeProducts?.filter(
+                (n) => n.isAvaliableForStore === "1"
+              )}
+            />
           )}
         </>
       )}

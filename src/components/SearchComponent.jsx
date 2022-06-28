@@ -1,6 +1,5 @@
 import { useLazyQuery, useMutation } from "@apollo/client";
-import React, { useState } from "react";
-import { useEffect } from "react";
+import React, { useState, useRef, useEffect } from "react";
 import { MdSearch } from "react-icons/md";
 import { SEARCH_ITEMS } from "../GraphQL/queries/products";
 import Loader from "./Loader";
@@ -8,9 +7,10 @@ import "flowbite";
 import { ADD_PRODUCT_TO_AVAILABLE_PRODUCTS } from "../GraphQL/mutations/store";
 import { alertSliceActions } from "../context/actions";
 import { GET_STORE_QUERY } from "../GraphQL/queries/store/queries";
-import { useParams } from "react-router-dom";
+import { useParams, useSearchParams } from "react-router-dom";
+import { ScrollToElement } from "../utils/hooks";
 
-const ToggleSwitch = ({ item }) => {
+const ToggleSwitchComponent = ({ item }) => {
   const [checked, setChecked] = useState(
     item?.isAvaliableForStore === "1" ? true : false
   );
@@ -21,7 +21,6 @@ const ToggleSwitch = ({ item }) => {
   storeNickname = storeNickname.replace("@", ""); // removing the `@` symbol
   useEffect(() => {
     if (!loading && data) {
-      alertSliceActions.clearAlerts([]);
       if (
         data.addAvaliableProduct &&
         data.addAvaliableProduct.success === true
@@ -60,31 +59,13 @@ const ToggleSwitch = ({ item }) => {
                 product_slug: item?.productSlug,
                 action: checked === true ? "remove" : "add",
               },
-              update: (cache, { data: { addAvaliableProduct } }) => {
-                // read data from cache
-                const { getStore } = cache.readQuery({
+              refetchQueries: [
+                {
                   query: GET_STORE_QUERY,
                   variables: { storeNickname: storeNickname },
-                });
-                // update the cache with new data
-                cache.writeQuery({
-                  query: GET_STORE_QUERY,
-                  data: {
-                    getStore: {
-                      vendor: {
-                        profile: { ...getStore.vendor.profile },
-                        store: {
-                          ...getStore.vendor.store,
-                          storeProducts: [
-                            ...getStore.vendor.store.storeProducts,
-                            addAvaliableProduct.product,
-                          ],
-                        },
-                      },
-                    },
-                  },
-                });
-              },
+                }, // DocumentNode object parsed with gql
+                "getStore", // Query name
+              ],
             });
           }}
           id={item.id}
@@ -141,12 +122,9 @@ const ToggleSwitch = ({ item }) => {
     </label>
   );
 };
-export const SearchResultComponent = ({ data, key }) => {
+const SearchResultComponent = ({ data }) => {
   return (
-    <div
-      key={key+data?.id}
-      className="w-full flex flex-row border-t p-4 justify-start items-start"
-    >
+    <div className="w-full flex flex-row border-t p-4 justify-start items-start">
       <figure
         className="w-[5.5rem] h-[3.5rem] rounded-md bg-arrenge-center"
         style={{
@@ -169,28 +147,48 @@ export const SearchResultComponent = ({ data, key }) => {
       </figure>
       <div className="w-full flex p-1 justify-between items-between">
         <p className="text-base mt-4">{data?.productName}</p>
-        <ToggleSwitch item={data} />
+        <ToggleSwitchComponent item={data} />
       </div>
     </div>
   );
 };
 
-export const SearchComponent = ({ flag }) => {
+export const SearchComponent = ({
+  flag,
+  showHandler,
+  setShowHandler,
+  showText,
+  setShowText,
+}) => {
   const [searchItems, { loading, data }] = useLazyQuery(SEARCH_ITEMS);
-  const [show, setShow] = useState(false);
-  const [searchQuery, setSearchQuery] = useState("");
+  let [searchParams] = useSearchParams();
+  const [searchQuery, setSearchQuery] = useState(
+    searchParams.get("search_query") ? searchParams.get("search_query") : ""
+  );
   const [searchResults, setsearchResults] = useState([]);
   const [didLookUp, setDidLookUp] = useState(true);
+  const [checkedParams, setCheckedParams] = useState(false)
+  searchParams = searchParams.get("search_query");
+  const SearchContainer = useRef(null);
+
   const showList = () => {
-    setShow(true);
+    setShowHandler(true);
+    if (setShowText) {
+      setShowText("");
+    }
   };
   const hideList = () => {
-    setShow(false);
+    setShowHandler(false);
   };
   const handleSearch = () => {
     setDidLookUp(false);
   };
   useEffect(() => {
+    if (searchParams && !checkedParams) {
+      setShowHandler(true);
+      setDidLookUp(false);
+      setCheckedParams(true)
+    }
     if (searchQuery && searchQuery.length > 0 && !didLookUp) {
       setDidLookUp(true);
       searchItems({
@@ -201,20 +199,31 @@ export const SearchComponent = ({ flag }) => {
     if (!loading && data) {
       setsearchResults(data.searchItems);
     }
-  }, [data, didLookUp, loading, searchItems, searchQuery, searchResults]);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [
+    data,
+    didLookUp,
+    loading,
+    searchItems,
+    searchParams,
+    searchQuery,
+    searchResults,
+    setShowHandler,
+  ]);
   return (
     <>
-      {show && (
+      {showHandler && (
         <div
           className="w-screen fixed h-screen z-10 top-0 bottom-0"
           onClick={hideList}
         ></div>
       )}
+      {/* Search Container */}
       <div className="md:w-[30rem] z-30 mr-5 md:m-0 w-[27rem] transition-all duration-100">
         {/* Search Bar */}
         <div
           className={`w-full flex flex-row justify-start p-1 items-start focus:border backdrop-blur-md bg-gray-100 transition-all duration-150 ease-in-out ${
-            show
+            showHandler
               ? `${
                   searchQuery && searchQuery.length > 0
                     ? `border-none rounded-tr-md rounded-tl-md shadow-md`
@@ -233,9 +242,11 @@ export const SearchComponent = ({ flag }) => {
             )}
           </div>
           <div className="w-full h-10 rounded-tr-md rounded-br-md flex justify-start items-center">
+            {showText && <ScrollToElement refrence={SearchContainer} />}
             <input
               type="text"
-              name=""
+              ref={SearchContainer}
+              placeholder={showText ? showText : ""}
               onChange={(e) => setSearchQuery(e.target.value)}
               onKeyUp={handleSearch}
               value={searchQuery}
@@ -248,12 +259,12 @@ export const SearchComponent = ({ flag }) => {
         {/* List Of Products */}
         <div
           className={`${
-            show && searchQuery && searchQuery.length > 0
+            showHandler && searchQuery && searchQuery.length > 0
               ? `h-auto z-10`
               : `h-[0px]`
           } overflow-auto relative w-full transition-all duration-100 ease-in-out rounded-bl-lg shadow-md backdrop-blur-md rounded-br-lg bg-gray-100`}
         >
-          {show &&
+          {showHandler &&
           searchQuery &&
           searchQuery.length > 0 &&
           searchResults &&
@@ -277,3 +288,31 @@ export const SearchComponent = ({ flag }) => {
     </>
   );
 };
+
+/*
+update: (cache, { data: { addAvaliableProduct } }) => {
+                // read data from cache
+                const { getStore } = cache.readQuery({
+                  query: GET_STORE_QUERY,
+                  variables: { storeNickname: storeNickname },
+                });
+                // update the cache with new data
+                cache.writeQuery({
+                  query: GET_STORE_QUERY,
+                  data: {
+                    getStore: {
+                      vendor: {
+                        profile: { ...getStore.vendor.profile },
+                        store: {
+                          ...getStore.vendor.store,
+                          storeProducts: [
+                            ...getStore.vendor.store.storeProducts,
+                            addAvaliableProduct.product,
+                          ],
+                        },
+                      },
+                    },
+                  },
+                });
+              }
+*/

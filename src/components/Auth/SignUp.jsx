@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+import React, { useState, useEffect, useRef } from "react";
 import { signupFields } from "./constants/formFields";
 import FormAction from "./FormAction";
 import FormHeader from "./FormHeader";
@@ -10,6 +10,7 @@ import { REGISTER_USER } from "../../GraphQL/mutations/auth";
 import { motion } from "framer-motion";
 import { AUTH_TOKEN } from "../../constants";
 import { errorHandler, apolloClientAuth } from "../../apollo";
+import { ScrollToElement } from "../../utils/hooks";
 
 const fields = signupFields;
 let fieldsState = {};
@@ -25,14 +26,13 @@ const Signup = () => {
   const [msg, setMsg] = useState("");
   const [alertStatus, setAlertStatus] = useState("danger");
   const [loginRedirect, setLoginRedirect] = useState(false);
-
+  const ref = useRef(null);
   const handleChange = (e) => {
     setSignupState({ ...signupState, [e.target.id]: e.target.value });
   };
 
   const handleSubmit = (e) => {
     e.preventDefault();
-    console.log(signupState);
     createAccount();
   };
   useEffect(() => {
@@ -49,7 +49,6 @@ const Signup = () => {
       if (qs.errors) {
         setIsError(true);
         setAlertStatus("danger");
-        // console.log(qs.errors);
         if (qs.errors) {
           let error = qs.errors;
           if (error.first_name) {
@@ -78,21 +77,12 @@ const Signup = () => {
         }, 3000);
       }
       if (qs.errors === null) {
-        console.log(qs.refreshToken);
         localStorage.setItem(AUTH_TOKEN, qs.token);
         setLoginRedirect(true);
       }
-      console.log(qs);
     }
   }, [data, loading, error]);
-  const ScrollToTopOnMount = () => {
-    window.scrollTo({
-      top: 0,
-      left: 0,
-      behavior: "smooth",
-    });
-    return null;
-  };
+
   //handle Signup API Integration here
   const createAccount = () => {
     register({
@@ -109,9 +99,10 @@ const Signup = () => {
 
   return (
     <motion.section
-      initial={{ width: 50 }}
-      animate={{ width: "100%" }}
-      exit={{ x: window.innerWidth, transition: { duration: 0.5 } }}
+      ref={ref}
+      initial={{ opacity: 0 }}
+      animate={{ opacity: 1 }}
+      exit={{ opacity: 0 }}
       className="h-auto"
     >
       {!loading && loginRedirect === true ? (
@@ -134,7 +125,7 @@ const Signup = () => {
               />
               {isError && (
                 <>
-                  <ScrollToTopOnMount />
+                  <ScrollToElement refrence={ref} />
                   <motion.p
                     initial={{ opacity: 0 }}
                     animate={{ opacity: 1 }}

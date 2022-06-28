@@ -1,6 +1,24 @@
 import { createSlice } from "@reduxjs/toolkit";
 import { fetchUser, fetchToken } from "../utils/fetchLocalStorageData";
 
+export const getUniqueArrays = (array, key) => {
+  if (typeof key !== "function") {
+    const property = key;
+    key = function (item) {
+      return item[property];
+    };
+  }
+  return Array.from(
+    array
+      .reduce(function (map, item) {
+        const k = key(item);
+        if (!map.has(k)) map.set(k, item);
+        return map;
+      }, new Map())
+      .values()
+  );
+};
+
 export const authTokenSlice = createSlice({
   name: "authToken",
   initialState: {
@@ -36,6 +54,7 @@ export const AlertSlice = createSlice({
         message: action.payload.message,
         type: action.payload.type,
       });
+      state.alerts = getUniqueArrays(state.alerts, "message")
     },
     clearAlerts: (state, action) => {
       state.alerts = [];
@@ -54,23 +73,6 @@ export const foodItemsSlice = createSlice({
     },
   },
 });
-export const getUniqueArrays = (array, key) => {
-  if (typeof key !== "function") {
-    const property = key;
-    key = function (item) {
-      return item[property];
-    };
-  }
-  return Array.from(
-    array
-      .reduce(function (map, item) {
-        const k = key(item);
-        if (!map.has(k)) map.set(k, item);
-        return map;
-      }, new Map())
-      .values()
-  );
-};
 
 export const cartSlice = createSlice({
   name: "cart",
@@ -111,14 +113,16 @@ export const cartSlice = createSlice({
 export const storeSlice = createSlice({
   name: "store",
   initialState: {
-    searchItems: []
+    avaliableItems: []
   },
   reducers: {
-    setSearchItems: (state, action) => {
-      state.searchItems = getUniqueArrays(action.payload, "id");
+    setAvaliableItems: (state, action) => {
+      state.avaliableItems = getUniqueArrays(action.payload, "id");
     },
-    clearSearchItems: (state, action) => {
-      state.searchItems = []
+    RemoveAvaliableItem: (state, action) => {
+      state.avaliableItems = state.avaliableItems.filter(
+        (item) => item.id !== action.payload.id
+      );
     }
   }
 })

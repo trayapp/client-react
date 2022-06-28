@@ -1,3 +1,3 @@
-import ScrollToTop from "./ScrollToTop";
+import {ScrollToTop, ScrollToElement} from "./ScrollHooks";
 import { ProtectedRoute } from "./ProtectedRoute";
-export { ScrollToTop, ProtectedRoute };
+export { ScrollToTop, ScrollToElement, ProtectedRoute };

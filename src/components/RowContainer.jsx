@@ -7,7 +7,6 @@ import { useSelector } from "react-redux";
 import { alertSliceActions, cartAction } from "../context/actions";
 import { useMutation } from "@apollo/client";
 import { ADD_PRODUCT_CLICK } from "../GraphQL/mutations/products/mutaions";
-import Loader from "./Loader";
 
 // Items Row Container
 const RowContainer = ({ flag, rowData, scrollValue, className }) => {
@@ -59,7 +58,7 @@ const RowContainer = ({ flag, rowData, scrollValue, className }) => {
           : "overflow-x-hidden flex-wrap justify-center"
       }`}
     >
-      {!loading && rowData && rowData.length > 0 ? (
+      {rowData && rowData.length > 0 ? (
         rowData.map((item) => (
           <div
             key={item?.productSlug}
@@ -101,7 +100,7 @@ const RowContainer = ({ flag, rowData, scrollValue, className }) => {
                   } else if (!inCart) {
                     alertSliceActions.createAlert({
                       type: "info",
-                      message: `${item?.productImage} is Already Added Cart`,
+                      message: `${item?.productName} is Already Added Cart`,
                     });
                   } else {
                     alertSliceActions.createAlert({
@@ -133,18 +132,10 @@ const RowContainer = ({ flag, rowData, scrollValue, className }) => {
         ))
       ) : (
         <div className="w-full flex flex-col items-center justify-center">
-          {rowData && rowData.length <= 0 ? (
-            <>
               <NotFound className="w-340 h-340" />
               <p className="text-xl text-headingColor font-semibold my-2">
                 Items Not Available
               </p>
-            </>
-          ) : (
-            <div className="flex justify-center items-center w-340 h-340">
-              <Loader />
-            </div>
-          )}
         </div>
       )}
     </motion.div>
