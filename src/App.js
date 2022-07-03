@@ -30,7 +30,7 @@ const App = () => {
   return (
     <>
     <Alerts />
-    <AnimatePresence>
+    <AnimatePresence exitBeforeEnter>
       <div className="w-screen h-auto flex flex-col bg-primary">
         <Header />
 

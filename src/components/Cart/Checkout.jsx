@@ -1,12 +1,25 @@
 import React from "react";
-import { MdClose } from "react-icons/md";
+import { MdChevronRight, MdClose } from "react-icons/md";
 import { motion } from "framer-motion";
-const HostelListComponent = ({ }) => {
-    return (<p>ugfhu</p>)
-}
+const HostelListComponent = ({ setShowHostelList, className }) => {
+  let hostel = {};
+  return (
+    <motion.div
+      initial={{ opacity: 0, y: -50 }}
+      animate={{ opacity: 1, y: 0 }}
+      exit={{ opacity: 0, y: -50 }}
+      className={className}
+      onClick={() => setShowHostelList(false)}
+    >
+      ugfhu
+    </motion.div>
+  );
+};
 const Checkout = ({ options, setShow, total }) => {
-  const [filter, setFilter] = React.useState("0");
+  const [filter, setFilter] = React.useState("1");
   const [price, setPrice] = React.useState(options[0].price);
+  const [selectedHostel, setSelectedHostel] = React.useState(null);
+  const [showHostelList, setShowHostelList] = React.useState(false);
   return (
     <motion.div
       initial={{ opacity: 0 }}
@@ -14,11 +27,42 @@ const Checkout = ({ options, setShow, total }) => {
       exit={{ opacity: 0 }}
       className="w-full h-full flex flex-col"
     >
-      <div className="w-full h-[50%] flex flex-col gap-3 justify-center items-center">
-        <MdClose
-          onClick={() => setShow(false)}
-          className="fill-slate-100 cursor-pointer hover:fill-red-400 w-8 h-8"
+      {filter === "0" && showHostelList && (
+        <HostelListComponent
+          setShowHostelList={setShowHostelList}
+          setSelectedHostel={setSelectedHostel}
+          selectedHostel={selectedHostel}
+          className="w-full h-full z-20 border-b flex flex-col items-center justify-center"
         />
+      )}
+      <div className="w-full h-[50%] flex flex-col gap-3 transition-all duration-150 justify-center items-center">
+        {filter === "0" && showHostelList ? (
+          <motion.div
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+          >
+            <MdChevronRight
+              onClick={() => setShowHostelList(false)}
+              style={{ transform: "rotate(90deg)" }}
+              className="fill-slate-100 cursor-pointer hover:fill-red-400 w-8 h-8"
+            />
+          </motion.div>
+        ) : (
+          <motion.div
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+          >
+            <MdClose
+              onClick={() => {
+                setShow(false);
+                setFilter("");
+              }}
+              className="fill-slate-100 cursor-pointer hover:fill-red-400 w-8 h-8"
+            />
+          </motion.div>
+        )}
         <h3 className="text-white text-2xl font-semibold border-b">
           Select Delivary Location:
         </h3>
@@ -28,21 +72,24 @@ const Checkout = ({ options, setShow, total }) => {
             options.map((n, idx) => (
               <div
                 key={idx}
+                onClick={() => {
+                  setPrice(n?.price);
+                  setFilter(`${idx}`);
+                  if (idx === 0) {
+                    setShowHostelList(true);
+                  }
+                }}
                 className="flex cursor-pointer justify-start gap-4"
               >
                 <input
                   type="checkbox"
                   id={n?.name}
                   checked={filter === `${idx}` ? true : false}
-                  onClick={() => {
-                    setPrice(n?.price);
-                    setFilter(`${idx}`);
-                  }}
-                  className="w-[35px] rounded-full"
+                  className="w-[35px] cursor-pointer rounded-full"
                 />
                 <label
                   htmlFor={n?.name}
-                  className="text-lg font-semibold capitalize text-white"
+                  className="text-lg cursor-pointer font-semibold capitalize text-white"
                 >
                   {n?.name}
                 </label>
