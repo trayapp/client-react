@@ -1,3 +1,6 @@
 import CartContainer from "./CartContainer";
 import CartItem from "./CartItem";
-export { CartContainer, CartItem };
+import Checkout from "./Checkout";
+
+
+export { CartContainer, CartItem, Checkout };

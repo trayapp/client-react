@@ -3,11 +3,11 @@ import { linkError, linkAuth, linkMain, linkTokenHeader } from "./links";
 import { CachePersistor } from "apollo3-cache-persist";
 
 const inMemoryCache = new InMemoryCache({
-  freezeResults: true,
+  // freezeResults: true,
 });
 
 const SCHEMA_VERSION = "1";
-const SCHEMA_VERSION_KEY = `tray-version-${Date.now()}`;
+const SCHEMA_VERSION_KEY = `tray-version-1`;
 
 export const apolloClientAuth = new ApolloClient({
   //DEV connectToDevTools to false in production

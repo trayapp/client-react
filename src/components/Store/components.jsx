@@ -7,8 +7,8 @@ import { motion } from "framer-motion";
 import RowContainer from "../RowContainer";
 import { MdChevronLeft, MdChevronRight } from "react-icons/md";
 import Loader from "../Loader";
-import {EditInitialScreen} from "./menu";
-
+import { EditInitialScreen } from "./menu";
+import { ReactComponent as NoData } from "../../img/no_data.svg";
 export const StoreComponent = () => {
   const user = useSelector((state) => state.authToken?.user); // getting user state
   var { storeNickname } = useParams(); // getting storename from parameters
@@ -19,6 +19,7 @@ export const StoreComponent = () => {
     nextFetchPolicy: "cache-and-network",
   });
   const [store, setStore] = useState(null);
+  const [isLoading, setIsLoading] = useState(true);
   const windowHash = window.location.hash ? window.location.hash : false;
   const [filter, setFilter] = useState(
     windowHash !== false ? windowHash.replaceAll("#", "") : "all"
@@ -36,13 +37,13 @@ export const StoreComponent = () => {
   useEffect(() => {
     if (!loading && data) {
       setStore(data.getStore);
+      setIsLoading(false);
     }
     window.location.hash = filter;
   }, [data, filter, loading, scrollValue, windowHash]);
-
   return (
     <div className="w-full h-full flex flex-col items-center justify-center">
-      {!loading && store !== null ? (
+      {!isLoading && store !== null ? (
         <div className="w-full flex flex-col items-center justify-center mt-3">
           <div
             style={{ transform: "skew(227deg, 343deg)" }}
@@ -50,22 +51,33 @@ export const StoreComponent = () => {
                 rounded-lg bg-gradient-to-t from-orange-200 to-transparent"
           ></div>
           <figure className="w-[15rem] h-[15rem] drop-shadow-lg">
-            <img
-              src={store && store.vendor.profile?.image}
-              className="rounded-lg bg-orange-100 w-full h-full"
-              loading="lazy"
-              alt=""
-            />
+            {store && store.vendor.profile?.image ? (
+              <img
+                src={store && store.vendor.profile?.image}
+                className="rounded-lg bg-orange-100 w-full h-full"
+                loading="lazy"
+                alt=""
+              />
+            ) : (
+              <div
+                title="click to change profile picture"
+                className="bg-orange-500 w-full h-full flex justify-center select-none items-center rounded-lg uppercase cursor-pointer"
+              >
+                <span className="font-semibold text-primary backdrop-blur-sm leading-relaxed">
+                  {store?.storeName}
+                </span>
+              </div>
+            )}
             <p
               className="w-full border-t border-orange-300 bg-orange-300 flex justify-center 
                 items-center text-base p-2 absolute bottom-0 rounded-bl-lg rounded-br-lg"
             >
-              {store.vendor.store?.storeName}
+              {store?.storeName}
             </p>
           </figure>
           <div className="w-full text-center mt-2">
             <p className="font-semibold text-base">
-              {storeNickname} {store.vendor.store?.storeCategory}
+              {storeNickname} {store?.storeCategory}
             </p>
           </div>
           <div className="text-sm font-medium z-40 text-center mt-[3rem]">
@@ -113,14 +125,14 @@ export const StoreComponent = () => {
                     <motion.div
                       whileTap={{ scale: 0.75 }}
                       className="w-8 h-8 rounded-lg bg-orange-700 hover:bg-orange-500 cursor-pointer hover:shadow-lg flex items-center justify-center"
-                      onClick={() => setScrollValue(-200)}
+                      onClick={() => setScrollValue(-100)}
                     >
                       <MdChevronLeft className="text-lg text-white" />
                     </motion.div>
                     <motion.div
                       whileTap={{ scale: 0.75 }}
                       className="w-8 h-8 rounded-lg bg-orange-700 hover:bg-orange-500 cursor-pointer hover:shadow-lg flex items-center justify-center"
-                      onClick={() => setScrollValue(200)}
+                      onClick={() => setScrollValue(100)}
                     >
                       <MdChevronRight className="text-lg text-white" />
                     </motion.div>
@@ -128,7 +140,7 @@ export const StoreComponent = () => {
                 </motion.div>
                 <RowContainer
                   scrollValue={scrollValue}
-                  rowData={store.vendor.store?.storeProducts
+                  rowData={store?.storeProducts
                     ?.filter(
                       (n) =>
                         n.isAvaliable === true &&
@@ -147,11 +159,11 @@ export const StoreComponent = () => {
                   className="w-full flex items-center justify-between"
                 >
                   <p className="text-2xl font-semibold capitalize text-headingColor relative before:absolute before:rounded-lg before:content before:w-32 before:h-1 before:-bottom-2 before:left-0 before:bg-gradient-to-tr from-orange-400 to-orange-600 transition-all ease-in-out duration-100">
-                    {store.vendor.store?.storeName} Avaliable Items
+                    {store?.storeName} Avaliable Items
                   </p>
                 </motion.div>
                 <RowContainer
-                  rowData={store.vendor.store?.storeProducts?.filter(
+                  rowData={store?.storeProducts?.filter(
                     (n) => n.isAvaliable === true
                   )}
                   className="w-full flex no-select items-center gap-3 my-6 scroll-smooth overflow-x-scroll scrollbar-none"
@@ -164,7 +176,7 @@ export const StoreComponent = () => {
             {filter === menu[1] && (
               <>
                 <RowContainer
-                  rowData={store.vendor.store?.storeProducts}
+                  rowData={store?.storeProducts}
                   className="w-full flex no-select items-center gap-3 my-6 scroll-smooth overflow-x-scroll scrollbar-none"
                   flag={false}
                 />
@@ -178,15 +190,22 @@ export const StoreComponent = () => {
                   is_user={is_user}
                   filter={filter}
                   setFilter={setFilter}
-                  store={store.vendor?.store}
+                  store={store}
                 />
               )}
           </div>
         </div>
       ) : (
         <div className="bg-primary store-loader fixed top-0 h-screen w-screen m-auto flex justify-center items-center">
-          {!loading && store === null && "Store Not Found!"}
-          {loading && <Loader className="top-50" />}
+          {loading && isLoading && <Loader className="top-50" />}
+          {!loading && !isLoading && !store && store === null && (
+            <div className="flex flex-col gap-1 justify-center items-center">
+              <NoData className="w-[10rem] h-[10rem]" />
+              <span className="md:text-3xl md:w-[16rem] text-2xl w-[13rem] text-slate-800 text-center flex justify-center font-semibold">
+                Store Not Found
+              </span>
+            </div>
+          )}
         </div>
       )}
     </div>

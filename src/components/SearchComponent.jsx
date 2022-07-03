@@ -64,7 +64,6 @@ const ToggleSwitchComponent = ({ item }) => {
                   query: GET_STORE_QUERY,
                   variables: { storeNickname: storeNickname },
                 }, // DocumentNode object parsed with gql
-                "getStore", // Query name
               ],
             });
           }}
@@ -199,17 +198,7 @@ export const SearchComponent = ({
     if (!loading && data) {
       setsearchResults(data.searchItems);
     }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [
-    data,
-    didLookUp,
-    loading,
-    searchItems,
-    searchParams,
-    searchQuery,
-    searchResults,
-    setShowHandler,
-  ]);
+  }, [checkedParams, data, didLookUp, loading, searchItems, searchParams, searchQuery, setShowHandler]);
   return (
     <>
       {showHandler && (
@@ -219,7 +208,7 @@ export const SearchComponent = ({
         ></div>
       )}
       {/* Search Container */}
-      <div className="md:w-[30rem] z-30 mr-5 md:m-0 w-[27rem] transition-all duration-100">
+      <div ref={SearchContainer} className="md:w-[30rem] z-30 mr-5 md:m-0 w-[27rem] transition-all duration-100">
         {/* Search Bar */}
         <div
           className={`w-full flex flex-row justify-start p-1 items-start focus:border backdrop-blur-md bg-gray-100 transition-all duration-150 ease-in-out ${
@@ -245,7 +234,6 @@ export const SearchComponent = ({
             {showText && <ScrollToElement refrence={SearchContainer} />}
             <input
               type="text"
-              ref={SearchContainer}
               placeholder={showText ? showText : ""}
               onChange={(e) => setSearchQuery(e.target.value)}
               onKeyUp={handleSearch}

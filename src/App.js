@@ -28,8 +28,9 @@ const App = () => {
     }
   }, [data, loading, foodItems]);
   return (
+    <>
+    <Alerts />
     <AnimatePresence>
-      <Alerts />
       <div className="w-screen h-auto flex flex-col bg-primary">
         <Header />
 
@@ -39,6 +40,7 @@ const App = () => {
         </main>
       </div>
     </AnimatePresence>
+    </>
   );
 };
 

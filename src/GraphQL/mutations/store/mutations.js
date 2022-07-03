@@ -7,7 +7,7 @@ mutation ADD_PRODUCT_TO_AVAILABLE_PRODUCTS($product_slug: String!, $action: Stri
         success
         product {
             isAvaliableForStore
-            ${product_const}
+            ${product_const()}
         }
     }
 }

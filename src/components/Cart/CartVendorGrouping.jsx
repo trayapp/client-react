@@ -16,6 +16,8 @@ const CartVendorGrouping = ({ items, vendor, flag, setFlag }) => {
   });
   const [store, setStore] = useState(null);
   const navigate = useNavigate();
+  let storeImageName = store?.storeName.split(' ');
+  storeImageName = storeImageName && storeImageName.length > 1 ? `${storeImageName[0][0]+storeImageName[1][0]}` : store?.storeNickname
 
   useEffect(() => {
     if (!loading && data) {
@@ -33,19 +35,25 @@ const CartVendorGrouping = ({ items, vendor, flag, setFlag }) => {
     <div>
       {store && store !== null && (
         <motion.div
-          onClick={() => handleStoreRedirect(store.vendor.store?.storeNickname)}
+          onClick={() => handleStoreRedirect(store?.storeNickname)}
           whileTap={{ scale: 0.85 }}
           className="w-max flex p-1 justify-start hover:bg-gray-700 transition-all 
         duration-100 cursor-pointer rounded-md items-start mb-2 gap-3"
         >
-          <img
+          {store && store.vendor.profile?.image ? (
+            <img
             src={store.vendor.profile?.image}
             loading="lazy"
-            className="w-8 h-8 rounded-full"
+            className="w-8 h-8 rounded-full shadow-md"
             alt=""
           />
-          <p className="text-base font-semibold text-yellow-500 mt-1">
-            {store.vendor.store?.storeName}
+          ): (
+              <div className="w-8 h-8 rounded-full bg-orange-500 shadow-md flex justify-center items-center">
+                <span className="text-base font-semibold capitalize text-gray-100">{storeImageName}</span>
+            </div>
+          )}
+          <p className="text-base font-semibold capitalize text-yellow-500 mt-1">
+            {store?.storeName}
           </p>
         </motion.div>
       )}

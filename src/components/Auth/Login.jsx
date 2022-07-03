@@ -12,6 +12,7 @@ import { ReactComponent as LoginIllustration } from "../../img/login.svg";
 import { errorHandler, apolloClientAuth } from "../../apollo";
 import { authTokenActions, alertSliceActions } from "../../context/actions";
 import { ScrollToElement } from "../../utils/hooks";
+import { useNavigate } from "react-router-dom";
 
 const fields = loginFields;
 let fieldsState = {};
@@ -25,6 +26,7 @@ const Login = () => {
   const [isError, setIsError] = useState(false);
   const [msg, setMsg] = useState("");
   const [alertStatus, setAlertStatus] = useState("danger");
+  const navigate = useNavigate()
   const ref = useRef(null);
   const handleChange = (e) => {
     setLoginState({ ...loginState, [e.target.id]: e.target.value });
@@ -60,17 +62,17 @@ const Login = () => {
       }
       if (qs.errors === null) {
         authTokenActions.setAuthToken(qs);
-        console.log(qs.refreshToken);
         localStorage.setItem("user", JSON.stringify(qs.user));
         localStorage.setItem(AUTH_TOKEN, qs.token);
         localStorage.setItem(AUTH_TOKEN_REFRESH, qs.refreshToken);
+        navigate('/')
         alertSliceActions.createAlert({
           type: "success",
           message: `You Logged In as ${qs.user.username} Successfully 🤩`,
         });
       }
-      console.log(qs);
     }
+  // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [data, loading, error]);
 
   //Handling Login API Integration here

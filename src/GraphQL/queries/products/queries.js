@@ -4,7 +4,7 @@ import { product_const } from "../../contants";
 export const LOAD_ITEMS = gql`
   query LOAD_ITEMS($count: Int) {
     items(count: $count) {
-      ${product_const}
+      ${product_const()}
     }
   }
 `;
@@ -12,7 +12,7 @@ export const LOAD_ITEMS = gql`
 export const LOAD_HERO_DATA = gql`
   query LOAD_HERO_DATA($count: Int) {
     heroData(count: $count) {
-      ${product_const}
+      ${product_const()}
     }
   }
 `;
@@ -30,7 +30,7 @@ export const SEARCH_ITEMS = gql`
   query SEARCH_ITEMS($query: String!) {
     searchItems(query: $query) {
       isAvaliableForStore
-      ${product_const}
+      ${product_const()}
     }
   }
 `;

@@ -38,6 +38,7 @@ const CartItem = ({ item, flag, setFlag }) => {
           item.productImages.length > 0 &&
           item.productImages[0]?.productImage
         }
+        loading="lazy"
         className="w-20 h-20 max-w-[60px] rounded-full object-contain"
         alt=""
       />

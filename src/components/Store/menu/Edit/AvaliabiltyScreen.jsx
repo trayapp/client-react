@@ -10,7 +10,6 @@ import { GET_STORE_QUERY } from "../../../../GraphQL/queries/store/queries";
 import { useParams } from "react-router-dom";
 import { useEffect } from "react";
 import Loader from "../../../Loader";
-import { SEARCH_ITEMS } from "../../../../GraphQL/queries/products";
 
 export const AvaliableItemComponent = ({ item }) => {
   const [addAvaliableProduct, { data, loading }] = useMutation(
@@ -29,10 +28,6 @@ export const AvaliableItemComponent = ({ item }) => {
           query: GET_STORE_QUERY,
           variables: { storeNickname: storeNickname },
         },
-        {
-          query: SEARCH_ITEMS,
-          variables: { storeNickname: storeNickname },
-        } // DocumentNode object parsed with gql
       ],
     });
   };
@@ -76,10 +71,12 @@ export const AvaliableItemComponent = ({ item }) => {
 
 const AvaliabiltyScreen = ({ items, setShow, show, showText, setShowText }) => {
   const avaliableItems = useSelector((state) => state.store?.avaliableItems);
-  if (!(avaliableItems && items && avaliableItems.length === items.length)) {
-    storeAction.setAvaliableItems(items);
-  }
-  console.log(avaliableItems);
+  
+  React.useEffect(() => {
+    if (!(avaliableItems && items && avaliableItems.length === items.length)) {
+      storeAction.setAvaliableItems(items);
+    }
+  }, [avaliableItems, items]);
   return (
     <div className="AvaliabiltyScreenComponent">
       <div className="w-screen p-2 flex flex-col justify-center items-center">
