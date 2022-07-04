@@ -1,0 +1,1 @@
+export {LOAD_HOSTELS} from './queries'

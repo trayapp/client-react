@@ -1,17 +1,43 @@
 import React from "react";
 import { MdChevronRight, MdClose } from "react-icons/md";
 import { motion } from "framer-motion";
-const HostelListComponent = ({ setShowHostelList, className }) => {
-  let hostel = {};
+import { useQuery } from "@apollo/client";
+import { LOAD_HOSTELS } from "../../GraphQL/queries/user";
+
+export const HostelListComponent = ({ setShowHostelList, className }) => {
+  const { data, loading } = useQuery(LOAD_HOSTELS);
+  const [hostelList, setHostelList] = React.useState([]);
+
+  React.useEffect(() => {
+    if (!loading && data) {
+      setHostelList(data.hostels);
+    }
+  }, [data, loading]);
+
   return (
     <motion.div
       initial={{ opacity: 0, y: -50 }}
       animate={{ opacity: 1, y: 0 }}
       exit={{ opacity: 0, y: -50 }}
       className={className}
-      onClick={() => setShowHostelList(false)}
     >
-      ugfhu
+      <fieldset className="flex gap-2 w-[15rem]">
+        <label htmlFor="gender" className="text-lg font-semibold text-gray-100">Gender:</label>
+        <select id="gender" className="border-none outline-none focus:outline-none bg-gray-800 w-full text-slate-200 rounded-md px-3 py-2">
+        <option value="male">Male</option>
+        <option value="female">Female</option>
+        </select>
+      </fieldset>
+      <fieldset className="flex gap-2 w-[15rem]">
+        <label htmlFor="hostel" className="text-lg font-semibold text-gray-100">Hostel:</label>
+        <select id="hostel" className="border-none outline-none focus:outline-none bg-gray-800 w-full text-slate-200 rounded-md px-3 py-2">
+          {hostelList &&
+            hostelList.length > 0 &&
+            hostelList.map((hostel, idx) => (
+              <option value={hostel.shortName}>{hostel.name}</option>
+            ))}
+        </select>
+      </fieldset>
     </motion.div>
   );
 };
@@ -32,7 +58,7 @@ const Checkout = ({ options, setShow, total }) => {
           setShowHostelList={setShowHostelList}
           setSelectedHostel={setSelectedHostel}
           selectedHostel={selectedHostel}
-          className="w-full h-full z-20 border-b flex flex-col items-center justify-center"
+          className="w-full h-full z-20 border-b flex flex-col gap-1 items-center justify-center"
         />
       )}
       <div className="w-full h-[50%] flex flex-col gap-3 transition-all duration-150 justify-center items-center">
@@ -72,19 +98,19 @@ const Checkout = ({ options, setShow, total }) => {
             options.map((n, idx) => (
               <div
                 key={idx}
-                onClick={() => {
-                  setPrice(n?.price);
-                  setFilter(`${idx}`);
-                  if (idx === 0) {
-                    setShowHostelList(true);
-                  }
-                }}
                 className="flex cursor-pointer justify-start gap-4"
               >
                 <input
                   type="checkbox"
                   id={n?.name}
                   checked={filter === `${idx}` ? true : false}
+                  onChange={() => {
+                    setPrice(n?.price);
+                    setFilter(`${idx}`);
+                    if (idx === 0) {
+                      setShowHostelList(true);
+                    }
+                  }}
                   className="w-[35px] cursor-pointer rounded-full"
                 />
                 <label
