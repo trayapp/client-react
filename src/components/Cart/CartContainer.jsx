@@ -19,21 +19,21 @@ const CartContainer = () => {
   const [showCheckout, setShowCheckout] = useState(false);
   const navigate = useNavigate();
   let hostelprice =
-    cartItems && cartItems.length > 8
-      ? 500
-      : cartItems.length > 6
-      ? 300
-      : cartItems.length > 4
-      ? 200
-      : 100;
-  let portalprice =
-    cartItems && cartItems.length > 8
+    cartItems && cartItems.length > 7
+      ? 550
+      : cartItems.length > 5
       ? 350
-      : cartItems.length > 6
-      ? 200
       : cartItems.length > 4
-      ? 100
-      : 50;
+      ? 250
+      : 150;
+  let portalprice =
+    cartItems && cartItems.length > 7
+      ? 400
+      : cartItems.length > 5
+      ? 250
+      : cartItems.length > 4
+      ? 150
+      : 100;
   const options = [
     { name: "hostel", price: hostelprice, forStudent: true },
     { name: "portal", price: portalprice, forStudent: false },

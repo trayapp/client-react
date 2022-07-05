@@ -1,6 +1,6 @@
 export const product_const = (flag) => {
   return `      
-  id(flag: ${flag === true ? `true`:`false`})
+  id(flag: ${flag === true ? `true` : `false`})
   isAvaliable
   productName
   productQty
@@ -41,8 +41,8 @@ export const product_const = (flag) => {
       }
     }
   }
-  `
-}
+  `;
+};
 
 export const store_const = `
   storeName
@@ -54,3 +54,37 @@ export const store_const = `
     ${product_const(true)}
   }
 `;
+
+export const hostel_const = `
+  name
+  gender
+  shortName
+  isFloor
+  floorCount
+`;
+
+export const user_const = `
+id
+username
+firstName
+lastName
+email
+verified
+isActive
+profile {
+  image
+  phoneNumber
+  vendor {
+    store {
+      storeName
+      storeNickname
+    }
+  }
+  client {
+    hostel{
+      ${hostel_const}
+    }
+    room
+  }
+}
+`

@@ -1,4 +1,5 @@
 import { gql } from "@apollo/client";
+import { user_const } from "../../contants";
 
 export const LOGIN_USER = gql`
   mutation loginUser($username: String!, $password: String!) {
@@ -10,27 +11,7 @@ export const LOGIN_USER = gql`
       refreshToken
       unarchiving
       user {
-        id
-        username
-        firstName
-        lastName
-        email
-        verified
-        isActive
-        profile {
-          image
-          phoneNumber
-          vendor {
-            store {
-              storeName
-              storeNickname
-            }
-          }
-          client {
-            hostel
-            room
-          }
-        }
+       ${user_const}
       }
     }
   }
@@ -104,27 +85,7 @@ export const CREATE_VENDOR = gql`
     ) {
       success
       user {
-        id
-        username
-        firstName
-        lastName
-        email
-        verified
-        isActive
-        profile {
-          image
-          phoneNumber
-          vendor {
-            store {
-              storeName
-              storeNickname
-            }
-          }
-          client {
-            hostel
-            room
-          }
-        }
+        ${user_const}
       }
     }
   }
