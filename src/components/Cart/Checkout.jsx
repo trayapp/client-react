@@ -194,9 +194,7 @@ const Checkout = ({ options, setShow, total }) => {
         />
       )}
       <div
-        className={`w-full ${
-          showHostelList ? "h-[13rem]" : "h-full"
-        } mt-2 duration-100 flex flex-col`}
+        className={`w-full h-full mt-2 duration-100 flex flex-col`}
       >
         <div className="w-full h-[50%] flex flex-col gap-3 transition-all duration-150 justify-center items-center">
           {filter === "0" && showHostelList ? (
@@ -262,6 +260,11 @@ const Checkout = ({ options, setShow, total }) => {
         </div>
         {/* Total Area */}
         <div
+          style={{
+            transform: `${
+              showHostelList && filter === "0" ? "translateY(100vh)" : "none"
+            }`,
+          }}
           className="w-full flex-1 bg-cartTotal transition-all duration-100 rounded-t-[2rem] flex flex-col items-center justify-evenly px-8 py-2"
         >
           <div className="w-full flex items-center justify-between">
