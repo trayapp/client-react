@@ -58,6 +58,11 @@ textarea:focus,
 select:focus {
   box-shadow: none !important;
 }
+input.no-arrows[type=number]::-webkit-inner-spin-button, 
+input.no-arrows[type=number]::-webkit-outer-spin-button { 
+  -webkit-appearance: none; 
+  margin: 0; 
+}
 .signup-ring{
   transition: all 500ms ease;
 }

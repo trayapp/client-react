@@ -5,176 +5,259 @@ import { useQuery } from "@apollo/client";
 import { LOAD_HOSTELS } from "../../GraphQL/queries/user";
 import { convertNumberToLetter, createRange } from "../../utils";
 
-export const HostelListComponent = ({ setSelectedHostel, className }) => {
+export const HostelListComponent = ({
+  setSelectedHostel,
+  className,
+  setShowHostelList,
+  selectedHostel,
+}) => {
   const { data, loading } = useQuery(LOAD_HOSTELS, {
     fetchPolicy: "network-only",
   });
   const [hostelList, setHostelList] = React.useState([]);
+  const [showAlert, setShowAlert] = React.useState(false);
   const genders = ["MALE", "FEMALE", "OTHERS"];
-  const [currentGender, setCurrentGender] = React.useState("");
-  const [currentHostel, setCurrentHostel] = React.useState("");
-  const [currentFloor, setCurrentFloor] = React.useState("");
-  const [currentRoom, setCurrentRoom] = React.useState("");
-  const selectClass = `border-none outline-none cursor-pointer focus:outline-none bg-gray-800 w-full text-slate-200 rounded-md px-3 py-2`;
+  const [currentGender, setCurrentGender] = React.useState(
+    `${selectedHostel !== null ? selectedHostel.gender : ``}`
+  );
+  const [currentHostel, setCurrentHostel] = React.useState(
+    `${selectedHostel !== null ? selectedHostel.hostel : ``}`
+  );
+  const [currentFloor, setCurrentFloor] = React.useState(
+    `${selectedHostel !== null ? selectedHostel.room.split(";")[0] : ``}`
+  );
+  const [currentRoom, setCurrentRoom] = React.useState(
+    `${
+      selectedHostel !== null
+        ? selectedHostel.room.split(";")[1].split(" ")[1]
+        : ``
+    }`
+  );
+  const selectClass = `border-none outline-none focus:shadow-lg shadow-2xl active:shadow-lg cursor-pointer focus:outline-none bg-gray-800 w-full text-slate-200 rounded-md px-3 py-2`;
   let hostelData;
   hostelData = React.useRef(hostelData);
   React.useEffect(() => {
     if (currentHostel !== "" && currentFloor !== "" && currentRoom !== "") {
       hostelData.current = {
-        name:
-          currentHostel.split(";") &&
-          currentHostel.split(";").length > 0 &&
-          currentHostel.split(";")[1],
-        room: `${currentFloor}-Room${currentRoom}`,
+        gender: currentGender,
+        hostel: currentHostel,
+        room: `${currentFloor};Room ${currentRoom}`,
       };
     }
     if (!loading && data) {
       setHostelList(data.hostels);
     }
-  }, [currentFloor, currentHostel, currentRoom, data, hostelData, loading]);
-
+  }, [
+    currentFloor,
+    currentGender,
+    currentHostel,
+    currentRoom,
+    data,
+    hostelData,
+    loading,
+  ]);
+  const handleForm = (action) => {
+    if (action) {
+      setShowHostelList(false);
+      setSelectedHostel(hostelData.current);
+    }
+  };
   return (
-    <motion.div
-      initial={{ opacity: 0, y: -50 }}
-      animate={{ opacity: 1, y: 0 }}
-      exit={{ opacity: 0, y: -50 }}
-      className={className}
-    >
-      <fieldset className="flex gap-2 w-[15rem]">
-        <label htmlFor="gender" className="text-lg font-semibold text-gray-100">
-          Gender:
-        </label>
-        <select
-          id="gender"
-          value={currentGender}
-          onChange={(e) => {
-            setCurrentHostel("");
-            setCurrentGender(e.target.value);
-          }}
-          className={selectClass}
-        >
-          <option value="" disabled defaultValue="">
-            Select Gender
-          </option>
-          {genders.map((gender, idx) => (
-            <option key={idx} value={gender}>
-              {gender}
-            </option>
-          ))}
-        </select>
-      </fieldset>
-      {currentGender !== "" && (
-        <>
-          <motion.fieldset
-            initial={{ scale: 0.85 }}
-            animate={{ scale: 1 }}
-            exit={{ scale: -0.85 }}
-            className="flex gap-2 w-[15rem] cursor-pointer"
+    <>
+      {showAlert && (
+        <div className="w-full h-screen z-50 backdrop-blur-sm fixed top-0 bottom-0 bg-overlay flex items-center justify-center">
+          <motion.div
+            initial={{ opacity: 0, scale: 0.75 }}
+            animate={{ opacity: 1, scale: 1 }}
+            exit={{ opacity: 0, scale: 0.75 }}
+            className="bg-primary rounded-lg shadow-md w-[15rem]"
           >
-            <label
-              htmlFor="hostel"
-              className="text-lg font-semibold text-gray-100"
-            >
-              Hostel:
-            </label>
-            <select
-              id="hostel"
-              className={selectClass}
-              value={currentHostel}
-              onChange={(e) => setCurrentHostel(e.target.value)}
-            >
-              <option value="" disabled defaultValue="">
-                Select Hostel
-              </option>
-              {hostelList &&
-                hostelList.length > 0 &&
-                hostelList
-                  ?.filter((n) => n.gender === currentGender)
-                  .map((hostel, idx) => (
-                    <option
-                      key={idx}
-                      value={`${hostel.shortName};${hostel.isFloor};${hostel.floorCount}`}
-                    >
-                      {hostel.name}
-                    </option>
-                  ))}
-            </select>
-          </motion.fieldset>
-          {currentHostel !== "" && (
-            <>
-              <motion.fieldset
-                initial={{ scale: 0.85 }}
-                animate={{ scale: 1 }}
-                exit={{ scale: -0.85 }}
-                className="flex gap-2 w-[15rem] cursor-pointer"
+            <p className="text-base font-semibold py-3 px-6 capitalize">
+              Set selected hostel as default
+            </p>
+            <div className="border-t w-full h-1 border-orange-300"></div>
+            <div className="flex gap-1 px-2 justify-end items-end">
+              <button
+                onClick={() => handleForm("yes")}
+                className="text-lg font-semibold capitalize py-2 px-4 transition-all duration-100 hover:shadow-none shadow-md rounded-lg my-2 bg-orange-400 hover:bg-orange-500"
               >
-                <label
-                  htmlFor={
-                    currentHostel.split(";")[1] === "true" ? "floor" : "flat"
-                  }
-                  className="text-lg font-semibold text-gray-100"
-                >
-                  {currentHostel.split(";")[1] === "true" ? "Floor:" : "Flat:"}
-                </label>
-                <select
-                  id={currentHostel.split(";")[1] === "true" ? "floor" : "flat"}
-                  className={selectClass}
-                  value={currentFloor}
-                  onChange={(e) => setCurrentFloor(e.target.value)}
-                >
-                  <option value="" disabled defaultValue="">
-                    Select{" "}
-                    {currentHostel.split(";")[1] === "true" ? "Floor" : "Flat"}
-                  </option>
-                  {createRange(1, parseInt(currentHostel.split(";")[2])).map(
-                    (n, idx) => (
+                yes
+              </button>
+              <button
+                onClick={() => handleForm("no")}
+                className="text-lg font-semibold capitalize py-2 px-4 rounded-full transition-all duration-150 hover:bg-slate-200 my-2"
+              >
+                no
+              </button>
+            </div>
+          </motion.div>
+        </div>
+      )}
+      <motion.div
+        initial={{ opacity: 0, y: -50 }}
+        animate={{ opacity: 1, y: 0 }}
+        exit={{ opacity: 0, y: -50 }}
+        className={className}
+      >
+        <fieldset className="flex gap-2 w-[15rem]">
+          <label htmlFor="gender" className="sr-only">
+            Gender:
+          </label>
+          <select
+            id="gender"
+            value={currentGender}
+            onChange={(e) => {
+              setCurrentHostel("");
+              setCurrentFloor("");
+              setCurrentRoom("");
+              setCurrentGender(e.target.value);
+            }}
+            className={selectClass}
+          >
+            <option value="" disabled defaultValue="">
+              Select Gender
+            </option>
+            {genders.map((gender, idx) => (
+              <option key={idx} value={gender}>
+                {gender}
+              </option>
+            ))}
+          </select>
+        </fieldset>
+        {currentGender !== "" && (
+          <>
+            <motion.fieldset
+              initial={{ scale: 0.85 }}
+              animate={{ scale: 1 }}
+              exit={{ scale: -0.85 }}
+              className="flex gap-2 w-[15rem] cursor-pointer"
+            >
+              <label htmlFor="hostel" className="sr-only">
+                Hostel:
+              </label>
+              <select
+                id="hostel"
+                className={selectClass}
+                value={currentHostel}
+                onChange={(e) => setCurrentHostel(e.target.value)}
+              >
+                <option value="" disabled defaultValue="">
+                  Select Hostel
+                </option>
+                {hostelList &&
+                  hostelList.length > 0 &&
+                  hostelList
+                    ?.filter((n) => n.gender === currentGender)
+                    .map((hostel, idx) => (
                       <option
                         key={idx}
-                        value={
-                          currentHostel.split(";")[1] === "true"
-                            ? `floor ${convertNumberToLetter(n)}`
-                            : `flat ${n}`
-                        }
+                        value={`${hostel.shortName};${hostel.isFloor};${hostel.floorCount}`}
                       >
-                        {currentHostel.split(";")[1] === "true"
-                          ? `floor ${convertNumberToLetter(n)}`
-                          : `flat ${n}`}
+                        {hostel.name}
                       </option>
-                    )
-                  )}
-                </select>
-              </motion.fieldset>
-              {currentFloor !== "" && (
+                    ))}
+              </select>
+            </motion.fieldset>
+            {currentHostel !== "" && (
+              <>
                 <motion.fieldset
-                  initial={{ scale: -0.85 }}
+                  initial={{ scale: 0.85 }}
                   animate={{ scale: 1 }}
-                  exit={{ scale: 0.85 }}
-                  className="flex gap-2 w-[15rem]"
+                  exit={{ scale: -0.85 }}
+                  className="flex gap-2 w-[15rem] cursor-pointer"
                 >
                   <label
-                    htmlFor="room-no"
-                    className="text-lg font-semibold text-gray-100"
+                    htmlFor={
+                      currentHostel.split(";")[1] === "true" ? "floor" : "flat"
+                    }
+                    className="sr-only"
                   >
-                    Room No:
+                    {currentHostel.split(";")[1] === "true"
+                      ? "Floor:"
+                      : "Flat:"}
                   </label>
-                  <input
+                  <select
+                    id={
+                      currentHostel.split(";")[1] === "true" ? "floor" : "flat"
+                    }
                     className={selectClass}
-                    type="number"
-                    value={currentRoom}
-                    onChange={(e) => setCurrentRoom(e.target.value)}
-                    id="room-no"
-                  />
+                    value={currentFloor}
+                    onChange={(e) => setCurrentFloor(e.target.value)}
+                  >
+                    <option value="" disabled defaultValue="">
+                      Select{" "}
+                      {currentHostel.split(";")[1] === "true"
+                        ? "Floor"
+                        : "Flat"}
+                    </option>
+                    {createRange(1, parseInt(currentHostel.split(";")[2])).map(
+                      (n, idx) => (
+                        <option
+                          key={idx}
+                          value={
+                            currentHostel.split(";")[1] === "true"
+                              ? `floor ${convertNumberToLetter(n)}`
+                              : `flat ${n}`
+                          }
+                        >
+                          {currentHostel.split(";")[1] === "true"
+                            ? `floor ${convertNumberToLetter(n)}`
+                            : `flat ${n}`}
+                        </option>
+                      )
+                    )}
+                  </select>
                 </motion.fieldset>
-              )}
-            </>
-          )}
-        </>
-      )}
-    </motion.div>
+                {currentFloor !== "" && (
+                  <>
+                    <motion.fieldset
+                      initial={{ scale: 0.85 }}
+                      animate={{ scale: 1 }}
+                      exit={{ scale: 0.85 }}
+                      className="flex gap-2 w-[15rem]"
+                    >
+                      <label htmlFor="room-no" className="sr-only">
+                        Room No:
+                      </label>
+                      <input
+                        className={`${selectClass} cursor-text no-arrows`}
+                        min="1"
+                        type="number"
+                        value={currentRoom}
+                        placeholder="Room Number"
+                        onChange={(e) => setCurrentRoom(e.target.value)}
+                        id="room-no"
+                      />
+                    </motion.fieldset>
+                    {currentRoom !== "" && (
+                      <motion.fieldset
+                        initial={{ opacity: 0, scale: 0.85 }}
+                        animate={{ opacity: 1, scale: 1 }}
+                        exit={{ opacity: 0, scale: 0.85 }}
+                      >
+                        <motion.button
+                          whileTap={{ scale: 0.75 }}
+                          className="bg-gradient-to-tr hover:from-slate-400 hover:to-slate-300 from-gray-400 to-gray-300 px-4 py-3 my-2
+                            text-lg font-semibold transition-all duration-150 w-[15rem] border-none shadow-2xl"
+                          onClick={() => setShowAlert(true)}
+                          type="submit"
+                        >
+                          Done
+                        </motion.button>
+                      </motion.fieldset>
+                    )}
+                  </>
+                )}
+              </>
+            )}
+          </>
+        )}
+      </motion.div>
+    </>
   );
 };
 const Checkout = ({ options, setShow, total }) => {
-  const [filter, setFilter] = React.useState("1");
+  const [filter, setFilter] = React.useState("portal");
   const [price, setPrice] = React.useState(options[1].price);
   const [selectedHostel, setSelectedHostel] = React.useState(null);
   const [showHostelList, setShowHostelList] = React.useState(false);
@@ -185,19 +268,18 @@ const Checkout = ({ options, setShow, total }) => {
       exit={{ opacity: 0 }}
       className="w-full h-full flex flex-col overflow-y-hidden"
     >
-      {filter === "0" && showHostelList && (
+      {/* HOSTEL LISTER */}
+      {filter === "hostel" && showHostelList && (
         <HostelListComponent
           setShowHostelList={setShowHostelList}
           setSelectedHostel={setSelectedHostel}
           selectedHostel={selectedHostel}
-          className="w-full h-full border-b flex flex-col gap-1 items-center justify-center"
+          className="w-full h-full rounded-b-2xl flex my-4 flex-col gap-1 items-center justify-center"
         />
       )}
-      <div
-        className={`w-full h-full mt-2 duration-100 flex flex-col`}
-      >
+      <div className={`w-full h-full mt-2 duration-100 flex flex-col`}>
         <div className="w-full h-[50%] flex flex-col gap-3 transition-all duration-150 justify-center items-center">
-          {filter === "0" && showHostelList ? (
+          {filter === "hostel" && showHostelList ? (
             <motion.div
               initial={{ opacity: 0 }}
               animate={{ opacity: 1 }}
@@ -238,10 +320,10 @@ const Checkout = ({ options, setShow, total }) => {
                   <input
                     type="checkbox"
                     id={n?.name}
-                    checked={filter === `${idx}` ? true : false}
+                    checked={filter === `${n?.name}` ? true : false}
                     onChange={() => {
                       setPrice(n?.price);
-                      setFilter(`${idx}`);
+                      setFilter(`${n?.name}`);
                       if (idx === 0) {
                         setShowHostelList(true);
                       }
@@ -262,7 +344,7 @@ const Checkout = ({ options, setShow, total }) => {
         <div
           style={{
             transform: `${
-              showHostelList && filter === "0" ? "translateY(100vh)" : "none"
+              showHostelList && filter === "hostel" ? "translateY(100vh)" : "none"
             }`,
           }}
           className="w-full flex-1 bg-cartTotal transition-all duration-100 rounded-t-[2rem] flex flex-col items-center justify-evenly px-8 py-2"
@@ -273,7 +355,13 @@ const Checkout = ({ options, setShow, total }) => {
           </div>
           <div className="w-full flex items-center justify-between">
             <p className="text-gray-400 text-lg">Location</p>
-            <p className="text-gray-400 text-lg">{options[0].name}</p>
+            <p className="text-gray-300 select-text text-lg capitalize">
+              {selectedHostel !== null && filter === "hostel"
+                ? `${selectedHostel?.hostel.split(";")[0]} ${
+                    selectedHostel.room.split(";")[0]
+                  } ${selectedHostel.room.split(";")[1]}`
+                : filter}
+            </p>
           </div>
           <div className="w-full border-b border-gray-600 my-2"></div>
 

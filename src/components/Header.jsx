@@ -181,7 +181,7 @@ const Header = () => {
                       My Store
                     </Link>
                   </>
-                ) : user && user.profile.vendor === null ? (
+                ) : user && user.profile.vendor === null && user.profile.client === null ? (
                   <Link
                     to="/auth/become-vendor"
                     className="px-4 py-2 flex items-center gap-3 cursor-pointer hover:bg-slate-100 transition-all duration-100 ease-in-out text-textColor text-base"
@@ -286,7 +286,7 @@ const Header = () => {
                     My Store
                   </Link>
                 </>
-              ) : user && user.profile.vendor === null ? (
+              ) : user && user.profile.vendor === null && user.profile.client === null ? (
                 <Link
                   to="/auth/become-vendor"
                   className="px-4 py-2 flex items-center gap-3 cursor-pointer hover:bg-slate-100 transition-all duration-100 ease-in-out text-textColor text-base"

@@ -50,6 +50,7 @@ module.exports = {
         cartNumBg: "#e80013",
         primary: "#f5f3f3",
         loginColor: "#fff",
+        overlay: "#00000061",
         navOverlay: "#f5f3f3ad",
         cardOverlay: "rgba(256,256,256, 0.4)",
         lighttextGray: "#9ca0ab",
