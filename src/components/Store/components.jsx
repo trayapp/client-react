@@ -19,7 +19,6 @@ export const StoreComponent = () => {
     nextFetchPolicy: "cache-and-network",
   });
   const [store, setStore] = useState(null);
-  const [isLoading, setIsLoading] = useState(true);
   const windowHash = window.location.hash ? window.location.hash : false;
   const [filter, setFilter] = useState(
     windowHash !== false ? windowHash.replaceAll("#", "") : "all"
@@ -28,7 +27,7 @@ export const StoreComponent = () => {
 
   let menu = ["all", "items", "about"];
   const is_user =
-    user && user.profile.vendor.store.storeNickname === storeNickname
+    user && user.profile.vendor !== null && user.profile.vendor.store.storeNickname === storeNickname
       ? true
       : false;
   if (is_user) {
@@ -37,13 +36,12 @@ export const StoreComponent = () => {
   useEffect(() => {
     if (!loading && data) {
       setStore(data.getStore);
-      setIsLoading(false);
     }
     window.location.hash = filter;
   }, [data, filter, loading, scrollValue, windowHash]);
   return (
     <div className="w-full h-full flex flex-col items-center justify-center">
-      {!isLoading && store !== null ? (
+      {!loading && store !== null ? (
         <div className="w-full flex flex-col items-center justify-center mt-3">
           <div
             style={{ transform: "skew(227deg, 343deg)" }}
@@ -197,8 +195,8 @@ export const StoreComponent = () => {
         </div>
       ) : (
         <div className="bg-primary store-loader fixed top-0 h-screen w-screen m-auto flex justify-center items-center">
-          {loading && isLoading && <Loader className="top-50" />}
-          {!loading && !isLoading && !store && store === null && (
+          {loading && <Loader className="top-50" />}
+          {!loading && !store && store === null && (
             <div className="flex flex-col gap-1 justify-center items-center">
               <NoData className="w-[10rem] h-[10rem]" />
               <span className="md:text-3xl md:w-[16rem] text-2xl w-[13rem] text-slate-800 text-center flex justify-center font-semibold">

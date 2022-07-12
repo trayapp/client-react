@@ -9,7 +9,6 @@ export const LOGIN_USER = gql`
       unarchiving
       token
       refreshToken
-      unarchiving
       user {
        ${user_const}
       }
@@ -89,4 +88,23 @@ export const CREATE_VENDOR = gql`
       }
     }
   }
+`;
+
+export const CREATE_CLIENT = gql`
+  mutation Create_Client(
+    $hostel_shortname: String
+    $room: String
+    $gender: String!
+    ){
+      createClient(
+        hostelShortname: $hostel_shortname
+        room: $room
+        gender: $gender
+        ){
+          success
+          user {
+            ${user_const}
+          }
+        }
+    }
 `;

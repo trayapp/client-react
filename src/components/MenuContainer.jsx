@@ -7,7 +7,7 @@ import { useQuery } from "@apollo/client";
 import { LOAD_ITEM_ATTRIBUTE } from "../GraphQL/queries/products";
 
 const MenuContainer = () => {
-  const [filter, setFilter] = useState("snacks");
+  const [filter, setFilter] = useState("category-snacks");
   const { loading, data } = useQuery(LOAD_ITEM_ATTRIBUTE, {
     variables: {
       type: 1,

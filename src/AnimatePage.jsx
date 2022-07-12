@@ -2,9 +2,9 @@ import React from "react";
 import { motion } from "framer-motion";
 
 const animations = {
-  initial: { opacity: 0.7, x: window.innerWidth },
+  initial: { opacity: 0, x: window.innerWidth },
   animate: { opacity: 1, x: 0 },
-  exit: { opacity: 0.7, x: window.innerWidth },
+  exit: { opacity: 0, x: window.innerWidth },
 };
 const AnimatePage = ({ children }) => {
   return (
@@ -13,7 +13,7 @@ const AnimatePage = ({ children }) => {
       initial="initial"
       animate="animate"
       exit="exit"
-      transition={{ duration: 0.4 }}
+      transition={{ duration: 0.2 }}
     >
       {children}
     </motion.div>

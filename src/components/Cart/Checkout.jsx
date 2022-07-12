@@ -1,25 +1,124 @@
 import React from "react";
 import { MdChevronRight, MdClose } from "react-icons/md";
 import { motion } from "framer-motion";
-import { useQuery } from "@apollo/client";
+import { useQuery, useMutation } from "@apollo/client";
 import { LOAD_HOSTELS } from "../../GraphQL/queries/user";
 import { convertNumberToLetter, createRange } from "../../utils";
+import { CREATE_CLIENT } from "../../GraphQL/mutations/auth/mutations";
+import { alertSliceActions, authTokenActions } from "../../context/actions";
+import { USER } from "../../constants";
+import AlertComponent from "../Store/Alert/AlertComponent";
 
-export const HostelListComponent = ({
+const selectClass = `border-none outline-none focus:shadow-lg shadow-2xl active:shadow-lg cursor-pointer 
+focus:outline-none bg-gray-800 w-full text-slate-200 rounded-md px-3 py-2`;
+
+const CreateClientAlertComponent = ({
+  currentGender,
+  gender,
+  setGender,
+  setShowHostelList,
+  setSelectedHostel,
+  hostelData,
+}) => {
+  const [createClient, { data, loading }] = useMutation(CREATE_CLIENT);
+  const [showLoader, setShowLoader] = React.useState(false);
+  const [currentAction, setCurrentAction] = React.useState("");
+  let hostel = hostelData.hostel.split(";")[0];
+  React.useEffect(() => {
+    if (loading) {
+      setShowLoader(true);
+    }
+    if (data) {
+      let qs = data.createClient;
+      if (qs && qs.user) {
+        authTokenActions.setAuthUser(qs.user);
+        localStorage.setItem(USER, JSON.stringify(qs.user));
+        if (currentAction === "yes") {
+          alertSliceActions.createAlert({
+            type: `${qs.success === true ? "success" : "info"}`,
+            message: `${
+              qs.success === true ? "Set" : "Already set"
+            } ${hostel} as default hostel 👍`,
+          });
+        }
+        setTimeout(() => {
+          setShowHostelList(false);
+          setSelectedHostel(hostelData);
+        }, 2000);
+      }
+    }
+  }, [
+    currentAction,
+    data,
+    hostel,
+    hostelData,
+    loading,
+    setSelectedHostel,
+    setShowHostelList,
+  ]);
+  const handleAction = (action) => {
+    if (action) {
+      setCurrentAction(`${action}`);
+      createClient({
+        variables:
+          action === "yes"
+            ? {
+                hostel_shortname: hostel,
+                gender: hostelData.gender.toUpperCase(),
+                room: hostelData.room,
+              }
+            : {
+                gender: hostelData.gender.toUpperCase(),
+              },
+      });
+    }
+  };
+  return (
+    <div className="w-full h-screen z-50 backdrop-blur-sm fixed top-0 bottom-0 bg-overlay flex items-center justify-center">
+      <AlertComponent
+        handleAction={handleAction}
+        handleLoader={showLoader}
+        handleParagraph={`${
+          currentGender === "OTHERS" ? "Select specific gender and s" : "S"
+        }et selected hostel as default`}
+        extraElement={
+          currentGender === "OTHERS" && (
+            <fieldset className="w-[12rem] m-auto">
+              <label htmlFor="real-gender" className="sr-only"></label>
+              <select
+                value={gender}
+                onChange={(e) => setGender(e.target.value)}
+                className={`${selectClass}`}
+              >
+                <option disabled={gender !== "" && true}>Select Gender</option>
+                <option value="MALE">MALE</option>
+                <option value="FEMALE">FEMALE</option>
+              </select>
+            </fieldset>
+          )
+        }
+        handleYesDisable={currentGender === "OTHERS" && gender === "" && true}
+        handleNoDisable={false}
+      />
+    </div>
+  );
+};
+
+// HostelList Component
+const HostelListComponent = ({
   setSelectedHostel,
   className,
   setShowHostelList,
   selectedHostel,
 }) => {
-  const { data, loading } = useQuery(LOAD_HOSTELS, {
-    fetchPolicy: "network-only",
-  });
+  const { data, loading } = useQuery(LOAD_HOSTELS);
   const [hostelList, setHostelList] = React.useState([]);
   const [showAlert, setShowAlert] = React.useState(false);
   const genders = ["MALE", "FEMALE", "OTHERS"];
   const [currentGender, setCurrentGender] = React.useState(
     `${selectedHostel !== null ? selectedHostel.gender : ``}`
   );
+  const [gender, setGender] = React.useState(currentGender);
   const [currentHostel, setCurrentHostel] = React.useState(
     `${selectedHostel !== null ? selectedHostel.hostel : ``}`
   );
@@ -33,13 +132,12 @@ export const HostelListComponent = ({
         : ``
     }`
   );
-  const selectClass = `border-none outline-none focus:shadow-lg shadow-2xl active:shadow-lg cursor-pointer focus:outline-none bg-gray-800 w-full text-slate-200 rounded-md px-3 py-2`;
   let hostelData;
   hostelData = React.useRef(hostelData);
   React.useEffect(() => {
     if (currentHostel !== "" && currentFloor !== "" && currentRoom !== "") {
       hostelData.current = {
-        gender: currentGender,
+        gender: gender !== "" ? gender : currentGender,
         hostel: currentHostel,
         room: `${currentFloor};Room ${currentRoom}`,
       };
@@ -53,45 +151,21 @@ export const HostelListComponent = ({
     currentHostel,
     currentRoom,
     data,
+    gender,
     hostelData,
     loading,
   ]);
-  const handleForm = (action) => {
-    if (action) {
-      setShowHostelList(false);
-      setSelectedHostel(hostelData.current);
-    }
-  };
   return (
     <>
       {showAlert && (
-        <div className="w-full h-screen z-50 backdrop-blur-sm fixed top-0 bottom-0 bg-overlay flex items-center justify-center">
-          <motion.div
-            initial={{ opacity: 0, scale: 0.75 }}
-            animate={{ opacity: 1, scale: 1 }}
-            exit={{ opacity: 0, scale: 0.75 }}
-            className="bg-primary rounded-lg shadow-md w-[15rem]"
-          >
-            <p className="text-base font-semibold py-3 px-6 capitalize">
-              Set selected hostel as default
-            </p>
-            <div className="border-t w-full h-1 border-orange-300"></div>
-            <div className="flex gap-1 px-2 justify-end items-end">
-              <button
-                onClick={() => handleForm("yes")}
-                className="text-lg font-semibold capitalize py-2 px-4 transition-all duration-100 hover:shadow-none shadow-md rounded-lg my-2 bg-orange-400 hover:bg-orange-500"
-              >
-                yes
-              </button>
-              <button
-                onClick={() => handleForm("no")}
-                className="text-lg font-semibold capitalize py-2 px-4 rounded-full transition-all duration-150 hover:bg-slate-200 my-2"
-              >
-                no
-              </button>
-            </div>
-          </motion.div>
-        </div>
+        <CreateClientAlertComponent
+          gender={gender}
+          setShowHostelList={setShowHostelList}
+          hostelData={hostelData.current}
+          currentGender={currentGender}
+          setGender={setGender}
+          setSelectedHostel={setSelectedHostel}
+        />
       )}
       <motion.div
         initial={{ opacity: 0, y: -50 }}
@@ -147,7 +221,7 @@ export const HostelListComponent = ({
                 {hostelList &&
                   hostelList.length > 0 &&
                   hostelList
-                    ?.filter((n) => n.gender === currentGender)
+                    ?.filter((n) => n.gender.name === currentGender)
                     .map((hostel, idx) => (
                       <option
                         key={idx}
@@ -256,6 +330,8 @@ export const HostelListComponent = ({
     </>
   );
 };
+
+// Main Function
 const Checkout = ({ options, setShow, total }) => {
   const [filter, setFilter] = React.useState("portal");
   const [price, setPrice] = React.useState(options[1].price);
@@ -344,7 +420,9 @@ const Checkout = ({ options, setShow, total }) => {
         <div
           style={{
             transform: `${
-              showHostelList && filter === "hostel" ? "translateY(100vh)" : "none"
+              showHostelList && filter === "hostel"
+                ? "translateY(100vh)"
+                : "none"
             }`,
           }}
           className="w-full flex-1 bg-cartTotal transition-all duration-100 rounded-t-[2rem] flex flex-col items-center justify-evenly px-8 py-2"
@@ -360,6 +438,8 @@ const Checkout = ({ options, setShow, total }) => {
                 ? `${selectedHostel?.hostel.split(";")[0]} ${
                     selectedHostel.room.split(";")[0]
                   } ${selectedHostel.room.split(";")[1]}`
+                : filter === "hostel"
+                ? "Enter your hostel details"
                 : filter}
             </p>
           </div>
@@ -374,8 +454,15 @@ const Checkout = ({ options, setShow, total }) => {
           <motion.button
             whileTap={{ scale: 0.9 }}
             type="button"
-            className="w-full p-2 rounded-full bg-gradient-to-tr from-emerald-400 
-                    to-emerald-600 text-gray-50 text-lg my-2 hover:shadow-lg"
+            disabled={
+              filter !== "hostel"
+                ? false
+                : selectedHostel !== null
+                ? false
+                : true
+            }
+            className="w-full p-2 rounded-full bg-gradient-to-tr from-emerald-400 disabled:from-emerald-200
+                    to-emerald-600 disabled:to-emerald-300 text-gray-50 text-lg my-2 hover:shadow-lg"
           >
             Pay Now
           </motion.button>

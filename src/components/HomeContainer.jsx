@@ -63,7 +63,10 @@ const HomeContainer = () => {
         />
 
         <div className="w-full h-full absolute top-0 left-0 flex items-center justify-center lg:pr-32 gap-4 flex-wrap">
-          {heroData.length > 0 &&
+          {heroData && heroData.length === 0 && (
+            <h1 className="w-full text-lg text-center uppercase font-normal">There is nothing here...</h1>
+          )}
+          {heroData && heroData.length > 0 &&
             heroData?.filter((n)=>n.isAvaliable === true).map((p, idx) => (
               <div
                 key={idx}

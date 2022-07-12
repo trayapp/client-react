@@ -60,6 +60,15 @@ module.exports = {
         cartItem: "#2e3033",
         cartTotal: "#343739",
       },
+      animation: {
+        load: "load 3s ease-in-out infinite",
+      },
+      keyframes: {
+        load: {
+          "0%, 100%": { transform: "translateX(300px)" },
+          "50%": { transform: "translateX(-500px)" },
+        },
+      },
     },
   },
   plugins: [require("tailwind-scrollbar")],

@@ -57,7 +57,9 @@ export const store_const = `
 
 export const hostel_const = `
   name
-  gender
+  gender{
+    name
+  }
   shortName
   isFloor
   floorCount

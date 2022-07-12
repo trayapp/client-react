@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, { useState } from "react";
 import { motion } from "framer-motion";
 import {
   MdFastfood,
@@ -15,7 +15,7 @@ import { useMutation } from "@apollo/client";
 import { ADD_NEW_PRODUCT } from "../GraphQL/mutations/products";
 import { alertSliceActions } from "../context/actions";
 import { errorHandler } from "../apollo";
-import { LOAD_ITEMS } from "../GraphQL/queries/products/queries";
+import { ScrollToTop } from "../utils/hooks/ScrollHooks";
 
 // Saving new Items
 const CreateContainer = () => {
@@ -45,17 +45,6 @@ const CreateContainer = () => {
       setProductImage(file);
       reader.readAsDataURL(file);
     });
-  const ScrollToTopOnMount = () => {
-    useEffect(() => {
-      window.scrollTo({
-        top: 0,
-        left: 0,
-        behavior: "smooth",
-      });
-    }, []);
-
-    return null;
-  };
 
   const uploadImage = (e) => {
     const imageFile = e.target.files[0];
@@ -93,8 +82,8 @@ const CreateContainer = () => {
     setTimeout(() => {
       setFields(false);
     }, 4000);
-    console.log(productImage);
   };
+
   const deleteImage = () => {
     setIsLoading(true);
     setImageAsset(null);
@@ -141,29 +130,17 @@ const CreateContainer = () => {
             product_description: productDescription,
             product_calories: parseInt(productCalories),
           },
-          onError: (error) => {
-            alertSliceActions.createAlert({
-              type: "error",
-              message: `${error} ❗`,
-            });
-          },
-          update: (cache, mutationResult) => {
-            const newItem = mutationResult.data.addProduct;
-            const data = cache.readQuery({
-              query: LOAD_ITEMS,
-              variables: { count: 30 },
-            });
-            cache.writeQuery({
-              query: LOAD_ITEMS,
-              variables: { count: 50 },
-              data: { tasks: [...data.items, newItem] },
-            });
-          },
           onCompleted: () => {
             clearData();
             alertSliceActions.createAlert({
               type: "success",
               message: "Item Was Added Successfully 💚",
+            });
+          },
+          onError: (error) => {
+            alertSliceActions.createAlert({
+              type: "error",
+              message: `${error} ❗`,
             });
           },
         }).then(errorHandler);
@@ -196,10 +173,10 @@ const CreateContainer = () => {
         className="no-select w-full min-h-screen flex items-center justify-center"
         onSubmit={saveDetails}
       >
-        <div className="w-[90%] md:w-[75%] border border-gray-300 rounded-lg p-4 flex flex-col items-center justify-center gap-4 transition-all duration-500">
+        <div className="w-[90%] shadow-lg bg-white md:w-[75%] border border-gray-300 rounded-lg p-4 flex flex-col items-center justify-center gap-4 transition-all duration-500">
           {fields && (
             <>
-              {isScroll && <ScrollToTopOnMount />}
+              {isScroll && <ScrollToTop />}
               <motion.p
                 initial={{ opacity: 0 }}
                 animate={{ opacity: 1 }}
@@ -241,7 +218,7 @@ const CreateContainer = () => {
           <div className="w-full">
             <select
               onChange={(e) => setProductCategory(e.target.value)}
-              className="outline-none w-full text-base border-b-2 border-gray-200 p-2 rounded-md cursor-pointer"
+              className="outline-none w-full text-base border-2 border-gray-200 p-2 rounded-md cursor-pointer"
             >
               <option value="others" className="bg-white">
                 Select Category
@@ -252,7 +229,7 @@ const CreateContainer = () => {
           <div className="w-full">
             <select
               onChange={(e) => setProductType(e.target.value)}
-              className={`outline-none w-full text-base border-b-2 border-gray-200 p-2 rounded-md cursor-pointer ${
+              className={`outline-none w-full text-base border-2 border-gray-200 p-2 rounded-md cursor-pointer ${
                 productCategory ? "block" : "hidden"
               }`}
             >
@@ -379,7 +356,7 @@ const CreateContainer = () => {
                     ? true
                     : false
                 }
-                onSubmit={saveDetails}
+                // onSubmit={saveDetails}
               >
                 Add
               </button>

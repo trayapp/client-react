@@ -70,7 +70,7 @@ const BecomeVendor = () => {
     if (data && !loading) {
       alertSliceActions.clearAlerts([]);
       var qs = data.createVendor;
-      if (qs.success === true) {
+      if (qs && qs.success === true) {
         authTokenActions.setAuthToken(qs);
         localStorage.setItem(USER, JSON.stringify(qs.user));
         alertSliceActions.createAlert({

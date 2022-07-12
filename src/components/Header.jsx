@@ -62,24 +62,17 @@ const Header = () => {
   to null and clearing the localStorage 
   */
   const logout = () => {
-    alertSliceActions.createAlert({
-      type: "info",
-      message: `Logging You Out... 🙂`,
-    });
     setIsMenu(false);
     authTokenActions.logOut();
-    // setting a 3secs timeout before the `Logout was Successful` message shows
-    setTimeout(() => {
-      alertSliceActions.createAlert({
-        type: "success",
-        message: `Logout was Successful 😁`,
-      });
-    }, 200);
+    alertSliceActions.createAlert({
+      type: "success",
+      message: `Logout was Successful 😁`,
+    });
   };
 
   return (
     <header className="fixed no-select z-50 w-screen p-3 px-4 md:p-6 md:px-16 bg-navOverlay backdrop-blur-md">
-            {isMenu && (
+      {isMenu && (
         <div
           className="w-screen fixed h-screen z-10 top-0 bottom-0"
           onClick={showMenu}
@@ -181,7 +174,9 @@ const Header = () => {
                       My Store
                     </Link>
                   </>
-                ) : user && user.profile.vendor === null && user.profile.client === null ? (
+                ) : user &&
+                  user.profile.vendor === null &&
+                  user.profile.client === null ? (
                   <Link
                     to="/auth/become-vendor"
                     className="px-4 py-2 flex items-center gap-3 cursor-pointer hover:bg-slate-100 transition-all duration-100 ease-in-out text-textColor text-base"
@@ -286,7 +281,9 @@ const Header = () => {
                     My Store
                   </Link>
                 </>
-              ) : user && user.profile.vendor === null && user.profile.client === null ? (
+              ) : user &&
+                user.profile.vendor === null &&
+                user.profile.client === null ? (
                 <Link
                   to="/auth/become-vendor"
                   className="px-4 py-2 flex items-center gap-3 cursor-pointer hover:bg-slate-100 transition-all duration-100 ease-in-out text-textColor text-base"

@@ -7,7 +7,7 @@ import FormHeader from "./FormHeader";
 import { useMutation } from "@apollo/client";
 import { LOGIN_USER } from "../../GraphQL/mutations/auth";
 import { motion } from "framer-motion";
-import { AUTH_TOKEN, AUTH_TOKEN_REFRESH } from "../../constants";
+import { AUTH_TOKEN, AUTH_TOKEN_REFRESH, USER } from "../../constants";
 import { ReactComponent as LoginIllustration } from "../../img/login.svg";
 import { errorHandler, apolloClientAuth } from "../../apollo";
 import { authTokenActions, alertSliceActions } from "../../context/actions";
@@ -26,7 +26,7 @@ const Login = () => {
   const [isError, setIsError] = useState(false);
   const [msg, setMsg] = useState("");
   const [alertStatus, setAlertStatus] = useState("danger");
-  const navigate = useNavigate()
+  const navigate = useNavigate();
   const ref = useRef(null);
   const handleChange = (e) => {
     setLoginState({ ...loginState, [e.target.id]: e.target.value });
@@ -50,7 +50,6 @@ const Login = () => {
       if (qs.errors) {
         setIsError(true);
         setAlertStatus("danger");
-        // console.log(qs.errors);
         if (qs.errors.nonFieldErrors) {
           setMsg(`${qs.errors.nonFieldErrors[0].message}`);
         } else {
@@ -60,19 +59,8 @@ const Login = () => {
           setIsError(false);
         }, 3000);
       }
-      if (qs.errors === null) {
-        authTokenActions.setAuthToken(qs);
-        localStorage.setItem("user", JSON.stringify(qs.user));
-        localStorage.setItem(AUTH_TOKEN, qs.token);
-        localStorage.setItem(AUTH_TOKEN_REFRESH, qs.refreshToken);
-        navigate('/')
-        alertSliceActions.createAlert({
-          type: "success",
-          message: `You Logged In as ${qs.user.username} Successfully 🤩`,
-        });
-      }
     }
-  // eslint-disable-next-line react-hooks/exhaustive-deps
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [data, loading, error]);
 
   //Handling Login API Integration here
@@ -81,6 +69,18 @@ const Login = () => {
       variables: {
         username: loginState.username,
         password: loginState.password,
+      },
+      onCompleted: (data) => {
+        let qs = data.tokenAuth;
+        authTokenActions.setAuthToken(qs);
+        localStorage.setItem(USER, JSON.stringify(qs.user));
+        localStorage.setItem(AUTH_TOKEN, qs.token);
+        localStorage.setItem(AUTH_TOKEN_REFRESH, qs.refreshToken);
+        alertSliceActions.createAlert({
+          type: "success",
+          message: `You Logged In as ${qs.user.username} Successfully 🤩`,
+        });
+        navigate("/");
       },
     }).catch(errorHandler);
   };

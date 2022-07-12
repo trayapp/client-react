@@ -7,6 +7,7 @@ export const LoadItemAttribute = ({ type }) => {
     variables: {
       type: type,
     },
+    fetchPolicy: "network-only"
   });
   const [itemAttribute, setItemAttribute] = useState(null);
   type = useRef(type);
