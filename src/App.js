@@ -5,7 +5,7 @@ import { useQuery } from "@apollo/client";
 import { LOAD_ITEMS } from "./GraphQL/queries/products/queries";
 import { AnimatePresence } from "framer-motion";
 import { Header, Alerts, CartContainer } from "./components";
-import { cartAction, foodItemsAction } from "./context/actions";
+import { cartAction, foodItemsAction, productViewerAction } from "./context/actions";
 import ProductViewer from "./components/ProductViewer";
 
 const App = () => {
@@ -15,11 +15,17 @@ const App = () => {
     nextFetchPolicy: "cache-and-network",
   });
   const cartShow = useSelector((state) => state.cart.cartShow);
-  const [cartInit, setCartInit] = useState(false);
+  const currentViewedProduct = useSelector(
+    (state) => state.productViewer?.product
+  );
+  /* This is to know when the user has loaded a page */ 
+  const [InitLoad, setInitLoad] = useState(false);
   const [foodItems, setFoodItems] = useState(null);
-  if (cartInit === false) {
-    setCartInit(true);
+
+  if (InitLoad === false) {
+    setInitLoad(true);
     cartAction.setCartShow(false);
+    productViewerAction.setCurrentView(null)
   }
   useEffect(() => {
     if (!loading && data && foodItems === null) {
@@ -34,7 +40,10 @@ const App = () => {
       <AnimatePresence exitBeforeEnter>
         <div className="w-screen h-auto flex flex-col bg-primary">
           {/* Product Viewer */}
-          <ProductViewer />
+          {currentViewedProduct !== null && (
+            
+          <ProductViewer p={currentViewedProduct} />
+          )}
           <Header />
 
           <main className="mt-14 md:mt-20 px-4 md:px-16 py-4 w-full">
