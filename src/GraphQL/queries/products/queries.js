@@ -34,3 +34,11 @@ export const SEARCH_ITEMS = gql`
     }
   }
 `;
+
+export const LOAD_ITEM = gql`
+  query LOAD_ITEM($slug: String!) {
+    item(slug: $slug) {
+      ${product_const()}
+    }
+  }
+`;

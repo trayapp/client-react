@@ -17,7 +17,7 @@ const CartVendorGrouping = ({ items, vendor, flag, setFlag }) => {
   const [store, setStore] = useState(null);
   const navigate = useNavigate();
   let storeImageName = store?.storeName.split(' ');
-  storeImageName = storeImageName && storeImageName.length > 1 ? `${storeImageName[0][0]+storeImageName[1][0]}` : store?.storeNickname
+  storeImageName = storeImageName && storeImageName.length > 1 ? `${storeImageName[0][0]+storeImageName[1][0]}` : store?.storeNickname[0]
 
   useEffect(() => {
     if (!loading && data) {

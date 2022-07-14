@@ -7,16 +7,24 @@ import { useQuery } from "@apollo/client";
 import { LOAD_ITEM_ATTRIBUTE } from "../GraphQL/queries/products";
 
 const MenuContainer = () => {
-  const [filter, setFilter] = useState("category-snacks");
   const { loading, data } = useQuery(LOAD_ITEM_ATTRIBUTE, {
     variables: {
       type: 1,
     },
     fetchPolicy: "network-only",
-    nextFetchPolicy: "cache-and-network"
+    nextFetchPolicy: "cache-and-network",
   });
   const [categories, setCategories] = useState(null);
-  const foodItems = useSelector((state) => state.foodItems?.foodItems?.filter((n)=>n.isAvaliable === true));
+  const [filter, setFilter] = useState(
+    `${
+      categories !== null && categories.length > 0
+        ? categories[0].urlParamName
+        : "category-snacks"
+    }`
+  );
+  const foodItems = useSelector((state) =>
+    state.foodItems?.foodItems?.filter((n) => n.isAvaliable === true)
+  );
   useEffect(() => {
     if (!loading && data) {
       setCategories(data?.itemAttributes);
@@ -37,6 +45,7 @@ const MenuContainer = () => {
         </p>
         <div className="w-full flex items-center no-select justify-start lg:justify-center gap-8 py-6 overflow-x-scroll scrollbar-none">
           {categories &&
+            categories.length > 0 &&
             categories.map((category) => (
               <motion.div
                 whileTap={{ scale: 0.75 }}

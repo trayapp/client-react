@@ -1,10 +1,14 @@
 import React, { useEffect, useRef, useState } from "react";
-import { MdShoppingBasket } from "react-icons/md";
+import { MdShoppingBasket, MdVisibility } from "react-icons/md";
 import { motion } from "framer-motion";
 import { ReactComponent as NotFound } from "../img/not-found.svg";
 import { CART_ITEMS } from "../constants";
 import { useSelector } from "react-redux";
-import { alertSliceActions, cartAction } from "../context/actions";
+import {
+  alertSliceActions,
+  cartAction,
+  productViewerAction,
+} from "../context/actions";
 import { useMutation } from "@apollo/client";
 import { ADD_PRODUCT_CLICK } from "../GraphQL/mutations/products/mutaions";
 
@@ -64,6 +68,18 @@ const RowContainer = ({ flag, rowData, scrollValue, className }) => {
             key={`${item?.productSlug}-${item?.id}-${idx}`}
             className="w-275 h-auto min-w-[275px] md:w-300 md:min-w-[300px] bg-cardOverlay rounded-lg p-2 px-4 my-12 backdrop-blur-lg hover:drop-shadow-lg flex flex-col items-center justify-evenly relative"
           >
+            <div
+              title="view"
+              className="absolute top-0 cursor-pointer flex z-10 justify-center rounded-tr-lg 
+              items-center bg-orange-300 hover:bg-orange-400 right-0 w-8 h-8"
+              onClick={() =>
+                productViewerAction.setCurrentView(item)
+              }
+            >
+              <motion.div whileTap={{ scale: 0.85 }}>
+                <MdVisibility className="text-white" />
+              </motion.div>
+            </div>
             <div className="w-full flex items-center justify-between">
               <motion.div
                 whileHover={{ scale: 1.2 }}
@@ -114,10 +130,10 @@ const RowContainer = ({ flag, rowData, scrollValue, className }) => {
               </motion.div>
             </div>
             <div className="w-full flex flex-col gap-4 items-end justify-end">
-              <p className="text-textColor font-semibold md:text-lg text-base">
+              <p className="text-textColor font-semibold md:text-lg select-text text-base">
                 {item?.productName}
               </p>
-              <p className="mt-1 text-sm text-gray-500">
+              <p className="mt-1 text-sm text-gray-500 select-text">
                 {item?.productCategory.name}
                 {item.productCalories && ` > ${item?.productCalories} Calories`}
               </p>

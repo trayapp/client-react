@@ -35,7 +35,7 @@ export const authTokenSlice = createSlice({
       state.refreshExpiresIn = payload.refreshExpiresIn;
     },
     setAuthUser: (state, { payload }) => {
-      state.user = payload
+      state.user = payload;
     },
     logOut: (state, { payload }) => {
       state.user = null;
@@ -57,7 +57,7 @@ export const AlertSlice = createSlice({
         message: action.payload.message,
         type: action.payload.type,
       });
-      state.alerts = getUniqueArrays(state.alerts, "message")
+      state.alerts = getUniqueArrays(state.alerts, "message");
     },
     clearAlerts: (state, action) => {
       state.alerts = [];
@@ -86,6 +86,7 @@ export const cartSlice = createSlice({
   reducers: {
     setCartItems: (state, action) => {
       state.cartItems = getUniqueArrays(action.payload, "id");
+      state.cartItems = getUniqueArrays(action.payload, "avaliableStore");
     },
     AddQty: (state, action) => {
       const filtered = state.cartItems.find(
@@ -112,11 +113,10 @@ export const cartSlice = createSlice({
   },
 });
 
-
 export const storeSlice = createSlice({
   name: "store",
   initialState: {
-    avaliableItems: []
+    avaliableItems: [],
   },
   reducers: {
     setAvaliableItems: (state, action) => {
@@ -126,6 +126,18 @@ export const storeSlice = createSlice({
       state.avaliableItems = state.avaliableItems.filter(
         (item) => item.id !== action.payload.id
       );
-    }
-  }
-})
+    },
+  },
+});
+
+export const productViewerSlice = createSlice({
+  name: "currentView",
+  initialState: {
+    product: null,
+  },
+  reducers: {
+    setCurrentView: (state, action) => {
+      state.product = action.payload;
+    },
+  },
+});

@@ -4,6 +4,7 @@ export const product_const = (flag) => {
   isAvaliable
   productName
   productQty
+  productDesc
   productType {
     name
     id
@@ -29,15 +30,13 @@ export const product_const = (flag) => {
   }
   avaliableStore
   productCreator {
+    store{
+      storeName
+      storeNickname
+    }
     profile {
       user {
         username
-      }
-      vendor{
-        store{
-          storeName
-          storeNickname
-        }
       }
     }
   }

@@ -1,7 +1,14 @@
 import { combineReducers } from "@reduxjs/toolkit";
 import { persistReducer } from "redux-persist";
 import storage from "redux-persist/lib/storage";
-import { authTokenSlice, cartSlice, AlertSlice, foodItemsSlice, storeSlice } from "../context/slices";
+import {
+  authTokenSlice,
+  cartSlice,
+  AlertSlice,
+  foodItemsSlice,
+  storeSlice,
+  productViewerSlice,
+} from "../context/slices";
 
 const persistConfigMain = {
   key: "root",
@@ -20,7 +27,8 @@ const rootReducerMain = combineReducers({
   notifications: AlertSlice.reducer,
   foodItems: foodItemsSlice.reducer,
   cart: cartSlice.reducer,
-  store: storeSlice.reducer
+  store: storeSlice.reducer,
+  productViewer: productViewerSlice.reducer,
 });
 
 export const persistedReducerMain = persistReducer(

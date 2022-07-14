@@ -1,6 +1,13 @@
 import { bindActionCreators } from "@reduxjs/toolkit";
 import { reduxStoreMain } from "../redux/storeMain";
-import { authTokenSlice, cartSlice, AlertSlice, foodItemsSlice, storeSlice } from "./slices";
+import {
+  authTokenSlice,
+  cartSlice,
+  AlertSlice,
+  foodItemsSlice,
+  storeSlice,
+  productViewerSlice,
+} from "./slices";
 
 export const authTokenActions = bindActionCreators(
   authTokenSlice.actions,
@@ -14,16 +21,19 @@ export const alertSliceActions = bindActionCreators(
 export const foodItemsAction = bindActionCreators(
   foodItemsSlice.actions,
   reduxStoreMain.dispatch
-)
+);
 
 export const cartAction = bindActionCreators(
   cartSlice.actions,
   reduxStoreMain.dispatch
-)
+);
 
 export const storeAction = bindActionCreators(
   storeSlice.actions,
   reduxStoreMain.dispatch
-)
-
+);
+export const productViewerAction = bindActionCreators(
+  productViewerSlice.actions,
+  reduxStoreMain.dispatch
+);
 export { useSelector } from "react-redux";
